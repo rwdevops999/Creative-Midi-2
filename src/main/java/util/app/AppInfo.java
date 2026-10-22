@@ -10,5 +10,9 @@ public enum AppInfo {
         @Setter
         private boolean debugMode = false;
 
+        @Getter
+        @Setter
+        private boolean testMode = false;
+
         // Add your properties and methods here
 }
