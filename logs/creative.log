@@ -13,3 +13,11 @@
 2026-10-22 09:34:26 INFO  util.app.Initialize - Initializing Application
 2026-10-22 09:34:26 INFO  scenes.root.panes.RootPane - building Pane RootPane
 2026-10-22 09:34:26 INFO  scenes.root.panes.RootPane - built Pane RootPane
+2026-10-22 09:39:30 INFO  scenes.CreativeApp - Starting Creative Midi
+2026-10-22 09:39:30 INFO  util.app.Initialize - Initializing Application
+2026-10-22 09:39:30 INFO  scenes.root.panes.RootPane - building Pane RootPane
+2026-10-22 09:39:30 INFO  scenes.root.panes.RootPane - built Pane RootPane
+2026-10-22 09:40:52 INFO  scenes.CreativeApp - Starting Creative Midi
+2026-10-22 09:40:52 INFO  util.app.Initialize - Initializing Application
+2026-10-22 09:40:52 INFO  scenes.root.panes.RootPane - building Pane RootPane
+2026-10-22 09:40:52 INFO  scenes.root.panes.RootPane - built Pane RootPane

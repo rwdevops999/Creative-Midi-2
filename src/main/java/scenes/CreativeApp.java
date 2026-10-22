@@ -17,6 +17,9 @@ public class CreativeApp extends Application {
 
     private static final AppInfo appInfo = AppInfo.INSTANCE;
 
+    private double xOffset = 0;
+    private double yOffset = 0;
+
     private static final String TEST = "-t";
 
     public static void startup(String[] args) {
@@ -47,6 +50,22 @@ public class CreativeApp extends Application {
         String css = Objects.requireNonNull(CreativeApp.class.getResource("/style/style.css")).toExternalForm();
         rootScene.getStylesheets().add(css);
 
+        primaryStage.setScene(rootScene);
+        primaryStage.show();
 
+        // To move the screen around
+        handleMouseEvents(primaryStage, rootPane);
+    }
+
+    private void handleMouseEvents(Stage primaryStage, RootPane rootPane) {
+        rootPane.setOnMousePressed(event -> {
+            xOffset = event.getSceneX();
+            yOffset = event.getSceneY();
+        });
+
+        rootPane.setOnMouseDragged(event -> {
+            primaryStage.setX(event.getScreenX() - xOffset);
+            primaryStage.setY(event.getScreenY() - yOffset);
+        });
     }
 }
