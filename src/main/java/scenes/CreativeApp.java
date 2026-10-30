@@ -6,7 +6,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import scenes.root.panes.RootPane;
+import scenes.root.root.RootPane;
 import util.app.AppInfo;
 import util.app.Initialize;
 
