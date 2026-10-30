@@ -8,6 +8,7 @@ import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scenes.CreativeApp;
+import scenes.root.root.footer.FooterPane;
 import scenes.root.root.header.HeaderPane;
 import util.properties.AppProperties;
 
@@ -92,6 +93,8 @@ public class MainPane extends BorderPane {
         // Set Header
         setTop(new HeaderPane(this, 100, 15));
 
+        // Set Footer
+        setBottom(new FooterPane(this, 100, 15));
     }
 
     // ACCESSORS

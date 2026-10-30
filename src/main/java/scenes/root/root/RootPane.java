@@ -24,8 +24,8 @@ public class RootPane extends VBox {
     private void buildPane() {
         logger.info("building Pane {}", getId());
 
-        getChildren().add(new MainPane(this, 100, 78));
-        getChildren().add(new MonitorPane(this, 100, 22));
+        getChildren().add(new MainPane(this, 100, 83));
+        getChildren().add(new MonitorPane(this, 100, 17));
 
         logger.info("built Pane {}", getId());
     }

@@ -23,6 +23,7 @@ public class MonitorPane extends VBox {
         this.parent = owner;
 
         setPaneSizeAsPercentage(this, parent, width, height);
+        setPaneBackground(this);
 
         showPaneBorder(this, getColor("border", "green"));
 
