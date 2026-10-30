@@ -28,6 +28,7 @@ public class ColorScheme {
         colors.put(new ColorKey("border", "green", null), Color.GREEN);
         colors.put(new ColorKey("border", "blue", null), Color.BLUE);
         colors.put(new ColorKey("border", "orange", null), Color.ORANGE);
+        colors.put(new ColorKey("border", "gold", null), Color.GOLD);
     }
 
     public static Color getColor(ColorKey key) {

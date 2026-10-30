@@ -42,7 +42,7 @@ public class CreativeApp extends Application {
         primaryStage.initStyle(StageStyle.UNDECORATED);
 
         // 1. Initialize the app
-        Initialize init = new Initialize();
+        new Initialize();
 
         // 2. Create root app
         RootPane rootPane = new RootPane(); // builds the main pane and monitor pane

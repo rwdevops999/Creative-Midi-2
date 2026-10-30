@@ -10,7 +10,9 @@ import org.slf4j.LoggerFactory;
 import app.CreativeApp;
 import app.root.root.footer.FooterPane;
 import app.root.root.header.HeaderPane;
+import scenes.main.MainScene;
 import util.app.AppInfo;
+import util.app.routing.Router;
 import util.properties.AppProperties;
 
 import java.util.Objects;
@@ -99,6 +101,8 @@ public class MainPane extends BorderPane {
 
         // This pane will contain all SPA's
         AppInfo.INSTANCE.setSpaOwner(this);
+
+        Router.getInstance().routeTo(null, new MainScene(), true);
     }
 
     // ACCESSORS

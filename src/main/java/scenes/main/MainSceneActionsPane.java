@@ -1,6 +1,7 @@
 package scenes.main;
 
 import app.root.root.MainActionsPane;
+import fx.component.SceneSelectButton;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.VPos;
@@ -9,6 +10,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scenes.sysex.SysexScene;
 import util.app.scene.IScene;
 
 public class MainSceneActionsPane extends GridPane {
@@ -48,8 +50,12 @@ public class MainSceneActionsPane extends GridPane {
         buildPane();
     }
 
+    private static final int ICON_SIZE=64;
+
     private void buildPane() {
         logger.debug("Building {}", getId());
+
+        add(new SceneSelectButton(parentScene, ICON_SIZE, "sysexButton", "handle sysex", "sysex", new SysexScene()), 1, 0);
 
         logger.debug("Built {}", getId());
     }
