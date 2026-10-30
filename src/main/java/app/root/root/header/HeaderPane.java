@@ -1,11 +1,10 @@
-package scenes.root.root.header;
+package app.root.root.header;
 
 import javafx.scene.layout.GridPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import scenes.root.root.MainPane;
+import app.root.root.MainPane;
 
-import static util.Constants.APP_WIDTH;
 import static util.app.colors.ColorScheme.getColor;
 import static util.util.*;
 

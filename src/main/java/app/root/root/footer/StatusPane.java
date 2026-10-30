@@ -1,4 +1,4 @@
-package scenes.root.root.footer;
+package app.root.root.footer;
 
 import javafx.scene.layout.HBox;
 import org.slf4j.Logger;
@@ -8,24 +8,23 @@ import static util.app.colors.ColorScheme.getColor;
 import static util.util.setPaneSizeAsPercentage;
 import static util.util.showPaneBorder;
 
-public class ClockPane extends HBox {
-    private static final Logger logger = LoggerFactory.getLogger(ClockPane.class);
+public class StatusPane extends HBox {
+    private static final Logger logger = LoggerFactory.getLogger(StatusPane.class);
 
-    public ClockPane() {
+    public StatusPane() {
         super();
 
-        setId("ClockPane");
+        setId("StatusPane");
     }
 
     private FooterPane parent;
-
-    public ClockPane(FooterPane owner, int width, int height) {
+    public StatusPane(FooterPane owner, int width, int height) {
         this();
 
         this.parent = owner;
 
         setPaneSizeAsPercentage(this, owner, width, height);
-        showPaneBorder(this, getColor("border", "orange"));
+        showPaneBorder(this, getColor("border", "blue"));
 
         buildPane();
     }
@@ -37,6 +36,7 @@ public class ClockPane extends HBox {
     }
 
     // ACCESSORS
+
     public FooterPane getFooterPane() {
         return parent;
     }

@@ -1,4 +1,4 @@
-package scenes.root.root;
+package app.root.root;
 
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;

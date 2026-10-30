@@ -1,6 +1,6 @@
-package scenes.root.root.footer;
+package app.root.root.header;
 
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,23 +8,23 @@ import static util.app.colors.ColorScheme.getColor;
 import static util.util.setPaneSizeAsPercentage;
 import static util.util.showPaneBorder;
 
-public class CopyrightPane extends HBox {
-    private static final Logger logger = LoggerFactory.getLogger(CopyrightPane.class);
+public class ControlsPane extends VBox {
+    private static final Logger logger = LoggerFactory.getLogger(ControlsPane.class);
 
-    public CopyrightPane() {
+    public ControlsPane() {
         super();
 
-        setId("CopyrightPane");
+        setId("ControlsPane");
     }
 
-    private FooterPane parent;
-    public CopyrightPane(FooterPane owner, int width, int height) {
+    private HeaderPane parent;
+    public ControlsPane(HeaderPane owner, int width, int height) {
         this();
 
         this.parent = owner;
 
         setPaneSizeAsPercentage(this, owner, width, height);
-        showPaneBorder(this, getColor("border", "green"));
+        showPaneBorder(this, getColor("border", "orange"));
 
         buildPane();
     }
@@ -37,7 +37,8 @@ public class CopyrightPane extends HBox {
 
     // ACCESSORS
 
-    public FooterPane getFooterPane() {
+    public HeaderPane getHeaderPane() {
         return parent;
     }
+
 }

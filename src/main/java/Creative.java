@@ -1,6 +1,6 @@
 import org.apache.logging.log4j.core.config.Configurator;
 import org.fusesource.jansi.AnsiConsole;
-import scenes.CreativeApp;
+import app.CreativeApp;
 import util.app.AppInfo;
 import util.app.Logging;
 

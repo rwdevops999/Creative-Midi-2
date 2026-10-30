@@ -1,11 +1,9 @@
-package scenes.root.root.footer;
+package app.root.root.footer;
 
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import scenes.root.root.MainPane;
-import scenes.root.root.header.HeaderPane;
+import app.root.root.MainPane;
 
 import static util.app.colors.ColorScheme.getColor;
 import static util.util.*;

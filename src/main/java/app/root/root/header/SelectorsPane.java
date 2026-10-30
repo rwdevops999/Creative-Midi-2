@@ -1,4 +1,4 @@
-package scenes.root.root.header;
+package app.root.root.header;
 
 import javafx.scene.layout.VBox;
 import org.slf4j.Logger;

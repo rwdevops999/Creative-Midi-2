@@ -1,4 +1,4 @@
-package scenes.root.root;
+package app.root.root;
 
 import fx.dialog.AboutDialog;
 import javafx.animation.PauseTransition;
@@ -7,9 +7,10 @@ import javafx.scene.layout.*;
 import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import scenes.CreativeApp;
-import scenes.root.root.footer.FooterPane;
-import scenes.root.root.header.HeaderPane;
+import app.CreativeApp;
+import app.root.root.footer.FooterPane;
+import app.root.root.header.HeaderPane;
+import util.app.AppInfo;
 import util.properties.AppProperties;
 
 import java.util.Objects;
@@ -24,7 +25,7 @@ public class MainPane extends BorderPane {
     public MainPane() {
         super();
 
-        setId("MainPane");
+        setId("MainPane (SPAOwner)");
     }
 
     private RootPane parent;
@@ -95,6 +96,9 @@ public class MainPane extends BorderPane {
 
         // Set Footer
         setBottom(new FooterPane(this, 100, 15));
+
+        // This pane will contain all SPA's
+        AppInfo.INSTANCE.setSpaOwner(this);
     }
 
     // ACCESSORS
