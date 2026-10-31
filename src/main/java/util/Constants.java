@@ -9,4 +9,6 @@ public class Constants {
 
     public final static String SCENE_SPA="SPA";
 
+    public final static int OS_MAC=0;
+    public final static int OS_WINDOWS=1;
 }

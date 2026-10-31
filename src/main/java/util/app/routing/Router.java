@@ -40,4 +40,26 @@ public class Router implements IRouter {
         }
     }
 
+    public void routeTo(IScene callingScene, IScene calledScene, Pane calledPane, boolean cleanup) {
+        logger.debug("[CM_ROUTER] Route To {}", calledScene.getClass().getName());
+
+        Pane spaOwner = AppInfo.INSTANCE.getSpaOwner();
+
+        if (cleanup)
+        {
+            Pane spa = AppInfo.INSTANCE.getSpa();
+            if (spa != null) {
+                spaOwner.getChildren().remove(spa);
+            }
+        }
+
+        Pane pane = calledScene.renderScene(callingScene, calledPane);
+        if (pane != null) {
+            if (spaOwner instanceof BorderPane bp) {
+                bp.setCenter(pane);
+            } else {
+                spaOwner.getChildren().add(pane);
+            }
+        }
+    }
 }

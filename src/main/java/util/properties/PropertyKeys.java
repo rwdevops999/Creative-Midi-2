@@ -5,4 +5,6 @@ public class PropertyKeys {
     public static String APP_RENDER_BACKGROUND = "app.render.background";
     public static String APP_RENDER_ABOUT = "app.render.about";
     public static String APP_RENDER_ABOUT_TIMING = "app.render.about.timing";
+
+    public static String APP_DEVICE_SCANNER_TIME = "app.device.scanner.time";
 }

@@ -11,6 +11,7 @@ import javafx.scene.layout.RowConstraints;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scenes.sysex.SysexScene;
+import util.app.AppInfo;
 import util.app.scene.IScene;
 
 public class MainSceneActionsPane extends GridPane {
@@ -57,7 +58,11 @@ public class MainSceneActionsPane extends GridPane {
 
         add(new SceneSelectButton(parentScene, ICON_SIZE, "sysexButton", "handle sysex", "sysex", new SysexScene()), 1, 0);
 
-        logger.debug("Built {}", getId());
+        if (AppInfo.INSTANCE.isTestMode()) {
+            add(new SceneSelectButton(parentScene, ICON_SIZE, "test1Button", "test 1", "test1", "Test1"), 3, 1);
+        }
+
+            logger.debug("Built {}", getId());
     }
 
     // ACCESSORS

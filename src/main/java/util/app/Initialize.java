@@ -2,6 +2,7 @@ package util.app;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import util.device.DeviceService;
 import util.properties.AppProperties;
 
 public class Initialize {
@@ -17,5 +18,8 @@ public class Initialize {
 
         // 1. Read Properties
         AppProperties.getInstance().loadAllProperties();
+
+        // TODO Remove this a it is for testing
+        DeviceService.getInstance().scan();
     }
 }
