@@ -77,10 +77,12 @@ public class DeviceService {
     private static final String ANSI_BLUE = "\u001B[34m";
 
     private void printDebugInfoOfDevice(MidiDevice dev) {
-        System.out.println("-= > Device: " + ANSI_RED + dev.getDeviceInfo().getName() + ANSI_RESET);
-        System.out.println("     Vendor: " + ANSI_GREEN + dev.getDeviceInfo().getVendor() + ANSI_RESET);
-        System.out.println("     num TX: " + ANSI_BLUE + dev.getMaxTransmitters() + ANSI_RESET);
-        System.out.println("     num RX: " + ANSI_BLUE + dev.getMaxReceivers() + ANSI_RESET);
+        if (!dev.getClass().getName().equals("com.sun.media.sound.RealTimeSequencer")) {
+            System.out.println("-= > Device: " + ANSI_RED + dev.getDeviceInfo().getName() + ANSI_RESET);
+            System.out.println("     Vendor: " + ANSI_GREEN + dev.getDeviceInfo().getVendor() + ANSI_RESET);
+            System.out.println("     num TX: " + ANSI_BLUE + dev.getMaxTransmitters() + ANSI_RESET);
+            System.out.println("     num RX: " + ANSI_BLUE + dev.getMaxReceivers() + ANSI_RESET);
+        }
     }
 
     private void addDevice(String deviceName, MidiDevice dev, DeviceDirection direction) {
