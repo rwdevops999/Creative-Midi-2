@@ -1,14 +1,12 @@
 package util.device;
 
-import entity.DeviceInfo;
-import javafx.application.Platform;
+import entity.device.DeviceInfo;
 import javafx.concurrent.Task;
 import util.properties.AppProperties;
 import util.registry.AppEvent;
 import util.registry.Registry;
 
 import java.util.List;
-import java.util.Properties;
 
 import static util.properties.PropertyKeys.APP_DEVICE_SCANNER_TIME;
 

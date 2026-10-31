@@ -9,4 +9,6 @@ public class PropertyKeys {
     public static String APP_DEVICE_SCANNER_TIME = "app.device.scanner.time";
 
     public static String DEVICE = "device.name";
+
+    public static String KEYBOARD = "keyboard";
 }

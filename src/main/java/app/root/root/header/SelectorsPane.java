@@ -1,15 +1,12 @@
 package app.root.root.header;
 
-import entity.DeviceInfo;
+import entity.device.DeviceInfo;
+import entity.voice.KeyboardVoice;
 import fx.component.LabeledSelector;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
-import javafx.event.Event;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import org.controlsfx.control.Notifications;
 import org.slf4j.Logger;
@@ -19,6 +16,9 @@ import util.properties.AppProperties;
 import util.properties.PropertyKeys;
 import util.registry.AppEvent;
 import util.registry.Registry;
+
+import java.security.Key;
+import java.util.ArrayList;
 import java.util.List;
 
 import static util.app.colors.ColorScheme.getColor;
@@ -144,12 +144,20 @@ public class SelectorsPane extends HBox {
             }
         });
 
-    /*
-    Als je straks de keyboardSelector aanzet, krijgt die ook 50% via exact dezelfde regel:
-    LabeledSelector keyboardSelector = new LabeledSelector(parent, "Keyboard");
-    keyboardSelector.prefWidthProperty().bind(this.widthProperty().divide(2));
-    getChildren().add(keyboardSelector);
-    */
+        // TODO load voice files here
+        List<KeyboardVoice> voiceFiles = getVoiceFiles();
+        LabeledSelector<KeyboardVoice> keyboardSelector = new LabeledSelector<>(parent, "Keyboard");
+        keyboardSelector.getComboBox().setItems(FXCollections.observableArrayList(voiceFiles));
+        keyboardSelector.prefWidthProperty().bind(this.widthProperty().divide(2));
+        keyboardSelector.getComboBox().getSelectionModel().selectedItemProperty().addListener((obs, oldDevice, newDevice) -> {
+
+        });
+
+        getChildren().add(keyboardSelector);
+    }
+
+    private List<KeyboardVoice> getVoiceFiles() {
+        return new ArrayList<>();
     }
 
     private void showNotification(String title, String message) {

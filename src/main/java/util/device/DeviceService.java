@@ -1,6 +1,6 @@
 package util.device;
 
-import entity.DeviceInfo;
+import entity.device.DeviceInfo;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,9 +13,7 @@ import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class DeviceService {
     private static final Logger logger = LoggerFactory.getLogger(DeviceService.class);

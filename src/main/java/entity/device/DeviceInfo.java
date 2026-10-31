@@ -1,5 +1,6 @@
-package entity;
+package entity.device;
 
+import entity.NameEntity;
 import lombok.Getter;
 import lombok.Setter;
 import util.device.DeviceDirection;

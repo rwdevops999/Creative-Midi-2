@@ -51,6 +51,13 @@
             <version>11.2.4</version>
             <scope>compile</scope>
         </dependency>
+        <!-- for utilities such as FilenameUtils -->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.22.0</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
