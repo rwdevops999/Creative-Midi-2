@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import app.root.root.MainPane;
 
 import static util.app.colors.ColorScheme.getColor;
-import static util.util.*;
+import static util.Util.*;
 
 public class HeaderPane extends GridPane {
     private static final Logger logger = LoggerFactory.getLogger(HeaderPane.class);
@@ -38,9 +38,9 @@ public class HeaderPane extends GridPane {
 
         setPaneBackground(this);
 
-        add(new TitlePane(this, 40, 100), 0, 0, 10, 1);
+        add(new TitlePane(this, 35, 100), 0, 0, 10, 1);
         add(new SelectorsPane(this, 55, 100), 10, 0, 10, 1);
-        add(new ControlsPane(this, 5, 100), 20, 0, 2, 1);
+        add(new ControlsPane(this, 10, 100), 20, 0, 2, 1);
 
         logger.debug("Built {}", getId());
     }

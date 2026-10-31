@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import app.root.root.MainPane;
 
 import static util.app.colors.ColorScheme.getColor;
-import static util.util.*;
+import static util.Util.*;
 
 public class FooterPane extends HBox {
     private static final Logger logger = LoggerFactory.getLogger(FooterPane.class);

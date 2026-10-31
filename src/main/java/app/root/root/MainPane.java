@@ -19,7 +19,7 @@ import java.util.Objects;
 
 import static util.app.colors.ColorScheme.getColor;
 import static util.properties.PropertyKeys.*;
-import static util.util.*;
+import static util.Util.*;
 
 public class MainPane extends BorderPane {
     private static final Logger logger = LoggerFactory.getLogger(MainPane.class);

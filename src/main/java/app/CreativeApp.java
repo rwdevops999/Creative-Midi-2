@@ -7,6 +7,7 @@ import javafx.stage.StageStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import app.root.root.RootPane;
+import util.Theme;
 import util.app.AppInfo;
 import util.app.Initialize;
 
@@ -47,8 +48,11 @@ public class CreativeApp extends Application {
         // 2. Create root app
         RootPane rootPane = new RootPane(); // builds the main pane and monitor pane
         Scene rootScene = new Scene(rootPane);
+
         String css = Objects.requireNonNull(CreativeApp.class.getResource("/style/style.css")).toExternalForm();
         rootScene.getStylesheets().add(css);
+        Theme.getInstance().switchTheme(rootScene);
+        AppInfo.INSTANCE.setRootScene(rootScene);
 
         primaryStage.setScene(rootScene);
         primaryStage.show();

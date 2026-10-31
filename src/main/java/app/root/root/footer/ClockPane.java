@@ -5,8 +5,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static util.app.colors.ColorScheme.getColor;
-import static util.util.setPaneSizeAsPercentage;
-import static util.util.showPaneBorder;
+import static util.Util.setPaneSizeAsPercentage;
+import static util.Util.showPaneBorder;
 
 public class ClockPane extends HBox {
     private static final Logger logger = LoggerFactory.getLogger(ClockPane.class);

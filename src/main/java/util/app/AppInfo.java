@@ -1,5 +1,6 @@
 package util.app;
 
+import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import lombok.Getter;
@@ -29,6 +30,11 @@ public enum AppInfo {
         @Getter
         @Setter
         private Pane spa;
+
+        // This is the root scene
+        @Getter
+        @Setter
+        private Scene rootScene;
 
         // Add your properties and methods here
 }

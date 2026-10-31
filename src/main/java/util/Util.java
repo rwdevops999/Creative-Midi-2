@@ -1,10 +1,12 @@
 package util;
 
+import javafx.scene.Node;
+import javafx.scene.control.Control;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import util.app.colors.ColorScheme;
 
-public class util {
+public class Util {
     public static void setPaneHeightAsPercentage(Pane child, Pane parent, int size) {
         double height = size / 100.0;
 
@@ -19,6 +21,14 @@ public class util {
         child.minWidthProperty().bind(parent.widthProperty().multiply(width));
         child.maxWidthProperty().bind(parent.widthProperty().multiply(width));
         child.prefWidthProperty().bind(parent.widthProperty().multiply(width));
+    }
+
+    public static void setControlWidthAsPercentage(Control control, Pane parent, int size) {
+        double width = size / 100.0;
+
+        control.minWidthProperty().bind(parent.widthProperty().multiply(width));
+        control.maxWidthProperty().bind(parent.widthProperty().multiply(width));
+        control.prefWidthProperty().bind(parent.widthProperty().multiply(width));
     }
 
     public static void setPaneSizeAsPercentage(Pane child, Pane parent, int width,int height) {

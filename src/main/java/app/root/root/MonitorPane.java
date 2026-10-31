@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static util.app.colors.ColorScheme.getColor;
-import static util.util.*;
+import static util.Util.*;
 
 public class MonitorPane extends VBox {
     private static final Logger logger = LoggerFactory.getLogger(MonitorPane.class);

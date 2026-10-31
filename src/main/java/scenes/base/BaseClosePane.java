@@ -13,7 +13,7 @@ import util.app.routing.Router;
 import util.app.scene.IScene;
 
 import static util.app.colors.ColorScheme.getColor;
-import static util.util.setPaneBackground;
+import static util.Util.setPaneBackground;
 
 public class BaseClosePane extends HBox {
     private static final Logger logger = LoggerFactory.getLogger(BaseClosePane.class);
