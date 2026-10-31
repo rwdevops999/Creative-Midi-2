@@ -13,9 +13,9 @@ import javafx.scene.text.Text;
  * - adjust the display of the selected item in the combo box
  * comboBox.setButtonCell(new EntityListCell());
  */
-public class EntityListCell extends ListCell<NameEntity> {
+public class EntityListCell<T extends NameEntity> extends ListCell<T> {
     @Override
-    protected void updateItem(NameEntity item, boolean empty) {
+    protected void updateItem(T item, boolean empty) {
         super.updateItem(item, empty);
 
         if (empty) {

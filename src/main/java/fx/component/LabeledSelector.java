@@ -1,5 +1,7 @@
 package fx.component;
 
+import entity.NameEntity;
+import fx.display.EntityListCell;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.VPos;
@@ -10,7 +12,7 @@ import util.Util;
 
 import static util.Util.setControlWidthAsPercentage;
 
-public class LabeledSelector extends VBox {
+public class LabeledSelector<T extends NameEntity> extends VBox {
     public LabeledSelector() {
         super();
 
@@ -24,18 +26,27 @@ public class LabeledSelector extends VBox {
     public LabeledSelector(Pane parent, String selectorName) {
         this();
 
-        buildComponent(selectorName);
+        buildComponent(parent, selectorName);
     }
 
-    private void buildComponent(String selectorName) {
+    ComboBox<T> comboBox;
+    private void buildComponent(Pane parent, String selectorName) {
         Label selectorLabel = new Label(selectorName);
 
-        ComboBox<String> selectorComboBox = new ComboBox<>();
-        selectorComboBox.setMinWidth(0);
-        selectorComboBox.prefWidthProperty().bind(this.widthProperty());
+        comboBox = new ComboBox<>();
+        comboBox.setMinWidth(100);
 
-        selectorComboBox.setMaxWidth(Double.MAX_VALUE);
+        // Vul de volledige breedte van DEZE VBox (die door de parent al op 50% is gezet)
+        comboBox.setMaxWidth(Double.MAX_VALUE);
+        comboBox.prefWidthProperty().bind(this.widthProperty());
 
-        getChildren().addAll(selectorLabel, selectorComboBox);
+        comboBox.setCellFactory(listView -> new EntityListCell<>());
+        comboBox.setButtonCell(new EntityListCell<>());
+
+        getChildren().addAll(selectorLabel, comboBox);
+    }
+
+    public ComboBox<T> getComboBox() {
+        return comboBox;
     }
 }

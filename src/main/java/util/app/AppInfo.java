@@ -1,5 +1,6 @@
 package util.app;
 
+import entity.DeviceInfo;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -35,6 +36,10 @@ public enum AppInfo {
         @Getter
         @Setter
         private Scene rootScene;
+
+        @Getter
+        @Setter
+        private DeviceInfo selectedDevice = null;
 
         // Add your properties and methods here
 }
