@@ -25,7 +25,7 @@ public class ControlsPane extends VBox {
         this.parent = owner;
 
         setPaneSizeAsPercentage(this, owner, width, height);
-        showPaneBorder(this, getColor("border", "orange"));
+//        showPaneBorder(this, getColor("border", "orange"));
 
         buildPane();
     }

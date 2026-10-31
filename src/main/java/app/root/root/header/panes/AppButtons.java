@@ -11,6 +11,7 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.RowConstraints;
+import org.fusesource.jansi.AnsiConsole;
 import util.Theme;
 import util.Util;
 import util.app.AppInfo;
@@ -49,11 +50,23 @@ public class AppButtons extends GridPane {
     }
 
     private void buildPane() {
-        IconButton exitButton = new IconButton("exit", "exit Creative Midi", "icons/exit.png", e -> {});
+        IconButton exitButton = new IconButton("exit", "exit Creative Midi", "icons/exit.png", e -> {
+            // 1. Save User data
+            // TODO Add User Data Save
+            // 2. Shut-up midi playing
+            // TODO Add Midi Player stop
+            // 3. Exit
+            AnsiConsole.systemUninstall();
+            System.exit(0);
+        });
         add(exitButton, 1, 0);
-        IconButton midiResetButton = new IconButton("midiReset", "shutup midi", "icons/midi.png", e -> {});
+        IconButton midiResetButton = new IconButton("midiReset", "shutup midi", "icons/midi.png", e -> {
+            // TODO Provide MidiWriter which also contains this
+        });
         add(midiResetButton, 1, 1);
-        IconButton midiSoundButton = new IconButton("midiSound", "sound midi", "icons/tuning-fork.png", e -> {});
+        IconButton midiSoundButton = new IconButton("midiSound", "sound midi", "icons/tuning-fork.png", e -> {
+            // TODO Add To MidiWriter
+        });
         add(midiSoundButton, 0, 1);
 
         Theme themeInstance = Theme.getInstance();
@@ -72,8 +85,8 @@ public class AppButtons extends GridPane {
     public static void setButtonIcon (ButtonBase button, String iconname) {
         Image icon = new Image(Objects.requireNonNull(Util.class.getClassLoader().getResourceAsStream(iconname)));
         ImageView imageView = new ImageView(icon);
-        imageView.setFitWidth(24);
-        imageView.setFitHeight(24);
+        imageView.setFitWidth(20);
+        imageView.setFitHeight(20);
 
         button.setGraphic(imageView);
     }

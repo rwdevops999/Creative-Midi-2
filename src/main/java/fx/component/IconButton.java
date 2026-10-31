@@ -2,6 +2,7 @@ package fx.component;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tooltip;
@@ -21,6 +22,8 @@ public class IconButton extends HBox {
 
         setSpacing(5);
         setAlignment(Pos.CENTER);
+
+        setPadding(new Insets(5));
     }
 
     public IconButton(String name, String tooltip, String iconname, EventHandler<ActionEvent> handler) {
@@ -30,8 +33,8 @@ public class IconButton extends HBox {
 
         Image icon = new Image(Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(iconname)));
         ImageView imageView = new ImageView(icon);
-        imageView.setFitWidth(24);
-        imageView.setFitHeight(24);
+        imageView.setFitWidth(20);
+        imageView.setFitHeight(20);
 
         Button button = new Button();
         button.setId(name);
