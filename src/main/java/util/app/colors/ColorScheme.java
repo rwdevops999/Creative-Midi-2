@@ -22,7 +22,9 @@ public class ColorScheme {
         // root color
         colors.put(new ColorKey(null, null, null), Color.DARKGRAY);
 
-        // borders
+        // status
+        colors.put(new ColorKey("status", null, null), Color.BLUE);
+
         // borders
         colors.put(new ColorKey("border", "red", null), Color.RED);
         colors.put(new ColorKey("border", "green", null), Color.GREEN);

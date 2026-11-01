@@ -10,6 +10,7 @@ import app.root.root.RootPane;
 import util.Theme;
 import util.app.AppInfo;
 import util.app.Initialize;
+import util.registry.Registry;
 
 import java.util.Objects;
 
@@ -56,6 +57,8 @@ public class CreativeApp extends Application {
 
         primaryStage.setScene(rootScene);
         primaryStage.show();
+
+        Registry.getInstance().showStatus("Creative Midi Ready");
 
         // To move the screen around
         handleMouseEvents(primaryStage, rootPane);
