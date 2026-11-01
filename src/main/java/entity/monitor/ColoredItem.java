@@ -17,6 +17,8 @@ public class ColoredItem extends NameEntity {
    }
 
    public ColoredItem(String text, CommunicationType type) {
+        this();
+
         this.name = text;
         this.type = type;
 

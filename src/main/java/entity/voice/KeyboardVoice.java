@@ -8,7 +8,7 @@ import java.util.Objects;
 
 public class KeyboardVoice extends NameEntity {
     @Getter
-    private VoiceType voiceType = null;
+    private VoiceType voiceType;
 
     public KeyboardVoice() {
         super();

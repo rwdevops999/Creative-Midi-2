@@ -2,13 +2,10 @@ package entity.device;
 
 import entity.NameEntity;
 import lombok.Getter;
-import lombok.Setter;
 import util.device.DeviceDirection;
 
-import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiUnavailableException;
-import javax.sound.midi.Receiver;
 
 public class DeviceInfo extends NameEntity {
     @Getter
@@ -28,7 +25,7 @@ public class DeviceInfo extends NameEntity {
                     try {
                         midiInputDevice.close();
                     } catch (Exception closeEx) {
-                        // Negeren, we willen puur de resources vrijgeven
+                        // ignore, just to free resources
                     }
 
                     midiInputDevice = null;
@@ -51,7 +48,7 @@ public class DeviceInfo extends NameEntity {
                     try {
                         midiOutputDevice.close();
                     } catch (Exception closeEx) {
-                        // Negeren, we willen puur de resources vrijgeven
+                        // ignore, just free the resources
                     }
                     midiOutputDevice = null;
                 }

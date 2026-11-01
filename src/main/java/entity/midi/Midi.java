@@ -2,11 +2,15 @@ package entity.midi;
 
 import entity.NameEntity;
 import lombok.Getter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.ShortMessage;
 
 public class Midi extends NameEntity {
+    private static final Logger logger = LoggerFactory.getLogger(Midi.class);
+
     @Getter
     private Integer[] rawData;
     @Getter
@@ -87,79 +91,79 @@ public class Midi extends NameEntity {
     }
 
     public void createMessage(Integer byte0, Integer byte1, Integer byte2) {
-        // 1. Veiligheidscheck: Zonder status byte (byte0) kunnen we het bericht niet parseren
+        // 1. Safety check: without status byte (byte0) we can't parse the message
         if (byte0 == null) {
-            System.err.println("Fout: Status byte (byte0) mag niet null zijn.");
+            logger.error("Error: status byte (byte0) can't be null.");
             return;
         }
 
-        // 2. Zet null-waarden veilig om naar 0 en filter eventuele negatieve waarden eruit
+        // 2. Convert null-values safe to 0 and filter possible negative values out
         int b0 = byte0 & 0xFF;
         int b1 = (byte1 != null) ? (byte1 & 0xFF) : 0;
         int b2 = (byte2 != null) ? (byte2 & 0xFF) : 0;
 
-        // 3. Isoleer het berichttype (bovenste 4 bits)
-        int berichtType = b0 & 0xF0;
+        // 3. Isolate the message type (upper 4 bits)
+        int messageType = b0 & 0xF0;
 
-        switch (berichtType) {
-            // 3 Bytes lang (b1 en b2 worden meegestuurd, zelfs als ze null/0 waren)
+        switch (messageType) {
+            // 3 bytes used (b1 en b2 are send also, even if they are null/0)
             case 0x80: // Note Off
             case 0x90: // Note On
             case 0xA0: // Polyphonic Key Pressure
             case 0xB0: // Control Change (CC)
             case 0xE0: // Pitch Bend Change
-                message = stuurDrieByteBericht(b0, b1, b2);
+                message = createThreeByteMessage(b0, b1, b2);
                 break;
 
-            // 2 Bytes lang (b2 wordt volledig genegeerd, dus of het nu null was maakt niet uit)
+            // 2 bytes used (b2 is ignored, it doesn't matter if it is null or not)
             case 0xC0: // Program Change
             case 0xD0: // Channel Pressure (Aftertouch)
-                message = stuurTweeByteBericht(b0, b1);
+                message = createTwoByteMessage(b0, b1);
                 break;
 
-            // System / Realtime berichten
+            // System / Realtime messages
             case 0xF0:
-                message = verwerkSystemBericht(b0, b1, b2);
+                message = createSystemMessage(b0, b1, b2);
                 break;
 
             default:
-                // Ongeldig of niet-ondersteund status byte
+                // Invalid or unsupported status byte
                 break;
         }
     }
 
-    private ShortMessage stuurDrieByteBericht(int b0, int b1, int b2) {
+    private ShortMessage createThreeByteMessage(int b0, int b1, int b2) {
         try {
             ShortMessage msg = new ShortMessage();
 
-            int command = b0 & 0xF0;  // Isoleer het commando (bijv. 0x90 of 0x80)
-            int channel = b0 & 0x0F;  // Isoleer het MIDI-kanaal (0 t/m 15)
+            int command = b0 & 0xF0;  // Isolate the command (e.g. 0x90 of 0x80)
+            int channel = b0 & 0x0F;  // Isolate the MIDI-channel (0 t/m 15)
 
-            // Gebruik de officiële Java-methode die command en channel los scheidt
+            // Use the official Java method that separates command and channel
             msg.setMessage(command, channel, b1, b2);
             return msg;
         } catch (InvalidMidiDataException e) {
-            e.printStackTrace();
+            logger.error("Exception. CAUSE {}", e.getMessage());
         }
 
         return null;
     }
 
-    private ShortMessage stuurTweeByteBericht(int b0, int b1) {
+    private ShortMessage createTwoByteMessage(int b0, int b1) {
         try {
             ShortMessage msg = new ShortMessage();
-            // Voor 2-byte berichten (zoals Program Change) zetten we het derde argument op 0.
-            // De Java MIDI-driver weet dat dit type bericht maar 2 bytes verzendt.
+            // For 2 byte messages (such as Program Change) put the third argument on 0.
+            // The Java MIDI driver knows that this type bericht sends only 2 bytes.
             msg.setMessage(b0, b1, 0);
             return msg;
         } catch (InvalidMidiDataException e) {
-            e.printStackTrace();
+            logger.error("Exception. CAUSE {}", e.getMessage());
         }
 
         return null;
     }
 
-    private ShortMessage verwerkSystemBericht(int b0, int b1, int b2) {
+    private ShortMessage createSystemMessage(int b0, int b1, int b2) {
         try {
             ShortMessage msg = new ShortMessage();
 
@@ -172,7 +176,7 @@ public class Midi extends NameEntity {
                     msg.setMessage(b0, b1, 0);
                     break;
 
-                // Realtime berichten (1 byte lang)
+                // Realtime messages (1 byte long)
                 case 0xF8: // MIDI Clock
                 case 0xFA: // MIDI Start
                 case 0xFB: // MIDI Continue
@@ -183,14 +187,13 @@ public class Midi extends NameEntity {
                     break;
 
                 case 0xF0: // SysEx Start
-                    // SysEx is variabel en gebruikt een andere klasse (SysexMessage).
-                    // Indien nodig moet dit apart opgevangen worden.
+                    // SysEx is variable and uses another class (SysexMessage).
                     break;
             }
 
             return msg;
         } catch (InvalidMidiDataException e) {
-            e.printStackTrace();
+            logger.error("Exception. CAUSE {}", e.getMessage());
         }
 
         return null;
