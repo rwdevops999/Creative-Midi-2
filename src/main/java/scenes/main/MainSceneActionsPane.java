@@ -58,7 +58,7 @@ public class MainSceneActionsPane extends GridPane {
     private void buildPane() {
         logger.debug("Building {}", getId());
 
-        add(new SceneSelectButton(parentScene, ICON_SIZE, "sysexButton", "handle sysex", "sysex", new SysexScene()), 1, 0);
+        add(new SceneSelectButton(parentScene, ICON_SIZE, "sysexButton", "create sysex banks", "sysex", new SysexScene()), 1, 0);
 
         if (AppInfo.INSTANCE.isTestMode()) {
             add(new SceneSelectButton(parentScene, ICON_SIZE, "test1Button", "test 1", "test1", "Test1"), 3, 1);
