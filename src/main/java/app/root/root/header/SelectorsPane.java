@@ -7,12 +7,9 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.geometry.Pos;
 import javafx.scene.layout.HBox;
-import javafx.util.Duration;
 import org.apache.commons.io.FilenameUtils;
-import org.controlsfx.control.Notifications;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import util.AnsiColors;
 import util.AppNotifications;
 import util.app.AppInfo;
 import util.device.DeviceDirection;
@@ -21,21 +18,16 @@ import util.properties.PropertyKeys;
 import util.registry.AppEvent;
 import util.registry.Registry;
 
-import javax.sound.midi.MidiDevice;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.Key;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static org.apache.commons.io.FilenameUtils.getExtension;
 import static util.AnsiColors.*;
-import static util.app.colors.ColorScheme.getColor;
 import static util.Util.setPaneSizeAsPercentage;
-import static util.Util.showPaneBorder;
 import static util.properties.PropertyKeys.VOICES_DIR;
 
 public class SelectorsPane extends HBox {
@@ -171,9 +163,7 @@ public class SelectorsPane extends HBox {
         keyboardSelector.getComboBox().getSelectionModel().selectedItemProperty().addListener((obs, oldVoice, newVoice) -> {
             if (newVoice != null) {
                 AppInfo.INSTANCE.setKeyboardVoice(newVoice);
-                Platform.runLater(() -> {
-                    AppNotifications.showNotification("Keyboard Voice Selected", "'" + newVoice.toString() + "'");
-                });
+                Platform.runLater(() -> AppNotifications.showNotification("Keyboard Voice Selected", "'" + newVoice + "'"));
             }
         });
 
@@ -219,8 +209,7 @@ public class SelectorsPane extends HBox {
         String keyboard = AppProperties.getInstance().getPropertyAsString(PropertyKeys.KEYBOARD, "PSR-SX600");
         String voiceType = AppProperties.getInstance().getPropertyAsString(PropertyKeys.VOICE_TYPE, "MS2S");
 
-        KeyboardVoice keyboardVoice = getVoiceFiles().stream().filter(v -> v.getName().equalsIgnoreCase(keyboard) && v.getVoiceType().name().equalsIgnoreCase(voiceType)).findFirst().orElse(null);
-        return keyboardVoice;
+        return getVoiceFiles().stream().filter(v -> v.getName().equalsIgnoreCase(keyboard) && v.getVoiceType().name().equalsIgnoreCase(voiceType)).findFirst().orElse(null);
     }
 
     // ACCESSORS

@@ -10,7 +10,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.RowConstraints;
 import org.fusesource.jansi.AnsiConsole;
 import util.Theme;
@@ -24,10 +23,6 @@ import java.util.Objects;
 public class AppButtons extends GridPane {
     public AppButtons() {
         super();
-    }
-
-    public AppButtons(Pane owner) {
-        this();
 
         ColumnConstraints col1 = new ColumnConstraints();
         col1.setPercentWidth(50);

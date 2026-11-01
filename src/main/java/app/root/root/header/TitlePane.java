@@ -13,13 +13,12 @@ import org.slf4j.LoggerFactory;
 import java.io.InputStream;
 import java.util.Objects;
 
-import static util.app.colors.ColorScheme.getColor;
 import static util.Util.*;
 
 public class TitlePane extends HBox {
     private static final Logger logger = LoggerFactory.getLogger(TitlePane.class);
 
-    private HeaderPane parent;
+    private final HeaderPane parent;
     public TitlePane(HeaderPane owner, int width, int height) {
         super();
 

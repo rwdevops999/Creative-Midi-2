@@ -77,18 +77,7 @@ public class MonitorPane extends VBox {
         contextMenu.getItems().addAll(clearMonitor, exportMonitor);
         messagesView.setContextMenu(contextMenu);
     }
-/*
-    private ListView<ColoredItem> messagesView;
-    private final ObservableList<ColoredItem> messages = FXCollections.observableArrayList();
 
-    private void setupView() {
-        ListView messagesView = new ListView<>();
-        messagesView.setCellFactory(lv -> new ColoredListCell());
-        messagesView.setItems(messages);
-        getChildren().add(messagesView);
-
-    }
-*/
     // ACCESSORS
     public RootPane getRootPane() {
         return parent;

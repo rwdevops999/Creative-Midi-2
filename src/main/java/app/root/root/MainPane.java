@@ -54,9 +54,9 @@ public class MainPane extends BorderPane {
             BackgroundFill backgroundColor = new BackgroundFill(getColor(), CornerRadii.EMPTY, javafx.geometry.Insets.EMPTY);
             BackgroundImage backgroundImage = new BackgroundImage(
                     image,
-                    BackgroundRepeat.NO_REPEAT,   // Niet herhalen
                     BackgroundRepeat.NO_REPEAT,
-                    BackgroundPosition.CENTER,    // Centreren
+                    BackgroundRepeat.NO_REPEAT,
+                    BackgroundPosition.CENTER,
                     new BackgroundSize(
                             BackgroundSize.AUTO,
                             BackgroundSize.AUTO,

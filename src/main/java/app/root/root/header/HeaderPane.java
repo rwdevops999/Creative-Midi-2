@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import app.root.root.MainPane;
 
-import static util.app.colors.ColorScheme.getColor;
 import static util.Util.*;
 
 public class HeaderPane extends GridPane {
@@ -25,8 +24,6 @@ public class HeaderPane extends GridPane {
         this();
 
         parent = owner;
-
-//        showPaneBorder(this, getColor("border", "red"));
 
         setPaneSizeAsPercentage(this, owner, width, height);
 
