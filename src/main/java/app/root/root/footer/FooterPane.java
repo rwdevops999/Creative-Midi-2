@@ -24,7 +24,7 @@ public class FooterPane extends HBox {
 
         this.parent = owner;
 
-        showPaneBorder(this, getColor("border", "red"));
+//        showPaneBorder(this, getColor("border", "red"));
         setPaneSizeAsPercentage(this, owner, width, height);
 
         buildPane();
@@ -36,8 +36,8 @@ public class FooterPane extends HBox {
         setPaneBackground(this);
 
         getChildren().add(new CopyrightPane(this, 20, 100));
-        getChildren().add(new StatusPane(this, 70, 100));
-        getChildren().add(new ClockPane(this, 10, 100));
+        getChildren().add(new StatusPane(this, 72, 100));
+        getChildren().add(new ClockPane(this, 8, 100));
 
         logger.debug("Built {}", getId());
     }

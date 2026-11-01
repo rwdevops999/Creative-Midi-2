@@ -1,5 +1,9 @@
 package app.root.root.footer;
 
+import eu.hansolo.medusa.Clock;
+import eu.hansolo.medusa.ClockBuilder;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.layout.HBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +19,9 @@ public class ClockPane extends HBox {
         super();
 
         setId("ClockPane");
+
+        setAlignment(Pos.CENTER_LEFT);
+        setPadding(new Insets(0, 0, 2, 0));
     }
 
     private FooterPane parent;
@@ -25,13 +32,23 @@ public class ClockPane extends HBox {
         this.parent = owner;
 
         setPaneSizeAsPercentage(this, owner, width, height);
-        showPaneBorder(this, getColor("border", "orange"));
+//        showPaneBorder(this, getColor("border", "orange"));
 
         buildPane();
     }
 
     private void buildPane() {
         logger.debug("Building {}", getId());
+
+        Clock clock = ClockBuilder.create()
+                .skinType(Clock.ClockSkinType.INDUSTRIAL)
+                .dateVisible(false)
+                .maxHeight(parent.getMaxHeight())
+                .prefHeight(parent.getPrefHeight())
+                .prefWidth(parent.getPrefWidth())
+                .running(true)
+                .build();
+        getChildren().add(clock);
 
         logger.debug("Built {}", getId());
     }

@@ -97,7 +97,7 @@ public class MainPane extends BorderPane {
         setTop(new HeaderPane(this, 100, 15));
 
         // Set Footer
-        setBottom(new FooterPane(this, 100, 15));
+        setBottom(new FooterPane(this, 100, 10));
 
         // This pane will contain all SPA's
         AppInfo.INSTANCE.setSpaOwner(this);

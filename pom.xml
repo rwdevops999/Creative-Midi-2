@@ -76,6 +76,14 @@
             <artifactId>ikonli-bytedance-pack</artifactId>
             <version>12.4.0</version>
         </dependency>
+
+        <!-- to display the clock -->
+        <dependency>
+            <groupId>eu.hansolo</groupId>
+            <artifactId>Medusa</artifactId>
+            <version>16.0.0</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
     <properties>
         <maven.compiler.source>17</maven.compiler.source>

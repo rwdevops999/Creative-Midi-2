@@ -31,7 +31,7 @@ public class CopyrightPane extends HBox {
         this.parent = owner;
 
         setPaneSizeAsPercentage(this, owner, width, height);
-        showPaneBorder(this, getColor("border", "green"));
+//        showPaneBorder(this, getColor("border", "green"));
 
         buildPane();
     }
