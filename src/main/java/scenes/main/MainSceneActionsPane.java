@@ -60,9 +60,10 @@ public class MainSceneActionsPane extends GridPane {
 
         if (AppInfo.INSTANCE.isTestMode()) {
             add(new SceneSelectButton(parentScene, ICON_SIZE, "test1Button", "test 1", "test1", "Test1"), 3, 1);
+            add(new SceneSelectButton(parentScene, ICON_SIZE, "test2Button", "test 2", "test2", "Test2"), 4, 1);
         }
 
-            logger.debug("Built {}", getId());
+        logger.debug("Built {}", getId());
     }
 
     // ACCESSORS
