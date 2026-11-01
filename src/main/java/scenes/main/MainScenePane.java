@@ -1,12 +1,12 @@
 package scenes.main;
 
-import app.root.root.MainActionsPane;
-import app.root.root.MainPane;
 import javafx.scene.layout.StackPane;
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.app.scene.IScene;
 
+@Getter
 public class MainScenePane extends StackPane {
     private static final Logger logger = LoggerFactory.getLogger(MainScenePane.class);
 
@@ -16,6 +16,7 @@ public class MainScenePane extends StackPane {
         setId("MainScenePane");
     }
 
+    // ACCESSORS
     private IScene parentScene;
     public MainScenePane(IScene ownerScene) {
         this();
@@ -33,8 +34,4 @@ public class MainScenePane extends StackPane {
         logger.debug("[CM_MAIN_PANE] Built {}", getId());
     }
 
-    // ACCESSORS
-    public IScene getParentScene() {
-        return parentScene;
-    }
 }

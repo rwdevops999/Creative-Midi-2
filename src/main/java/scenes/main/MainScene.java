@@ -1,6 +1,5 @@
 package scenes.main;
 
-import app.root.root.MainPane;
 import javafx.scene.layout.Pane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,6 +1,5 @@
 package scenes.main;
 
-import app.root.root.MainActionsPane;
 import fx.component.SceneSelectButton;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -8,12 +7,14 @@ import javafx.geometry.VPos;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scenes.sysex.SysexScene;
 import util.app.AppInfo;
 import util.app.scene.IScene;
 
+@Getter
 public class MainSceneActionsPane extends GridPane {
     private static final Logger logger = LoggerFactory.getLogger(MainSceneActionsPane.class);
 
@@ -42,6 +43,7 @@ public class MainSceneActionsPane extends GridPane {
         setPadding(new Insets(10));
     }
 
+    // ACCESSORS
     private IScene parentScene;
     public MainSceneActionsPane(IScene ownerScene) {
         this();
@@ -66,8 +68,4 @@ public class MainSceneActionsPane extends GridPane {
         logger.debug("Built {}", getId());
     }
 
-    // ACCESSORS
-    public IScene getParentScene() {
-        return parentScene;
-    }
 }

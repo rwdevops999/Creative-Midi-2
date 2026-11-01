@@ -29,13 +29,14 @@ public class BaseClosePane extends HBox {
         setAlignment(Pos.CENTER);
     }
 
+    private EventHandler<ActionEvent> closeHandler;
     public BaseClosePane(IScene callingScene, EventHandler<ActionEvent> handler) {
         this();
 
-/*        if (handler != null) {
+        if (handler != null) {
             closeHandler = handler;
         }
-*/
+
         buildPane();
 
         Background background = new Background(new BackgroundFill(getColor(), null, null));
@@ -52,11 +53,11 @@ public class BaseClosePane extends HBox {
             } catch (Exception ex) {
                 logger.error("[CM_CLOSE_PANE] Exception. CAUSE {}", ex.getMessage());
             }
-
+*/
             if (closeHandler != null) {
                 closeHandler.handle(null);
             }
-
+/*
             CommunicationModel.clearStatus();
 */
             Router.getInstance().routeTo(null, callingScene, true);
