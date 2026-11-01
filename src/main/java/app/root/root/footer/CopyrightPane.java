@@ -9,9 +9,7 @@ import javafx.scene.text.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static util.app.colors.ColorScheme.getColor;
 import static util.Util.setPaneSizeAsPercentage;
-import static util.Util.showPaneBorder;
 
 public class CopyrightPane extends HBox {
     private static final Logger logger = LoggerFactory.getLogger(CopyrightPane.class);
@@ -31,7 +29,6 @@ public class CopyrightPane extends HBox {
         this.parent = owner;
 
         setPaneSizeAsPercentage(this, owner, width, height);
-//        showPaneBorder(this, getColor("border", "green"));
 
         buildPane();
     }

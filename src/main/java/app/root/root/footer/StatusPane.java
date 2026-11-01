@@ -4,7 +4,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -16,7 +15,6 @@ import util.registry.Registry;
 
 import static util.app.colors.ColorScheme.getColor;
 import static util.Util.setPaneSizeAsPercentage;
-import static util.Util.showPaneBorder;
 
 public class StatusPane extends HBox {
     private static final Logger logger = LoggerFactory.getLogger(StatusPane.class);
@@ -36,7 +34,6 @@ public class StatusPane extends HBox {
         this.parent = owner;
 
         setPaneSizeAsPercentage(this, owner, width, height);
-//        showPaneBorder(this, getColor("border", "blue"));
 
         buildPane();
     }
