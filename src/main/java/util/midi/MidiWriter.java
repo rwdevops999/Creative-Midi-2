@@ -26,10 +26,12 @@ public class MidiWriter {
     public void send(Midi midi) throws MidiUnavailableException {
         DeviceInfo dev = AppInfo.INSTANCE.getSelectedDevice();
 
-        MidiDevice midiInputDevice = dev.getMidiInputDevice();
-        if (midiInputDevice != null) {
-            midiInputDevice.getReceiver().send(midi.getMessage(), -1);
-            CommunicationMessage.getInstance().showMessage(CommunicationType.OUTBOUND, midi.toString());
+        if (dev != null) {
+            MidiDevice midiInputDevice = dev.getMidiInputDevice();
+            if (midiInputDevice != null) {
+                midiInputDevice.getReceiver().send(midi.getMessage(), -1);
+                CommunicationMessage.getInstance().showMessage(CommunicationType.OUTBOUND, midi.toString());
+            }
         }
     }
 

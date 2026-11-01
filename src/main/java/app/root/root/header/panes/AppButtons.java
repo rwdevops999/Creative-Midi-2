@@ -1,6 +1,7 @@
 package app.root.root.header.panes;
 
 import fx.component.IconButton;
+import fx.dialog.DialogFactory;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
 import javafx.scene.control.ButtonBase;
@@ -63,13 +64,21 @@ public class AppButtons extends GridPane {
         });
         add(exitButton, 1, 0);
         IconButton midiResetButton = new IconButton("midiReset", "shutup midi", "icons/midi.png", e -> {
-            Registry.getInstance().showStatus("Resetting midi");
-            MidiWriter.getInstance().reset();
+            if (AppInfo.INSTANCE.getSelectedDevice() != null) {
+                Registry.getInstance().showStatus("Resetting midi");
+                MidiWriter.getInstance().reset();
+            } else {
+                DialogFactory.getInstance().renderErrorDialog("No device selected for MIDI");
+            }
         });
         add(midiResetButton, 1, 1);
         IconButton midiSoundButton = new IconButton("midiSound", "sound midi", "icons/tuning-fork.png", e -> {
-            Registry.getInstance().showStatus("Testing midi");
-            MidiWriter.getInstance().testTone();
+            if (AppInfo.INSTANCE.getSelectedDevice() != null) {
+                Registry.getInstance().showStatus("Testing midi");
+                MidiWriter.getInstance().testTone();
+            } else {
+                DialogFactory.getInstance().renderErrorDialog("No device selected for MIDI");
+            }
         });
         add(midiSoundButton, 0, 1);
 
