@@ -61,5 +61,4 @@ public class Registry {
     public void showStatus(String value) {
         eventQueue.offer(new AppEvent(AppEvent.AppEventType.STATUS, value));
     }
-
 }

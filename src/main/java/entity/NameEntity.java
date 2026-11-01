@@ -7,11 +7,11 @@ import org.kordamp.ikonli.javafx.FontIcon;
 public class NameEntity {
     @Getter
     @Setter
-    protected String name;
+    protected String name = "";
 
     @Getter
-    protected String textIcon;
+    protected String textIcon = "";
 
     @Getter
-    protected String fontIcon;
+    protected String fontIcon = "";
 }

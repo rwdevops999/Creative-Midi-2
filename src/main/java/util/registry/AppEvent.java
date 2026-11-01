@@ -6,6 +6,7 @@ import lombok.Setter;
 public record AppEvent(AppEventType  type, Object data) {
     public enum AppEventType {
         DEVICE,
-        STATUS;
+        STATUS,
+        MONITOR;
     }
 }

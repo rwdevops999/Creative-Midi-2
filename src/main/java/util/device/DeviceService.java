@@ -21,7 +21,7 @@ public class DeviceService {
     private static final Logger logger = LoggerFactory.getLogger(DeviceService.class);
 
     @Getter
-    private static DeviceService instance = new DeviceService();
+    private final static DeviceService instance = new DeviceService();
 
     private DeviceService() {
     }
