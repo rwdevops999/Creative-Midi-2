@@ -21,7 +21,7 @@ public class Creative {
         try {
             URL configUrl = Thread.currentThread().getContextClassLoader().getResource("log4j2.xml");
             if (configUrl != null) {
-                // Forceer de initialisatie direct bij het allereerste JVM-contact
+                // Force the initialization direct bij the first JVM contact
                 Configurator.initialize("MyAppCtx", configUrl.toURI().toString());
             } else {
                 Configurator.setRootLevel(org.apache.logging.log4j.Level.OFF);

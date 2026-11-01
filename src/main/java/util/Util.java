@@ -1,6 +1,5 @@
 package util;
 
-import javafx.scene.Node;
 import javafx.scene.control.Control;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
