@@ -1,6 +1,7 @@
 package util.app;
 
 import entity.device.DeviceInfo;
+import entity.sysex.Sysex;
 import entity.voice.KeyboardVoice;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
@@ -45,4 +46,8 @@ public enum AppInfo {
         // Add your properties and methods here
         @Setter
         private KeyboardVoice keyboardVoice;
+
+        @Getter
+        @Setter
+        private Sysex sysex;
 }

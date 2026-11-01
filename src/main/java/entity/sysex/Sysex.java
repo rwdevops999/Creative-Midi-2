@@ -1,10 +1,12 @@
 package entity.sysex;
 
 import entity.NameEntity;
+import lombok.Getter;
 
 import java.util.Objects;
 
 public class Sysex extends NameEntity {
+    @Getter
     private SysexContent content;
 
     public Sysex() {
@@ -15,6 +17,7 @@ public class Sysex extends NameEntity {
         this();
 
         this.name = name;
+        this.content = new SysexContent();
     }
 
     public Sysex(Sysex other) {
@@ -22,10 +25,6 @@ public class Sysex extends NameEntity {
 
         this.name = other.name;
         this.content = other.content;
-    }
-
-    public void setContent(SysexContent content) {
-        this.content = content;
     }
 
     public boolean equals(Object obj) {

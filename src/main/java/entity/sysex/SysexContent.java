@@ -24,6 +24,11 @@ public class SysexContent {
         this.bytes = setBytes(sysex);
     }
 
+    public void setSysex(String sysex) {
+        this.sysex = sysex;
+        this.bytes = setBytes(sysex);
+    }
+
     private byte[] setBytes(String sysex) {
         if (sysex != null) {
             if (sysex.contains(" ")) {

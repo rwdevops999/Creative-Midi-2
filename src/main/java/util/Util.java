@@ -43,6 +43,7 @@ public class Util {
     // This is for development only
     private static final int BORDER_SIZE=3;
     public static void showPaneBorder (Pane pane, Color color) {
+//            pane.setStyle("-fx-border-color: blue; -fx-border-width: 1;");
         pane.setBorder(new Border(new BorderStroke(
                 color,
                 BorderStrokeStyle.SOLID,

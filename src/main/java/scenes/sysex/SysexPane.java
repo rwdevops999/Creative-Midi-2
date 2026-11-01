@@ -2,17 +2,22 @@ package scenes.sysex;
 
 import entity.NameEntity;
 import entity.sysex.Sysex;
+import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scenes.SceneActionsPane;
 import scenes.sysex.consumers.*;
+import scenes.sysex.statemachine.StateMachine;
+import scenes.sysex.statemachine.States;
 
 import java.util.function.BiConsumer;
 
 public class SysexPane extends BorderPane {
     private static final Logger logger = LoggerFactory.getLogger(SysexPane.class);
+
+    private StateMachine stateMachine = StateMachine.getInstance();
 
     public SysexPane() {
         super();
@@ -33,9 +38,11 @@ public class SysexPane extends BorderPane {
                 new ExecuteConsumer<Sysex, Pane>("Execute"),
         };
 
+        SceneActionsPane actionsPane = new SceneActionsPane(this, 20, 100, consumers, this::getEntity);
+
         setLeft(new SysexListPane(this, 30, 100));
         setCenter(new SysexDetailsPane(this, 50, 100));
-        setRight(new SceneActionsPane(this, 20, 100, consumers, this::getEntity));
+        setRight(actionsPane);
 
         logger.debug("Built {}", getId());
     }
@@ -43,6 +50,10 @@ public class SysexPane extends BorderPane {
     public NameEntity getEntity() {
 //        return getSysexDetailsPane().getSysex();
         return null;
+    }
+
+    public void changeState(States state) {
+        stateMachine.setState(state);
     }
 
     // ACCESSORS
