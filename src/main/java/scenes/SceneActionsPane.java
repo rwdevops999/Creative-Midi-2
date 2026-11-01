@@ -15,8 +15,7 @@ import util.Util;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
-import static util.Util.setPaneSizeAsPercentage;
-import static util.Util.showPaneBorder;
+import static util.Util.*;
 import static util.app.colors.ColorScheme.getColor;
 
 public class SceneActionsPane extends VBox {
@@ -41,6 +40,8 @@ public class SceneActionsPane extends VBox {
 
         setPaneSizeAsPercentage(this, owner, width, height);
         showPaneBorder(this, getColor("border", "blue"));
+
+        setPaneBackground(this);
 
         buildPane(consumers);
     }
