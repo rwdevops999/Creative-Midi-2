@@ -1,11 +1,8 @@
 package util.properties;
 
-import javafx.stage.Stage;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import util.app.AppInfo;
-import util.app.Initialize;
 
 import java.io.*;
 import java.nio.file.*;
@@ -14,16 +11,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class AppProperties {
     private static final Logger logger = LoggerFactory.getLogger(AppProperties.class);
 
-    private Properties properties = new Properties();
+    private final Properties properties = new Properties();
 
     @Getter
-    private static AppProperties instance = new AppProperties();
+    private static final AppProperties instance = new AppProperties();
 
     Set<String> excludedDirs = Set.of(".mvn", "target");
 
@@ -37,9 +32,9 @@ public class AppProperties {
         List<Path> propFiles = new ArrayList<>();
 
         try {
-            Files.walkFileTree(rootDir, new SimpleFileVisitor<Path>() {
+            Files.walkFileTree(rootDir, new SimpleFileVisitor<>() {
                 @Override
-                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
                     // If the current directory name is in our exclusion set, skip it entirely
                     if (excludedDirs.contains(dir.getFileName().toString())) {
                         return FileVisitResult.SKIP_SUBTREE;
@@ -48,7 +43,7 @@ public class AppProperties {
                 }
 
                 @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
                     // Check if the file ends with .properties
                     if (file.getFileName().toString().endsWith(".properties")) {
                         propFiles.add(file);

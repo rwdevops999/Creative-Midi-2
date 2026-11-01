@@ -1,9 +1,10 @@
 package util.midi;
 
-import com.sun.jdi.ByteType;
 import entity.device.DeviceInfo;
 import entity.midi.Midi;
 import lombok.Getter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import util.app.AppInfo;
 import util.communication.CommunicationType;
 import util.registry.CommunicationMessage;
@@ -11,14 +12,14 @@ import util.registry.CommunicationMessage;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiUnavailableException;
-import javax.sound.midi.ShortMessage;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MidiWriter {
+    private static final Logger logger = LoggerFactory.getLogger(MidiWriter.class);
+
     @Getter
-    private static MidiWriter instance = new MidiWriter();
+    private static final MidiWriter instance = new MidiWriter();
 
     private MidiWriter() {
     }
@@ -89,38 +90,31 @@ public class MidiWriter {
 
             sendBulk();
         } catch (InvalidMidiDataException | MidiUnavailableException e) {
-            e.printStackTrace();
+            logger.error("Exception. CAUSE {}", e.getMessage());
         }
     }
 
     private void distributeOverAllChannels(Midi midi) throws InvalidMidiDataException {
-        // Haal de pure basis status op (bijv. 0xB0 of 0xE0) door het oude kanaal eraf te strippen
+        // Retrieve the status (e.g. 0xB0 of 0xE0) by stripping of the old channel
         int baseStatus = midi.getStatusByte() & 0xF0;
 
         for (int c = 0; c < 16; c++) {
-            // Bereken de exacte statusbyte voor DIT kanaal (bijv. 0xB0, 0xB1 ... t/m 0xBF)
+            // Calculate the exact status byte for this channel (e.g. 0xB0, 0xB1 ... t/m 0xBF)
             int statusForChannel = baseStatus | (c & 0x0F);
 
-            // Maak een 100% nieuw, onafhankelijk Midi object aan voor dit kanaal
+            // Create a complete new Midi object for this channel
             Midi channelMidi = new Midi(
                     midi.getName(),
-                    c, // Het kanaal-nummer (0-15)
+                    c, // The channel number (0-15)
                     statusForChannel,
-                    midi.getRawData()[1], // byte 1 (bijv. de controller zoals 0x40)
-                    midi.getRawData()[2]  // byte 2 (bijv. de waarde zoals 0x00)
+                    midi.getRawData()[1], // byte 1 (e.g. the controller like 0x40)
+                    midi.getRawData()[2]  // byte 2 (e.g. the value like 0x00)
             );
 
             midisList.add(channelMidi);
         }
     }
 
-/*    private void distributeOverAllNotes(Midi midi) throws InvalidMidiDataException {
-        for (int i = 0; i < 128; i++) {
-            Midi dataMidi = new Midi(midi, (byte)i);
-            midisList.add(dataMidi);
-        }
-    }
-*/
     public void testTone() {
         midisList = new ArrayList<>();
 
@@ -140,7 +134,7 @@ public class MidiWriter {
             sendBulk();
             Thread.sleep(100);
         } catch (InvalidMidiDataException | MidiUnavailableException| InterruptedException e) {
-            e.printStackTrace();
+            logger.error("Exception. CAUSE {}", e.getMessage());
         }
     }
 

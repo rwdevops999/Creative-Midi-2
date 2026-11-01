@@ -7,8 +7,6 @@ import org.slf4j.LoggerFactory;
 import util.communication.CommunicationType;
 
 public class CommunicationMessage {
-    private static final Logger logger = LoggerFactory.getLogger(CommunicationMessage.class);
-
     @Getter
     private final static CommunicationMessage instance = new CommunicationMessage();
 

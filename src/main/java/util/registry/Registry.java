@@ -14,7 +14,7 @@ public class Registry {
     private static final Logger logger = LoggerFactory.getLogger(Registry.class);
 
     @Getter
-    private static Registry instance = new Registry();
+    private static final Registry instance = new Registry();
 
     private final List<AppEventListener> listeners = new CopyOnWriteArrayList<>();
 
