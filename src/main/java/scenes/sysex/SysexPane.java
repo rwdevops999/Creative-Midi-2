@@ -25,4 +25,17 @@ public class SysexPane extends BorderPane {
 
         logger.debug("Built {}", getId());
     }
+
+    // ACCESSORS
+    public SysexListPane getSysexListPane() {
+        return (SysexListPane) getLeft();
+    }
+
+    public SysexDetailsPane getSysexDetailsPane() {
+        return (SysexDetailsPane) getCenter();
+    }
+
+    public SceneActionsPane getSceneActionsPane() {
+        return (SceneActionsPane) getRight();
+    }
 }
