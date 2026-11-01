@@ -1,5 +1,6 @@
 package scenes;
 
+import entity.NameEntity;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
@@ -25,7 +26,7 @@ public class SceneActionsPane extends VBox {
 
     private Pane parent;
 
-    public SceneActionsPane(Pane owner, int width, int height) {
+    public SceneActionsPane(Pane owner, int width, int height, BiConsumer<NameEntity, Pane>[] consumers, Supplier<NameEntity> supplier) {
         this();
 
         this.parent = owner;
