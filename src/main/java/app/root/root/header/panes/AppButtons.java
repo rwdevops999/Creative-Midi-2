@@ -15,6 +15,8 @@ import org.fusesource.jansi.AnsiConsole;
 import util.Theme;
 import util.Util;
 import util.app.AppInfo;
+import util.midi.MidiWriter;
+import util.registry.Registry;
 
 import java.util.Objects;
 
@@ -61,11 +63,13 @@ public class AppButtons extends GridPane {
         });
         add(exitButton, 1, 0);
         IconButton midiResetButton = new IconButton("midiReset", "shutup midi", "icons/midi.png", e -> {
-            // TODO Provide MidiWriter which also contains this
+            Registry.getInstance().showStatus("Resetting midi");
+            MidiWriter.getInstance().reset();
         });
         add(midiResetButton, 1, 1);
         IconButton midiSoundButton = new IconButton("midiSound", "sound midi", "icons/tuning-fork.png", e -> {
-            // TODO Add To MidiWriter
+            Registry.getInstance().showStatus("Testing midi");
+            MidiWriter.getInstance().testTone();
         });
         add(midiSoundButton, 0, 1);
 

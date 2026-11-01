@@ -43,6 +43,16 @@ public class DeviceService {
                 infos = provider.getDeviceInfo();
             }
             for (MidiDevice.Info info : infos) {
+                String name = info.getName();
+
+                if (name.contains("Microsoft GS Wavetable Synth") ||
+                        name.contains("Microsoft MIDI Mapper") ||
+                        name.contains("Real Time Sequencer") ||
+                        name.equalsIgnoreCase("Gervill")) {
+
+                    continue; // Spring meteen naar het volgende apparaat in de lijst
+                }
+
                 MidiDevice dev = null;
                 if (! OS.isWindows()) {
                     dev = provider != null ? provider.getDevice(info) : null;
@@ -72,37 +82,32 @@ public class DeviceService {
     }
 
     private synchronized void printDebugInfoOfDevice(MidiDevice dev) {
-        if (!dev.getClass().getName().equals("com.sun.media.sound.RealTimeSequencer")) {
-            System.out.println("-= > Device: " + ANSI_RED + dev.getDeviceInfo().getName() + ANSI_RESET);
-            System.out.println("     Vendor: " + ANSI_GREEN + dev.getDeviceInfo().getVendor() + ANSI_RESET);
-            System.out.println("     num TX: " + ANSI_BLUE + dev.getMaxTransmitters() + ANSI_RESET);
-            System.out.println("     num RX: " + ANSI_BLUE + dev.getMaxReceivers() + ANSI_RESET);
-        }
+        System.out.println("-= > Device: " + ANSI_RED + dev.getDeviceInfo().getName() + ANSI_RESET);
+        System.out.println("     Vendor: " + ANSI_GREEN + dev.getDeviceInfo().getVendor() + ANSI_RESET);
+        System.out.println("     num TX: " + ANSI_BLUE + dev.getMaxTransmitters() + ANSI_RESET);
+        System.out.println("     num RX: " + ANSI_BLUE + dev.getMaxReceivers() + ANSI_RESET);
     }
-
     private void addDevice(String deviceName, MidiDevice dev, DeviceDirection direction) {
-        if (!dev.getClass().getName().equals("com.sun.media.sound.RealTimeSequencer")) {
-            DeviceInfo devInfo = devices.stream().filter(d -> d.getName().equals(deviceName)).findFirst().orElse(null);
-            if (devInfo == null) {
-                devInfo = new DeviceInfo();
-                devInfo.setName(deviceName);
-            } else {
-                devices.remove(devInfo);
-            }
-
-            if (devInfo.getDeviceDirection() == DeviceDirection.INPUT || devInfo.getDeviceDirection() == DeviceDirection.OUTPUT) {
-                devInfo.setDeviceDirection(DeviceDirection.BIDIRECTIONAL);
-            } else {
-                devInfo.setDeviceDirection(direction);
-            }
-
-            if (direction == DeviceDirection.INPUT) {
-                devInfo.setMidiInputDevice(dev);
-            } else if (direction == DeviceDirection.OUTPUT) {
-                devInfo.setMidiOutputDevice(dev);
-            }
-
-            devices.add(devInfo);
+        DeviceInfo devInfo = devices.stream().filter(d -> d.getName().equals(deviceName)).findFirst().orElse(null);
+        if (devInfo == null) {
+            devInfo = new DeviceInfo();
+            devInfo.setName(deviceName);
+        } else {
+            devices.remove(devInfo);
         }
+
+        if (devInfo.getDeviceDirection() == DeviceDirection.INPUT || devInfo.getDeviceDirection() == DeviceDirection.OUTPUT) {
+            devInfo.setDeviceDirection(DeviceDirection.BIDIRECTIONAL);
+        } else {
+            devInfo.setDeviceDirection(direction);
+        }
+
+        if (direction == DeviceDirection.INPUT) {
+            devInfo.setMidiInputDevice(dev);
+        } else if (direction == DeviceDirection.OUTPUT) {
+            devInfo.setMidiOutputDevice(dev);
+        }
+
+        devices.add(devInfo);
     }
 }

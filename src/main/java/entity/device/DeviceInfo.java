@@ -5,17 +5,59 @@ import lombok.Getter;
 import lombok.Setter;
 import util.device.DeviceDirection;
 
+import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiDevice;
+import javax.sound.midi.MidiUnavailableException;
+import javax.sound.midi.Receiver;
 
 public class DeviceInfo extends NameEntity {
     @Getter
     private DeviceDirection deviceDirection;
 
-    @Setter
+    @Getter
     private MidiDevice midiInputDevice;
 
-    @Setter
+    public void setMidiInputDevice(MidiDevice midiDevice) {
+        midiInputDevice = midiDevice;
+
+        if (midiInputDevice != null) {
+            if (! midiInputDevice.isOpen()) {
+                try {
+                    midiInputDevice.open();
+                } catch (MidiUnavailableException e) {
+                    try {
+                        midiInputDevice.close();
+                    } catch (Exception closeEx) {
+                        // Negeren, we willen puur de resources vrijgeven
+                    }
+
+                    midiInputDevice = null;
+                }
+            }
+        }
+    }
+
+    @Getter
     private MidiDevice midiOutputDevice;
+
+    public void setMidiOutputDevice(MidiDevice midiDevice) {
+        midiOutputDevice = midiDevice;
+
+        if (midiDevice != null) {
+            if (! midiOutputDevice.isOpen()) {
+                try {
+                    midiOutputDevice.open();
+                } catch (MidiUnavailableException e) {
+                    try {
+                        midiOutputDevice.close();
+                    } catch (Exception closeEx) {
+                        // Negeren, we willen puur de resources vrijgeven
+                    }
+                    midiOutputDevice = null;
+                }
+            }
+        }
+    }
 
     public DeviceInfo() {
         this.name = "";
@@ -33,4 +75,5 @@ public class DeviceInfo extends NameEntity {
             this.textIcon = "⇄ ";
         }
     }
+
 }
