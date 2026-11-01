@@ -55,7 +55,7 @@ public class SelectorsPane extends HBox {
         parent = owner;
 
         setPaneSizeAsPercentage(this, owner, width, height);
-        showPaneBorder(this, getColor("border", "blue"));
+//        showPaneBorder(this, getColor("border", "blue"));
 
         buildPane();
     }

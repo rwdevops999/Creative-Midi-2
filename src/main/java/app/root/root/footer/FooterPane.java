@@ -35,8 +35,8 @@ public class FooterPane extends HBox {
 
         setPaneBackground(this);
 
-        getChildren().add(new CopyrightPane(this, 50, 100));
-        getChildren().add(new StatusPane(this, 40, 100));
+        getChildren().add(new CopyrightPane(this, 20, 100));
+        getChildren().add(new StatusPane(this, 70, 100));
         getChildren().add(new ClockPane(this, 10, 100));
 
         logger.debug("Built {}", getId());

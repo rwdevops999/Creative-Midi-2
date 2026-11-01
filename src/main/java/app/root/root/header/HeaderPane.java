@@ -26,7 +26,7 @@ public class HeaderPane extends GridPane {
 
         parent = owner;
 
-        showPaneBorder(this, getColor("border", "red"));
+//        showPaneBorder(this, getColor("border", "red"));
 
         setPaneSizeAsPercentage(this, owner, width, height);
 
