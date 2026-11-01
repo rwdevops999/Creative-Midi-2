@@ -59,7 +59,7 @@ public class SelectorsPane extends HBox {
     private boolean isFirstLoad = true;
 
     private void buildPane() {
-        LabeledSelector<DeviceInfo> deviceSelector = new LabeledSelector<>(parent, "Device");
+        LabeledSelector<DeviceInfo> deviceSelector = new LabeledSelector<>("Device");
 
         deviceSelector.prefWidthProperty().bind(this.widthProperty().divide(2));
 
@@ -157,7 +157,7 @@ public class SelectorsPane extends HBox {
         // TODO load voice files here
         List<KeyboardVoice> voiceFiles = getVoiceFiles();
 
-        LabeledSelector<KeyboardVoice> keyboardSelector = new LabeledSelector<>(parent, "Keyboard");
+        LabeledSelector<KeyboardVoice> keyboardSelector = new LabeledSelector<>("Keyboard");
         keyboardSelector.getComboBox().setItems(FXCollections.observableArrayList(voiceFiles));
         keyboardSelector.prefWidthProperty().bind(this.widthProperty().divide(2));
         keyboardSelector.getComboBox().getSelectionModel().selectedItemProperty().addListener((obs, oldVoice, newVoice) -> {

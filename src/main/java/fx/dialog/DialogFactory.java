@@ -2,7 +2,6 @@ package fx.dialog;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
 import javafx.stage.StageStyle;
 import lombok.Getter;
 import org.slf4j.Logger;
@@ -18,7 +17,7 @@ public class DialogFactory {
     }
 
     @Getter
-    private static DialogFactory instance = new DialogFactory();
+    private static final DialogFactory instance = new DialogFactory();
 
     private Alert renderDialog (String message, Alert.AlertType alertType, String headerText) {
         logger.debug("[CM_DIALOG_FACTORY] Render a uniform dialog. Type = {}", alertType.name());

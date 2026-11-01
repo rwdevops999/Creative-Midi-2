@@ -40,12 +40,12 @@ public class LightIndicatorButton extends ToggleButton {
         COLOR_LIGHT_ON = getColor("button", "light on", color);
         COLOR_BORDER_ON = getColor("button", "border on", color);
 
-        // DE FIX: Dwing de knop om ALTIJD deze breedte aan te nemen
+        // Force the button to take this width always
         this.setMinSize(size, size);
         this.setPrefSize(size, size);
         this.setMaxSize(size, size);
 
-        // Maak de basisknop zwart en haal de standaard JavaFX-borders weg
+        // make the button black and remove the JavaFX-borders
         this.setStyle("-fx-background-color: #000000; " +
                 "-fx-background-radius: 4; " +
                 "-fx-border-color: #222222; " +
@@ -60,7 +60,7 @@ public class LightIndicatorButton extends ToggleButton {
         buttonLabel = new Label(text);
         buttonLabel.setFont(Font.font("Segoe UI", FontWeight.BOLD, 8));
 
-        // Zorg dat lange tekst netjes wordt afgebroken met '...' als de knop te smal is
+        // Break up long text with '...' if the button is too small
         buttonLabel.setTextOverrun(javafx.scene.control.OverrunStyle.ELLIPSIS);
 
         glowEffect = new DropShadow();
@@ -74,9 +74,7 @@ public class LightIndicatorButton extends ToggleButton {
 
         updateVisuals(false);
 
-        this.selectedProperty().addListener((obs, wasSelected, isSelected) -> {
-            updateVisuals(isSelected);
-        });
+        this.selectedProperty().addListener((obs, wasSelected, isSelected) -> updateVisuals(isSelected));
     }
 
     private void updateVisuals(boolean isSelected) {

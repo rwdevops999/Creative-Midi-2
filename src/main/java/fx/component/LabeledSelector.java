@@ -2,16 +2,13 @@ package fx.component;
 
 import entity.NameEntity;
 import fx.display.EntityListCell;
-import javafx.geometry.HPos;
 import javafx.geometry.Insets;
-import javafx.geometry.VPos;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
-import util.Util;
+import lombok.Getter;
 
-import static util.Util.setControlWidthAsPercentage;
-
+@Getter
 public class LabeledSelector<T extends NameEntity> extends VBox {
     public LabeledSelector() {
         super();
@@ -23,20 +20,20 @@ public class LabeledSelector<T extends NameEntity> extends VBox {
         setPadding(new Insets(5));
     }
 
-    public LabeledSelector(Pane parent, String selectorName) {
+    public LabeledSelector(String selectorName) {
         this();
 
-        buildComponent(parent, selectorName);
+        buildComponent(selectorName);
     }
 
     ComboBox<T> comboBox;
-    private void buildComponent(Pane parent, String selectorName) {
+    private void buildComponent(String selectorName) {
         Label selectorLabel = new Label(selectorName);
 
         comboBox = new ComboBox<>();
         comboBox.setMinWidth(100);
 
-        // Vul de volledige breedte van DEZE VBox (die door de parent al op 50% is gezet)
+        // Fill the complete width of this VBox (which is already set to 50% by the parent)
         comboBox.setMaxWidth(Double.MAX_VALUE);
         comboBox.prefWidthProperty().bind(this.widthProperty());
 
@@ -52,7 +49,4 @@ public class LabeledSelector<T extends NameEntity> extends VBox {
         getChildren().addAll(selectorLabel, comboBox);
     }
 
-    public ComboBox<T> getComboBox() {
-        return comboBox;
-    }
 }

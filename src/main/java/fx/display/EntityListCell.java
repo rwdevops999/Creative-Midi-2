@@ -31,7 +31,7 @@ public class EntityListCell<T extends NameEntity> extends ListCell<T> {
                 setGraphic(icon);
             } else if (! item.getFontIcon().isEmpty()) {
                 FontIcon icon = new FontIcon(item.getFontIcon());
-                icon.setIconSize(16); // Grootte in pixels
+                icon.setIconSize(16); // Size in pixels
                 icon.setIconColor(javafx.scene.paint.Color.BLUE);
                 setGraphic(icon);
             }

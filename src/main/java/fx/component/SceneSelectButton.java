@@ -21,16 +21,14 @@ public class SceneSelectButton extends Button {
         super();
     }
 
-    public SceneSelectButton(IScene ownerScene, int size, String name, String tooltip, String iconname, IScene forScene) {
+    public SceneSelectButton(IScene ownerScene, int size, String name, String tooltip, String iconName, IScene forScene) {
         this();
 
-        EventHandler<ActionEvent> handler = e -> {
-            Router.getInstance().routeTo(ownerScene, forScene, true);
-        };
+        EventHandler<ActionEvent> handler = e -> Router.getInstance().routeTo(ownerScene, forScene, true);
 
         Tooltip tooltipField = new Tooltip(tooltip);
 
-        Image icon = new Image(Objects.requireNonNull(SceneSelectButton.class.getResourceAsStream("/icons/" + iconname + ".png")));
+        Image icon = new Image(Objects.requireNonNull(SceneSelectButton.class.getResourceAsStream("/icons/" + iconName + ".png")));
         ImageView imageView = new ImageView(icon);
         imageView.setFitWidth(size);
         imageView.setFitHeight(size);
@@ -44,34 +42,29 @@ public class SceneSelectButton extends Button {
         setStyle("-fx-background-color: yellow; -fx-padding: 1;");
     }
 
-    public SceneSelectButton(IScene ownerScene, int size, String name, String tooltip, String iconname, String paneName) {
+    public SceneSelectButton(IScene ownerScene, int size, String name, String tooltip, String iconName, String paneName) {
         this();
 
         EventHandler<ActionEvent> handler = e -> {
-            Pane resultingPane = null;
-
-            switch (paneName) {
-                case "Test1":
-                    resultingPane = new Test1Pane();
-                    break;
-                case "Test2":
-                    resultingPane = new Test2Pane();
-                    break;
+            Pane resultingPane = switch (paneName) {
+                case "Test1" -> new Test1Pane();
+                case "Test2" -> new Test2Pane();
+                default -> null;
 /*                case "Test3":
                     resultingPane = new Test3Pane();
                     break;
                 case "Test4":
                     resultingPane = new Test4Pane();
                     break; */
-            }
+            };
 
             Router.getInstance().routeTo(ownerScene, new TestScene(), resultingPane, true);
         };
 
         Tooltip tooltipField = new Tooltip( tooltip);
 
-        String nameOfIcon = "/icons/" + iconname + ".png";
-        Image icon = new Image(SceneSelectButton.class.getResourceAsStream(nameOfIcon));
+        String nameOfIcon = "/icons/" + iconName + ".png";
+        Image icon = new Image(Objects.requireNonNull(SceneSelectButton.class.getResourceAsStream(nameOfIcon)));
         ImageView imageView = new ImageView(icon);
         imageView.setFitWidth(size);
         imageView.setFitHeight(size);

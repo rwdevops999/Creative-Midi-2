@@ -15,8 +15,6 @@ import org.slf4j.LoggerFactory;
 import java.util.Objects;
 
 public class IconButton extends HBox {
-    private static final Logger logger = LoggerFactory.getLogger(IconButton.class);
-
     public IconButton() {
         super();
 
@@ -26,12 +24,12 @@ public class IconButton extends HBox {
         setPadding(new Insets(5));
     }
 
-    public IconButton(String name, String tooltip, String iconname, EventHandler<ActionEvent> handler) {
+    public IconButton(String name, String tooltip, String iconName, EventHandler<ActionEvent> handler) {
         this();
 
         Tooltip tooltipField = new Tooltip( tooltip);
 
-        Image icon = new Image(Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(iconname)));
+        Image icon = new Image(Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(iconName)));
         ImageView imageView = new ImageView(icon);
         imageView.setFitWidth(20);
         imageView.setFitHeight(20);
