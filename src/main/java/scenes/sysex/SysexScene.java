@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scenes.base.Base;
 import util.app.scene.IScene;
+import util.registry.Registry;
 
 public class SysexScene implements IScene {
     private static final Logger logger = LoggerFactory.getLogger(SysexScene.class);
@@ -13,6 +14,7 @@ public class SysexScene implements IScene {
     public Pane render(IScene callingScene) {
         logger.debug("[CM_SYSEX_SCENE] Starting Sysex Scene");
 
+        Registry.getInstance().showStatus("Create sysex banks");
         return new Base(new SysexPane(), callingScene, true);
     }
 }
