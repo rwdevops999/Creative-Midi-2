@@ -3,7 +3,6 @@ package util.app;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.device.DeviceScanner;
-import util.device.DeviceService;
 import util.properties.AppProperties;
 
 public class Initialize {

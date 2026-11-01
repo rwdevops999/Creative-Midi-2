@@ -5,5 +5,5 @@ public enum CommunicationType {
     OUTBOUND,
     ERROR,
     WARNING,
-    INFO;
+    INFO
 }

@@ -12,7 +12,7 @@ public class Router implements IRouter {
     private static final Logger logger = LoggerFactory.getLogger(Router.class);
 
     @Getter
-    private static Router instance = new Router();
+    private static final Router instance = new Router();
 
     private Router() {
     }

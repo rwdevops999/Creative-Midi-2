@@ -13,7 +13,7 @@ import static util.properties.PropertyKeys.APP_DEVICE_SCANNER_TIME;
 public class DeviceScanner extends Task<Void> {
 
     @Override
-    protected Void call() throws Exception {
+    protected Void call() {
         Registry registry = Registry.getInstance();
         int sleepTime  = AppProperties.getInstance().getPropertyAsInteger(APP_DEVICE_SCANNER_TIME, 0);
         while (!isCancelled()) {

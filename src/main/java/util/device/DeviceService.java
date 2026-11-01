@@ -32,8 +32,6 @@ public class DeviceService {
 
         CoreMidiDeviceProvider provider = null;
 
-        DeviceInfo deviceInfo = new DeviceInfo();
-
         try {
             MidiDevice.Info[] infos;
             if (OS.isWindows()) {
@@ -50,10 +48,10 @@ public class DeviceService {
                         name.contains("Real Time Sequencer") ||
                         name.equalsIgnoreCase("Gervill")) {
 
-                    continue; // Spring meteen naar het volgende apparaat in de lijst
+                    continue; // Continue immediate with the next device from the list
                 }
 
-                MidiDevice dev = null;
+                MidiDevice dev;
                 if (! OS.isWindows()) {
                     dev = provider != null ? provider.getDevice(info) : null;
                 } else {

@@ -28,7 +28,7 @@ public enum AppInfo {
         @Setter
         private Pane spaOwner;
 
-        // This is a SPA (which contains functionality)
+        // This is an SPA (which contains functionality)
         @Getter
         @Setter
         private Pane spa;
