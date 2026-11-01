@@ -40,9 +40,9 @@ public enum AppInfo {
 
         @Getter
         @Setter
-        private DeviceInfo selectedDevice = null;
+        private DeviceInfo selectedDevice;
 
         // Add your properties and methods here
         @Setter
-        private KeyboardVoice keyboardVoice = null;
+        private KeyboardVoice keyboardVoice;
 }

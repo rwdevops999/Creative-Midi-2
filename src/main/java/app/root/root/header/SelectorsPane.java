@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import util.AnsiColors;
 import util.AppNotifications;
 import util.app.AppInfo;
+import util.device.DeviceDirection;
 import util.properties.AppProperties;
 import util.properties.PropertyKeys;
 import util.registry.AppEvent;
@@ -141,10 +142,15 @@ public class SelectorsPane extends HBox {
                                     lastNotifiedDevice = deviceToSelect;
                                 }
                             } else {
-                                // HIER GEBEURT HET: Als het apparaat uit staat, wordt de combo leeg gemaakt.
-                                // Er wordt GEEN ander apparaat (zoals Gervill) gekozen.
                                 comboBox.getSelectionModel().clearSelection();
-                                AppInfo.INSTANCE.setSelectedDevice(null);
+                                if (! deviceList.isEmpty()) {
+                                    DeviceInfo inputDevice = deviceList.stream().filter(deviceInfo -> DeviceDirection.INPUT.equals(deviceInfo.getDeviceDirection())).findFirst().orElse(null);
+                                    if (inputDevice != null) {
+                                        comboBox.getSelectionModel().select(inputDevice);
+                                        AppInfo.INSTANCE.setSelectedDevice(inputDevice);
+                                    }
+                                }
+
                                 lastNotifiedDevice = null;
                             }
 
