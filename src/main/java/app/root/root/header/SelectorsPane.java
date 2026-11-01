@@ -165,6 +165,7 @@ public class SelectorsPane extends HBox {
         keyboardSelector.getComboBox().getSelectionModel().selectedItemProperty().addListener((obs, oldVoice, newVoice) -> {
             if (newVoice != null) {
                 AppInfo.INSTANCE.setKeyboardVoice(newVoice);
+                AppNotifications.showNotification(AppInfo.INSTANCE.getPrimaryStage(),"Keyboard Voice Selected", "'" + newVoice.toString() + "'");
             }
         });
 

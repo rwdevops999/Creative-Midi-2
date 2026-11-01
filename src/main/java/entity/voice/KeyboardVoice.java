@@ -45,4 +45,9 @@ public class KeyboardVoice extends NameEntity {
     public int hashCode() {
         return Objects.hash(getName(), getTextIcon(), getFontIcon());
     }
+
+    @Override
+    public String toString() {
+        return name + (VoiceType.INS.equals(voiceType) ? ".ins" : ".txt");
+    }
 }
