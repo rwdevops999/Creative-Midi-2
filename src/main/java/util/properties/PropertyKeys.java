@@ -14,4 +14,5 @@ public class PropertyKeys {
     public static String VOICE_TYPE = "voice.type";
 
     public static String VOICES_DIR = "voices.dir";
+    public static String EXPORT_DIR = "export.dir";
 }

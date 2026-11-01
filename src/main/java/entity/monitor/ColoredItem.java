@@ -30,4 +30,18 @@ public class ColoredItem extends NameEntity {
             case INFO -> getColor("communication", "info");
         };
    }
+
+   public String getReadableText() {
+        String identify;
+
+        identify = switch (type) {
+            case INFO -> "[I]";
+            case WARNING -> "[!]";
+            case ERROR -> "[X]";
+            case INBOUND -> "[⬅]";
+            case OUTBOUND -> "[➡]";
+        };
+
+        return identify + " " + name;
+   }
 }

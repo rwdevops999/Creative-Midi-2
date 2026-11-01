@@ -13,6 +13,7 @@ import org.controlsfx.control.Notifications;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.AnsiColors;
+import util.AppNotifications;
 import util.app.AppInfo;
 import util.properties.AppProperties;
 import util.properties.PropertyKeys;
@@ -78,7 +79,7 @@ public class SelectorsPane extends HBox {
                 AppInfo.INSTANCE.setSelectedDevice(newDevice);
 
                 if (lastNotifiedDevice == null || !lastNotifiedDevice.getName().equals(newDevice.getName())) {
-                    showNotification("Apparaat Actief", "Apparaat '" + newDevice.getName() + "' is nu actief.");
+                    AppNotifications.showNotification("Device Connected", "Device '" + newDevice.getName() + "' is connected.");
                     lastNotifiedDevice = newDevice;
                 }
             } else {
@@ -124,8 +125,8 @@ public class SelectorsPane extends HBox {
 
                                 // EENMALIGE MELDING: Het actieve apparaat is zojuist UITGESCHAKELD (niet meer in de lijst)
                                 if (deviceToSelect == null) {
-                                    showNotification("Apparaat Verbroken",
-                                            "Het apparaat '" + currentlySelected.getName() + "' is uitgeschakeld of losgekoppeld.");
+                                    AppNotifications.showNotification("Device Disconnected",
+                                            "The device '" + currentlySelected.getName() + "' is disconnected.");
                                 }
                             }
 
@@ -136,7 +137,7 @@ public class SelectorsPane extends HBox {
 
                                 // Geef melding als er een nieuw apparaat actief is geworden
                                 if (lastNotifiedDevice == null || !lastNotifiedDevice.getName().equals(deviceToSelect.getName())) {
-                                    showNotification("Apparaat Actief", "Apparaat '" + deviceToSelect.getName() + "' is nu actief.");
+                                    AppNotifications.showNotification("Device Connected", "Device '" + deviceToSelect.getName() + "' is connected.");
                                     lastNotifiedDevice = deviceToSelect;
                                 }
                             } else {
@@ -198,15 +199,6 @@ public class SelectorsPane extends HBox {
         }
 
         return voiceFiles;
-    }
-
-    private void showNotification(String title, String message) {
-        Notifications.create()
-                .title(title)
-                .text(message)
-                .hideAfter(Duration.seconds(3)) // Automatically hides after 5 seconds
-                .position(Pos.TOP_LEFT)     // Set corner position on screen
-                .showInformation();
     }
 
     private synchronized void printDebugInfoOfVoice(String filename, String extension) {

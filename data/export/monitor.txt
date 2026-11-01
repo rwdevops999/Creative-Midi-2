@@ -1,0 +1,3 @@
+[⬅] this is inbound
+[X] this is error
+[I] this is info
