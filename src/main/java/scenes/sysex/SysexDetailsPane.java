@@ -10,6 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scenes.sysex.statemachine.States;
 import util.Util;
 import util.app.AppInfo;
 
@@ -57,7 +58,10 @@ public class SysexDetailsPane extends VBox {
             getChildren().add(nameLabelValuePane);
 
             dsName.addListener((observable, oldValue, newValue) -> {
-                System.out.println("DSNAME CHANGED: " + newValue);
+                if (newValue != null) {
+                    currentSysex.setName(newValue);
+                    checkChanges();
+                }
             });
 
             LabelValuePane sysexLabelValuePane = new LabelValuePane(this, "Sysex:", dsSysex, 90, 6, 8);
@@ -65,7 +69,10 @@ public class SysexDetailsPane extends VBox {
             getChildren().add(sysexLabelValuePane);
 
             dsSysex.addListener((observable, oldValue, newValue) -> {
-                System.out.println("DSSYSEX CHANGED: " + newValue);
+                if (newValue != null) {
+                    currentSysex.getContent().setSysex(newValue);
+                    checkChanges();
+                }
             });
 
         }
@@ -74,14 +81,34 @@ public class SysexDetailsPane extends VBox {
     }
 
     public void setSysex(Sysex sysex) {
+        AppInfo.INSTANCE.setSysex(new Sysex(sysex));
+
         this.currentSysex = sysex;
 
         dsName.setValue(sysex.getName());
         dsSysex.setValue(sysex.getContent().getSysex());
 
-        AppInfo.INSTANCE.setSysex(sysex);
-
         buildPane();
+    }
+
+    private void checkChanges() {
+        boolean originalEmpty = AppInfo.INSTANCE.getSysex().isEmpty();
+        boolean currentEmpty = currentSysex.isEmpty();
+
+        if (originalEmpty) {
+            if (! currentEmpty) {
+                getSysexPane().changeState(States.ADD);
+            } else {
+                getSysexPane().changeState(States.NEW);
+            }
+        } else {
+            boolean equal = AppInfo.INSTANCE.getSysex().equals(currentSysex);
+            if (!equal) {
+                getSysexPane().changeState(States.UPDATE);
+            } else {
+                getSysexPane().changeState(States.SELECT);
+            }
+        }
     }
 
     // ACCESSORS

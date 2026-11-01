@@ -3,10 +3,13 @@ package entity.sysex;
 import app.CreativeApp;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.HexFormat;
+import java.util.Objects;
 
 public class SysexContent {
     private static final Logger logger = LoggerFactory.getLogger(SysexContent.class);
@@ -27,6 +30,11 @@ public class SysexContent {
     public void setSysex(String sysex) {
         this.sysex = sysex;
         this.bytes = setBytes(sysex);
+    }
+
+    public SysexContent(SysexContent content) {
+        this.sysex = content.getSysex();
+        this.bytes = content.getBytes().clone();
     }
 
     private byte[] setBytes(String sysex) {
@@ -53,4 +61,26 @@ public class SysexContent {
     public byte[] getBytes() {
         return bytes;
     }
-}
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if (!(obj instanceof SysexContent other)) {
+            return false;
+        }
+
+        // Compare the String with Objects.equals and the byte array with Arrays.equals
+        return Objects.equals(this.sysex, other.sysex) &&
+                Arrays.equals(this.bytes, other.bytes);
+    }
+
+    @Override
+    public int hashCode() {
+        // For an array we need to use Arrays.hashCode instead of Objects.hash
+        int result = Objects.hashCode(sysex);
+        result = 31 * result + Arrays.hashCode(bytes);
+        return result;
+    }}

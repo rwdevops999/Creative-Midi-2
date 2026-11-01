@@ -68,4 +68,5 @@ public class SysexPane extends BorderPane {
     public SceneActionsPane getSceneActionsPane() {
         return (SceneActionsPane) getRight();
     }
+
 }

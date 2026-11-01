@@ -24,7 +24,7 @@ public class Sysex extends NameEntity {
         this();
 
         this.name = other.name;
-        this.content = other.content;
+        this.content = new SysexContent(other.content);
     }
 
     public boolean equals(Object obj) {
@@ -36,11 +36,15 @@ public class Sysex extends NameEntity {
             return false;
         }
 
-        return Objects.equals(this.name, other.name) && Objects.deepEquals(this, other);
-    }
+        return Objects.equals(this.name, other.name) &&
+               Objects.equals(this.content, other.content);    }
 
     @Override
     public int hashCode() {
         return Objects.hash(name, content);
+    }
+
+    public boolean isEmpty() {
+        return (name == null || name.isEmpty()) && (content.getSysex() == null || content.getSysex().isEmpty());
     }
 }

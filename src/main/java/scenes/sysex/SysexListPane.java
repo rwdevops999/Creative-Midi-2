@@ -52,7 +52,6 @@ public class SysexListPane extends VBox {
         getChildren().add(sysexListView);
 
         sysexListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            System.out.println("Selected: " + newValue.getName());
             getSysexPane().changeState(States.SELECT);
             getSysexPane().getSysexDetailsPane().setSysex(newValue);
         });
