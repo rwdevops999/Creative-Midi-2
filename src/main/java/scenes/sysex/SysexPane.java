@@ -39,10 +39,13 @@ public class SysexPane extends BorderPane {
         };
 
         SceneActionsPane actionsPane = new SceneActionsPane(this, 20, 100, consumers, this::getEntity);
+        stateMachine.setActionsPane(actionsPane);
 
         setLeft(new SysexListPane(this, 30, 100));
         setCenter(new SysexDetailsPane(this, 50, 100));
         setRight(actionsPane);
+
+        stateMachine.setState(States.IDLE);
 
         logger.debug("Built {}", getId());
     }

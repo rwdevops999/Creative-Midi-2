@@ -8,11 +8,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.function.BiConsumer;
 
-public class AddConsumer<T extends NameEntity, P extends Pane> implements BiConsumer<T, P> {
+public class AddConsumer<T extends NameEntity, P extends Pane>  extends NameEntity implements BiConsumer<T, P> {
     private static final Logger logger = LoggerFactory.getLogger(AddConsumer.class);
-
-    @Getter
-    private String name;
 
     public AddConsumer(String name) {
         this.name = name;
