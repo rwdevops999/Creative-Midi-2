@@ -11,7 +11,7 @@ public class MS2SProvider implements InstrumentProvider {
     }
 
     @Override
-    public String getSourceType() {
-        return "MS2S";
+    public VoiceType getSourceType() {
+        return VoiceType.MS2S;
     }
 }

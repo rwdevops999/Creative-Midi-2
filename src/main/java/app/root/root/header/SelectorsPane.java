@@ -8,22 +8,33 @@ import javafx.collections.FXCollections;
 import javafx.geometry.Pos;
 import javafx.scene.layout.HBox;
 import javafx.util.Duration;
+import org.apache.commons.io.FilenameUtils;
 import org.controlsfx.control.Notifications;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import util.AnsiColors;
 import util.app.AppInfo;
 import util.properties.AppProperties;
 import util.properties.PropertyKeys;
 import util.registry.AppEvent;
 import util.registry.Registry;
 
+import javax.sound.midi.MidiDevice;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.Key;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
+import static org.apache.commons.io.FilenameUtils.getExtension;
+import static util.AnsiColors.*;
 import static util.app.colors.ColorScheme.getColor;
 import static util.Util.setPaneSizeAsPercentage;
 import static util.Util.showPaneBorder;
+import static util.properties.PropertyKeys.VOICES_DIR;
 
 public class SelectorsPane extends HBox {
     private static final Logger logger = LoggerFactory.getLogger(SelectorsPane.class);
@@ -146,18 +157,47 @@ public class SelectorsPane extends HBox {
 
         // TODO load voice files here
         List<KeyboardVoice> voiceFiles = getVoiceFiles();
+
         LabeledSelector<KeyboardVoice> keyboardSelector = new LabeledSelector<>(parent, "Keyboard");
         keyboardSelector.getComboBox().setItems(FXCollections.observableArrayList(voiceFiles));
         keyboardSelector.prefWidthProperty().bind(this.widthProperty().divide(2));
-        keyboardSelector.getComboBox().getSelectionModel().selectedItemProperty().addListener((obs, oldDevice, newDevice) -> {
-
+        keyboardSelector.getComboBox().getSelectionModel().selectedItemProperty().addListener((obs, oldVoice, newVoice) -> {
+            if (newVoice != null) {
+                AppInfo.INSTANCE.setKeyboardVoice(newVoice);
+            }
         });
 
+        KeyboardVoice defaultVoice = getDefaultVoiceFile();
+        if (defaultVoice != null) {
+            keyboardSelector.getComboBox().setValue(defaultVoice);
+            AppInfo.INSTANCE.setKeyboardVoice(defaultVoice);
+        }
         getChildren().add(keyboardSelector);
     }
 
     private List<KeyboardVoice> getVoiceFiles() {
-        return new ArrayList<>();
+        List<KeyboardVoice> voiceFiles = new ArrayList<>();
+
+        Path folderPath = Paths.get(AppProperties.getInstance().getPropertyAsString(VOICES_DIR, "./data/voices"));
+
+        try (Stream<Path> stream = Files.list(folderPath)) {
+            stream.filter(Files::isRegularFile)
+                    .forEach(path -> {
+                        String filename = path.toFile().getName();
+                        String filenameExtension = FilenameUtils.getExtension(filename);
+                        String filenameWithoutExtension = FilenameUtils.removeExtension(filename);
+                        if (AppInfo.INSTANCE.isDebugMode()) {
+                            printDebugInfoOfVoice(filenameWithoutExtension, filenameExtension);
+                        }
+                        KeyboardVoice keyboardVoice = new KeyboardVoice(filenameWithoutExtension, filenameExtension);
+                        voiceFiles.add(keyboardVoice);
+
+                    });
+        } catch (IOException e) {
+            logger.error("Exception. CAUSE {}", e.getMessage());
+        }
+
+        return voiceFiles;
     }
 
     private void showNotification(String title, String message) {
@@ -167,6 +207,19 @@ public class SelectorsPane extends HBox {
                 .hideAfter(Duration.seconds(3)) // Automatically hides after 5 seconds
                 .position(Pos.TOP_LEFT)     // Set corner position on screen
                 .showInformation();
+    }
+
+    private synchronized void printDebugInfoOfVoice(String filename, String extension) {
+        System.out.println("-=> Voice file: " + ANSI_RED + filename + ANSI_RESET + " <=-");
+        System.out.println("    Voice type: " + ANSI_BLUE + (extension.equals("ins") ? "INS" : "MS2S") + ANSI_RESET);
+    }
+
+    private KeyboardVoice getDefaultVoiceFile() {
+        String keyboard = AppProperties.getInstance().getPropertyAsString(PropertyKeys.KEYBOARD, "PSR-SX600");
+        String voiceType = AppProperties.getInstance().getPropertyAsString(PropertyKeys.VOICE_TYPE, "MS2S");
+
+        KeyboardVoice keyboardVoice = getVoiceFiles().stream().filter(v -> v.getName().equalsIgnoreCase(keyboard) && v.getVoiceType().name().equalsIgnoreCase(voiceType)).findFirst().orElse(null);
+        return keyboardVoice;
     }
 
     // ACCESSORS

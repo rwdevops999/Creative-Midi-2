@@ -11,7 +11,7 @@ public class InsProvider implements InstrumentProvider {
     }
 
     @Override
-    public String getSourceType() {
-        return "INS";
+    public VoiceType getSourceType() {
+        return VoiceType.INS;
     }
 }

@@ -41,7 +41,13 @@ public class LabeledSelector<T extends NameEntity> extends VBox {
         comboBox.prefWidthProperty().bind(this.widthProperty());
 
         comboBox.setCellFactory(listView -> new EntityListCell<>());
-        comboBox.setButtonCell(new EntityListCell<>());
+
+        comboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                // create the cell and JavaFX links the 'newVal' to it.
+                comboBox.setButtonCell(new EntityListCell<>());
+            }
+        });
 
         getChildren().addAll(selectorLabel, comboBox);
     }

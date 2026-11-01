@@ -15,6 +15,8 @@ import javax.sound.midi.MidiUnavailableException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static util.AnsiColors.*;
+
 public class DeviceService {
     private static final Logger logger = LoggerFactory.getLogger(DeviceService.class);
 
@@ -69,12 +71,7 @@ public class DeviceService {
         return devices;
     }
 
-    private static final String ANSI_RED = "\u001B[31m";
-    private static final String ANSI_RESET = "\u001B[0m";
-    private static final String ANSI_GREEN = "\u001B[32m";
-    private static final String ANSI_BLUE = "\u001B[34m";
-
-    private void printDebugInfoOfDevice(MidiDevice dev) {
+    private synchronized void printDebugInfoOfDevice(MidiDevice dev) {
         if (!dev.getClass().getName().equals("com.sun.media.sound.RealTimeSequencer")) {
             System.out.println("-= > Device: " + ANSI_RED + dev.getDeviceInfo().getName() + ANSI_RESET);
             System.out.println("     Vendor: " + ANSI_GREEN + dev.getDeviceInfo().getVendor() + ANSI_RESET);

@@ -3,6 +3,7 @@ package fx.display;
 import entity.NameEntity;
 import javafx.scene.control.ListCell;
 import javafx.scene.text.Text;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 /**
  * Can be used e.g. in combo box
@@ -23,9 +24,15 @@ public class EntityListCell<T extends NameEntity> extends ListCell<T> {
             setGraphic(null);
         } else {
             setText(item.getName());
+            setGraphic(null);
             if (! item.getTextIcon().isEmpty()) {
                 Text icon = new Text(item.getTextIcon());
                 icon.setStyle("-fx-fill: #555555; -fx-font-weight: bold;");
+                setGraphic(icon);
+            } else if (! item.getFontIcon().isEmpty()) {
+                FontIcon icon = new FontIcon(item.getFontIcon());
+                icon.setIconSize(16); // Grootte in pixels
+                icon.setIconColor(javafx.scene.paint.Color.BLUE);
                 setGraphic(icon);
             }
         }

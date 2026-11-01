@@ -1,6 +1,7 @@
 package util.app;
 
 import entity.device.DeviceInfo;
+import entity.voice.KeyboardVoice;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -42,4 +43,6 @@ public enum AppInfo {
         private DeviceInfo selectedDevice = null;
 
         // Add your properties and methods here
+        @Setter
+        private KeyboardVoice keyboardVoice = null;
 }

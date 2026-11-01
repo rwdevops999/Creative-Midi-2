@@ -11,4 +11,7 @@ public class PropertyKeys {
     public static String DEVICE = "device.name";
 
     public static String KEYBOARD = "keyboard";
+    public static String VOICE_TYPE = "voice.type";
+
+    public static String VOICES_DIR = "voices.dir";
 }
