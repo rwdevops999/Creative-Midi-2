@@ -10,4 +10,170 @@
     "parametrized" : true,
     "parametrizedFunction" : "Tempo"
   }
+}, {
+  "name" : "GM1 System On",
+  "content" : {
+    "sysex" : "F0 7E 7F 09 01 F7"
+  }
+}, {
+  "name" : "GM2 System On",
+  "content" : {
+    "sysex" : "F0 7E 7F 09 03 F7"
+  }
+}, {
+  "name" : "General MIDI Off",
+  "content" : {
+    "sysex" : "F0 7E 7F 09 02 F7"
+  }
+}, {
+  "name" : "XG System On",
+  "content" : {
+    "sysex" : "F0 43 10 4C 00 00 7E 00  F7"
+  }
+}, {
+  "name" : "All Parameter Reset",
+  "content" : {
+    "sysex" : "F0 43 10 4C 00 00 7F 00 F7"
+  }
+}, {
+  "name" : "Intro I On",
+  "content" : {
+    "sysex" : "F0 43 7E 00 00 7F F7"
+  }
+},
+  {
+    "name": "Intro I Off",
+    "content": {
+      "sysex": "F0 43 7E 00 00 00 F7"
+    }
+  }, {
+    "name" : "Intro II On",
+    "content" : {
+      "sysex" : "F0 43 7E 00 01 7F F7"
+    }
+  }, {
+    "name" : "Intro II Off",
+    "content" : {
+      "sysex" : "F0 43 7E 00 01 00 F7"
+    }
+}, {
+  "name" : "Intro III On",
+  "content" : {
+    "sysex" : "F0 43 7E 00 02 7F F7"
+  }
+}, {
+  "name" : "Intro III Off",
+  "content" : {
+    "sysex" : "F0 43 7E 00 02 00 F7"
+  }
+}, {
+  "name" : "Main A On",
+  "content" : {
+    "sysex" : "F0 43 7E 00 08 7F F7"
+  }
+}, {
+  "name" : "Main A Off",
+  "content" : {
+    "sysex" : "F0 43 7E 00 08 00 F7"
+  }
+}, {
+  "name" : "Main B On",
+  "content" : {
+    "sysex" : "F0 43 7E 00 09 7F F7"
+  }
+}, {
+  "name" : "Main B Off",
+  "content" : {
+    "sysex" : "F0 43 7E 00 09 00 F7"
+  }
+}, {
+  "name" : "Main C On",
+  "content" : {
+    "sysex" : "F0 43 7E 00 0A 7F F7"
+  }
+}, {
+  "name" : "Main C Off",
+  "content" : {
+    "sysex" : "F0 43 7E 00 0A 00 F7"
+  }
+}, {
+  "name" : "Main D On",
+  "content" : {
+    "sysex" : "F0 43 7E 00 0B 7F F7"
+  }
+}, {
+  "name" : "Main D Off",
+  "content" : {
+    "sysex" : "F0 43 7E 00 0B 00 F7"
+  }
+}, {
+  "name" : "Ending I On",
+  "content" : {
+    "sysex" : "F0 43 7E 00 20 7F F7"
+  }
+}, {
+  "name" : "Ending I Off",
+  "content" : {
+    "sysex" : "F0 43 7E 00 20 00 F7"
+  }
+}, {
+  "name" : "Ending II On",
+  "content" : {
+    "sysex" : "F0 43 7E 00 21 7F F7"
+  }
+}, {
+  "name" : "Ending II Off",
+  "content" : {
+    "sysex" : "F0 43 7E 00 21 00 F7"
+  }
+}, {
+  "name" : "Ending III On",
+  "content" : {
+    "sysex" : "F0 43 7E 00 22 7F F7"
+  }
+}, {
+  "name" : "Ending III Off",
+  "content" : {
+    "sysex" : "F0 43 7E 00 22 00 F7"
+  }
+}, {
+  "name" : "Select Registration Button 1",
+  "content" : {
+    "sysex" : "F0 43 73 01 52 25 11 00 02 00 00 F7"
+  }
+}, {
+  "name" : "Select Registration Button 2",
+  "content" : {
+    "sysex" : "F0 43 73 01 52 25 11 00 02 00 01 F7"
+  }
+}, {
+  "name" : "Select Registration Button 3",
+  "content" : {
+    "sysex" : "F0 43 73 01 52 25 11 00 02 00 02 F7"
+  }
+}, {
+  "name" : "Select Registration Button 4",
+  "content" : {
+    "sysex" : "F0 43 73 01 52 25 11 00 02 00 03 F7"
+  }
+}, {
+  "name" : "Select Registration Button 5",
+  "content" : {
+    "sysex" : "F0 43 73 01 52 25 11 00 02 00 04 F7"
+  }
+}, {
+  "name" : "Select Registration Button 6",
+  "content" : {
+    "sysex" : "F0 43 73 01 52 25 11 00 02 00 05 F7"
+  }
+}, {
+  "name" : "Select Registration Button 7",
+  "content" : {
+    "sysex" : "F0 43 73 01 52 25 11 00 02 00 06 F7"
+  }
+}, {
+  "name" : "Select Registration Button 8",
+  "content" : {
+    "sysex" : "F0 43 73 01 52 25 11 00 02 00 07 F7"
+  }
 } ]

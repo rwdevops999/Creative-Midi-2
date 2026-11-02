@@ -24,7 +24,10 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static util.properties.PropertyKeys.SYSEX_DIR;
 import static util.properties.PropertyKeys.SYSEX_FILENAME;
@@ -102,8 +105,11 @@ public class SysexContainer {
 
         try (InputStream in = Files.newInputStream(Path.of(sysexFile))) {
             sysexList = mapper.readValue(in, new TypeReference<>() {});
+            sysexList = sysexList.stream()
+                    .sorted(Comparator.comparing(Sysex::getName))
+                    .toList();
         } catch (IOException ioe) {
-            logger.error("Exception. CAUSE: {}", ioe.getMessage());
+            logger.error("Exception: CAUSE: {}", ioe.getMessage());
         }
     }
 
