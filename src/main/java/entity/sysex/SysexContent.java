@@ -17,14 +17,27 @@ public class SysexContent {
     @Getter
     private String sysex;
 
+    @Getter
+    @Setter
+    private Boolean parametrized;
+
+    @Getter
+    @Setter
+    private String parametrizedFunction;
+
     private byte[] bytes;
 
     public SysexContent() {
         this.sysex = "";
         this.bytes = new byte[0];
+
+        this.parametrized = false;
+        this.parametrizedFunction = null;
     }
 
     public SysexContent(String sysex) {
+        this();
+
         this.sysex = sysex;
         this.bytes = setBytes(sysex);
     }
@@ -40,6 +53,8 @@ public class SysexContent {
         if (content.getBytes() != null) {
             this.bytes = content.getBytes().clone();
         }
+        this.parametrized = content.getParametrized();
+        this.parametrizedFunction = content.getParametrizedFunction();
     }
 
     private byte[] setBytes(String sysex) {
@@ -79,6 +94,8 @@ public class SysexContent {
 
         // Compare the String with Objects.equals and the byte array with Arrays.equals
         return Objects.equals(this.sysex, other.sysex) &&
+                Objects.equals(this.parametrized, other.parametrized) &&
+                Objects.equals(this.parametrizedFunction, other.parametrizedFunction) &&
                 Arrays.equals(this.bytes, other.bytes);
     }
 
@@ -86,6 +103,10 @@ public class SysexContent {
     public int hashCode() {
         // For an array we need to use Arrays.hashCode instead of Objects.hash
         int result = Objects.hashCode(sysex);
+
         result = 31 * result + Arrays.hashCode(bytes);
+        result = 31 * result + Objects.hashCode(parametrized);
+        result = 31 * result + Objects.hashCode(parametrizedFunction);
+
         return result;
     }}

@@ -47,6 +47,9 @@ public class Sysex extends NameEntity {
 
     @JsonIgnore
     public boolean isEmpty() {
-        return (name == null || name.isEmpty()) && (content.getSysex() == null || content.getSysex().isEmpty());
+        return (name == null || name.isEmpty()) &&
+                (content.getSysex() == null || content.getSysex().isEmpty()) &&
+                (content.getParametrized() == null || !content.getParametrized()) &&
+                (content.getParametrizedFunction() == null || content.getParametrizedFunction().isEmpty());
     }
 }

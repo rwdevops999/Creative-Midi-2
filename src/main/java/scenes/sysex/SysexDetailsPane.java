@@ -2,14 +2,16 @@ package scenes.sysex;
 
 import app.CreativeApp;
 import entity.sysex.Sysex;
+import fx.component.CheckedValuePane;
+import fx.component.ComboValuePane;
 import fx.component.LabelValuePane;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scenes.sysex.parametrized.ParametrizedFunctions;
 import scenes.sysex.statemachine.States;
 import util.Util;
 import util.app.AppInfo;
@@ -45,6 +47,8 @@ public class SysexDetailsPane extends VBox {
 
     private StringProperty dsName = new SimpleStringProperty();
     private StringProperty dsSysex = new SimpleStringProperty();
+    private BooleanProperty dsParametrized = new SimpleBooleanProperty();
+    private StringProperty dsFunction = new SimpleStringProperty();
 
     private void buildPane() {
         logger.debug("Building {}", getId());
@@ -53,8 +57,6 @@ public class SysexDetailsPane extends VBox {
             getChildren().clear();
 
             LabelValuePane nameLabelValuePane = new LabelValuePane(this, "Name:", dsName, 90, 6, 4);
-            VBox.setMargin(nameLabelValuePane, Insets.EMPTY);
-//            nameLabelValuePane.setStyle("-fx-border-color: blue; -fx-border-width: 1;");
             getChildren().add(nameLabelValuePane);
 
             dsName.addListener((observable, oldValue, newValue) -> {
@@ -65,7 +67,6 @@ public class SysexDetailsPane extends VBox {
             });
 
             LabelValuePane sysexLabelValuePane = new LabelValuePane(this, "Sysex:", dsSysex, 90, 6, 8);
-            VBox.setMargin(sysexLabelValuePane, Insets.EMPTY);
             getChildren().add(sysexLabelValuePane);
 
             dsSysex.addListener((observable, oldValue, newValue) -> {
@@ -74,6 +75,31 @@ public class SysexDetailsPane extends VBox {
                     checkChanges();
                 }
             });
+
+            CheckedValuePane parametrizedCheckedValuePane = new CheckedValuePane(this, "Parametrized", dsParametrized, 90, 6, 4);
+            getChildren().add(parametrizedCheckedValuePane);
+            dsParametrized.addListener((observable, oldValue, newValue) -> {
+                if (newValue != null && currentSysex != null) {
+                    System.out.println("Parametrized: " + newValue);
+                    currentSysex.getContent().setParametrized(newValue);
+                    if (! newValue) {
+                        currentSysex.getContent().setParametrizedFunction(null);
+                    } else {
+                        currentSysex.getContent().setParametrizedFunction(dsFunction.get());
+                    }
+                    checkChanges();
+                }
+            });
+
+            ComboValuePane parametrizedSelectValuePane = new ComboValuePane(this, "Parametrized", dsFunction, dsParametrized, 90, 6, 4, ParametrizedFunctions.getParaFunctions());
+            getChildren().add(parametrizedSelectValuePane);
+            dsFunction.addListener((observable, oldValue, newValue) -> {
+                if (newValue != null && currentSysex != null) {
+                    currentSysex.getContent().setParametrizedFunction(newValue);
+                    checkChanges();
+                }
+            });
+
         } else {
             getChildren().clear();
         }
@@ -86,11 +112,15 @@ public class SysexDetailsPane extends VBox {
             AppInfo.INSTANCE.setSysex(new Sysex(sysex));
             dsName.setValue(sysex.getName());
             dsSysex.setValue(sysex.getContent().getSysex());
+            dsParametrized.setValue(sysex.getContent().getParametrized());
+            dsFunction.setValue(sysex.getContent().getParametrizedFunction());
             this.currentSysex = new Sysex(sysex);
         } else {
             AppInfo.INSTANCE.setSysex(null);
             dsName.setValue("");
             dsSysex.setValue("");
+            dsParametrized.setValue(false);
+            dsFunction.setValue("");
             this.currentSysex = null;
         }
 
@@ -104,14 +134,18 @@ public class SysexDetailsPane extends VBox {
 
             if (originalEmpty) {
                 if (! currentEmpty) {
-                    getSysexPane().changeState(States.ADD);
+                    if (! currentSysex.getName().isEmpty()) {
+                        getSysexPane().changeState(States.ADD);
+                    }
                 } else {
                     getSysexPane().changeState(States.NEW);
                 }
             } else {
                 boolean equal = AppInfo.INSTANCE.getSysex().equals(currentSysex);
                 if (!equal) {
-                    getSysexPane().changeState(States.UPDATE);
+                    if (!currentSysex.getName().isEmpty()) {
+                        getSysexPane().changeState(States.UPDATE);
+                    }
                 } else {
                     getSysexPane().changeState(States.SELECT);
                 }

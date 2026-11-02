@@ -1,6 +1,8 @@
 [ {
   "content" : {
+    "parametrized" : true,
+    "parametrizedFunction" : "Tempo",
     "sysex" : ""
   },
-  "name" : "a"
+  "name" : "Test"
 } ]
