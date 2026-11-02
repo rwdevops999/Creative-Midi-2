@@ -4,6 +4,7 @@ import javafx.scene.layout.Pane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scenes.base.Base;
+import scenes.sysex.container.SysexContainer;
 import util.app.scene.IScene;
 import util.registry.Registry;
 
@@ -15,6 +16,9 @@ public class SysexScene implements IScene {
         logger.debug("[CM_SYSEX_SCENE] Starting Sysex Scene");
 
         Registry.getInstance().showStatus("Create sysex banks");
+
+        SysexContainer.getInstance().load();
+
         return new Base(new SysexPane(), callingScene, true);
     }
 }

@@ -1,5 +1,6 @@
 package entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,9 +9,16 @@ public class NameEntity {
     @Setter
     protected String name = "";
 
-    @Getter
     protected String textIcon = "";
 
-    @Getter
+    @JsonIgnore
+    public String getTextIcon() {
+        return textIcon;
+    }
+
     protected String fontIcon = "";
+    @JsonIgnore
+    public String getFontIcon() {
+        return fontIcon;
+    }
 }

@@ -1,5 +1,6 @@
 package entity.sysex;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import entity.NameEntity;
 import lombok.Getter;
 
@@ -44,6 +45,7 @@ public class Sysex extends NameEntity {
         return Objects.hash(name, content);
     }
 
+    @JsonIgnore
     public boolean isEmpty() {
         return (name == null || name.isEmpty()) && (content.getSysex() == null || content.getSysex().isEmpty());
     }
