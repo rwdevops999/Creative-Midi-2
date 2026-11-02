@@ -2,7 +2,7 @@
   "content" : {
     "parametrized" : true,
     "parametrizedFunction" : "Tempo",
-    "sysex" : ""
+    "sysex" : "F0 43 7E 01 t4 t3 t2 t1 F7"
   },
-  "name" : "Test"
+  "name" : "Tempo"
 } ]

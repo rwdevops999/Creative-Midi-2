@@ -94,4 +94,8 @@ public class SysexContainer {
             logger.error("Exception. CAUSE: {}", ioe.getMessage());
         }
     }
+
+    public Sysex getSysexByName(String name) {
+        return sysexList.stream().filter(s -> s.getName().equals(name)).findFirst().orElse(null);
+    }
 }

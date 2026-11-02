@@ -11,6 +11,7 @@ import javafx.scene.layout.Pane;
 import scenes.tests.TestScene;
 import scenes.tests.panes.Test1Pane;
 import scenes.tests.panes.Test2Pane;
+import scenes.tests.panes.Test3Pane;
 import util.app.routing.Router;
 import util.app.scene.IScene;
 
@@ -49,11 +50,9 @@ public class SceneSelectButton extends Button {
             Pane resultingPane = switch (paneName) {
                 case "Test1" -> new Test1Pane();
                 case "Test2" -> new Test2Pane();
+                case "Test3" -> new Test3Pane();
                 default -> null;
-/*                case "Test3":
-                    resultingPane = new Test3Pane();
-                    break;
-                case "Test4":
+/*                case "Test4":
                     resultingPane = new Test4Pane();
                     break; */
             };
