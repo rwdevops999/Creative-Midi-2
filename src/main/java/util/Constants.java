@@ -11,4 +11,8 @@ public class Constants {
 
     public final static int OS_MAC=0;
     public final static int OS_WINDOWS=1;
+
+    // Midi Constants
+    public static final int TEMPO_EVENT = 0x51;
+    public static final int TIME_SIGNATURE_EVENT = 0x58;
 }
