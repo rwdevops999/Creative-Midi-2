@@ -7,7 +7,13 @@ import javafx.scene.layout.Pane;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import util.app.AppInfo;
+import util.midi.MidiWriter;
+import util.registry.Registry;
+import util.sysex.SysexWriter;
 
+import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.MidiUnavailableException;
 import java.util.function.BiConsumer;
 
 public class ExecuteConsumer<T extends NameEntity, P extends Pane> extends NameEntity implements BiConsumer<T, P> {
@@ -19,27 +25,20 @@ public class ExecuteConsumer<T extends NameEntity, P extends Pane> extends NameE
 
     @Override
     public void accept(T entity, P pane) {
-        logger.debug("Handling execute sysex");
-
         Sysex sysex = (Sysex) entity;
         if (sysex.getContent().getSysex().isEmpty()) {
             DialogFactory.getInstance().renderErrorDialog("Unable to execute an empty sysex");
         } else {
-            System.out.println("Executing sysex: " + sysex.getContent().getSysex());
+            if (AppInfo.INSTANCE.getSelectedDevice() != null) {
+                Registry.getInstance().showStatus("Sending sysex");
+                try {
+                    SysexWriter.getInstance().send(sysex);
+                } catch (InvalidMidiDataException | MidiUnavailableException e) {
+                    logger.debug("Exception. CAUSE {}", e.getMessage());
+                }
+            } else {
+                DialogFactory.getInstance().renderErrorDialog("No device selected for sending SYSEX");
+            }
         }
-/*
-        SceneActionsPane sceneActionsPane = (SceneActionsPane) pane;
-        SysexPane sysexPane = sceneActionsPane.getSysexPane();
-
-        Sysex sysex = new Sysex("Unknown");
-        sysex.getList().add(new SysexContent(""));
-
-        ApplicationInfo.getInstance().setCurrentSysex(sysex);
-
-        SysexDetailsPane sysexDetailsPane = new SysexDetailsPane(sysexPane, sysex);
-        sysexPane.setCenter(sysexDetailsPane);
-
-        SysexStateMachine stateMachine = sysexPane.getSysexDetailsPane().getStateMachine();
-        stateMachine.transitionTo(SysexState.NEW, true, sysexPane.getSysexDetailsPane().getSupplier()); */
     }
 }

@@ -21,8 +21,6 @@ public class DeleteConsumer<T extends NameEntity, P extends Pane> extends NameEn
 
     @Override
     public void accept(T entity, P pane) {
-        logger.debug("Handling delete sysex");
-
         Sysex sysex = (Sysex) entity;
         SysexContainer.getInstance().deleteSysex(sysex);
 

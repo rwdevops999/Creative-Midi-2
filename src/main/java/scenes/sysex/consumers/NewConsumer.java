@@ -22,8 +22,6 @@ public class NewConsumer<T extends NameEntity, P extends Pane> extends NameEntit
 
     @Override
     public void accept(T entity, P pane) {
-        logger.debug("Handling new sysex");
-
         Sysex sysex = new Sysex();
 
         SceneActionsPane sceneActionsPane = (SceneActionsPane) pane;

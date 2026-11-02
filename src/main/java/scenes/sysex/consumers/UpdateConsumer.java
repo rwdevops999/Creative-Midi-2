@@ -23,8 +23,6 @@ public class UpdateConsumer<T extends NameEntity, P extends Pane> extends NameEn
 
     @Override
     public void accept(T entity, P pane) {
-        logger.debug("Handling update sysex");
-
         Sysex sysex = new Sysex((Sysex) entity);
 
         if (sysex.getName().isEmpty()) {
@@ -37,19 +35,5 @@ public class UpdateConsumer<T extends NameEntity, P extends Pane> extends NameEn
             SysexPane sysexPane = sceneActionsPane.getSysexPane();
             sysexPane.getSysexListPane().reload(sysex);
         }
-/*
-        SceneActionsPane sceneActionsPane = (SceneActionsPane) pane;
-        SysexPane sysexPane = sceneActionsPane.getSysexPane();
-
-        Sysex sysex = new Sysex("Unknown");
-        sysex.getList().add(new SysexContent(""));
-
-        ApplicationInfo.getInstance().setCurrentSysex(sysex);
-
-        SysexDetailsPane sysexDetailsPane = new SysexDetailsPane(sysexPane, sysex);
-        sysexPane.setCenter(sysexDetailsPane);
-
-        SysexStateMachine stateMachine = sysexPane.getSysexDetailsPane().getStateMachine();
-        stateMachine.transitionTo(SysexState.NEW, true, sysexPane.getSysexDetailsPane().getSupplier()); */
     }
 }
