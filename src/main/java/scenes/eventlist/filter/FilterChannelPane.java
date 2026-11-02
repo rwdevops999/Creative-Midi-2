@@ -1,8 +1,10 @@
 package scenes.eventlist.filter;
 
+import javafx.geometry.Insets;
 import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scenes.eventlist.filter.subpanes.ChannelFilterPane;
 
 import static util.Util.setPaneHeightAsPercentage;
 import static util.Util.showSmallPaneBorder;
@@ -21,14 +23,13 @@ public class FilterChannelPane extends VBox {
     public FilterChannelPane(EventListFilterPane owner) {
         this();
 
-        showSmallPaneBorder(this, getColor("border", "gold"));
-
         this.parent = owner;
 
         buildPane();
     }
 
     private  void buildPane() {
-
+        ChannelFilterPane channelFilterPane = new ChannelFilterPane(this);
+        getChildren().add(channelFilterPane);
     }
 }

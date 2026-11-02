@@ -28,6 +28,9 @@ public class ColorScheme {
         colors.put(new ColorKey("button", "light off", "green"), Color.DARKGREEN);
         colors.put(new ColorKey("button", "light on", "green"), Color.GREEN);
         colors.put(new ColorKey("button", "border on", "green"), Color.CHARTREUSE);
+        colors.put(new ColorKey("button", "light off", "orange"), Color.INDIANRED);
+        colors.put(new ColorKey("button", "light on", "orange"), Color.ORANGE);
+        colors.put(new ColorKey("button", "border on", "orange"), Color.ORANGERED);
 
         // borders
         colors.put(new ColorKey("border", "black", null), Color.BLACK);

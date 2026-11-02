@@ -3,6 +3,7 @@ package scenes.eventlist.editor.subpanes;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -14,6 +15,8 @@ public class MidiInfoDurationPane extends HBox {
 
     public MidiInfoDurationPane() {
         super();
+
+        setAlignment(Pos.CENTER_LEFT);
         setSpacing(5);
         setPadding(new Insets(0, 0, 0, 5));
     }

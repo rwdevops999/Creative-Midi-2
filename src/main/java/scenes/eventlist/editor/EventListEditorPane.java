@@ -42,17 +42,17 @@ public class EventListEditorPane extends GridPane {
         fileInfoPane = new FileInfoPane(this);
         fileEditorPane = new FileEditorPane(this);
 
+        // Rij 0 (FileHandler): Neem de natuurlijke hoogte van de knoppen aan (COMPUTE_SIZE)
         RowConstraints rowFileHandler = new RowConstraints();
-        rowFileHandler.setPercentHeight(6);
-        rowFileHandler.setFillHeight(true);
+        rowFileHandler.setVgrow(Priority.NEVER);
 
+// Rij 1 (FileInfo): Neem ook de natuurlijke hoogte aan
         RowConstraints rowFileInfo = new RowConstraints();
-        rowFileInfo.setPercentHeight(6);
-        rowFileInfo.setFillHeight(true);
+        rowFileInfo.setVgrow(Priority.NEVER);
 
+// Rij 2 (FileEditor/Tabel): Eis álle resterende verticale ruimte op!
         RowConstraints rowFileEditor = new RowConstraints();
-        rowFileEditor.setPercentHeight(88);
-        rowFileEditor.setFillHeight(true);
+        rowFileEditor.setVgrow(Priority.ALWAYS);
 
         this.getRowConstraints().addAll(rowFileHandler, rowFileInfo, rowFileEditor);
 

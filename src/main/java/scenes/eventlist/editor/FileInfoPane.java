@@ -46,16 +46,14 @@ public class FileInfoPane extends HBox {
 
         setPaneBackground(this);
 
-        showSmallPaneBorder(this, getColor("border", "blue"));
-
-//        showPaneBorder(this, getColor("border", "black"));
+        showPaneBorder(this, getColor("border", "black"));
 
         buildPane();
     }
 
     private  void buildPane() {
         logger.debug("Building {}", getId());
-/*
+
         MidiInfoFilenamePane filenamePane = new MidiInfoFilenamePane(this);
         getChildren().add(filenamePane);
 
@@ -67,7 +65,7 @@ public class FileInfoPane extends HBox {
 
         MidiInfoDurationPane durationPane = new MidiInfoDurationPane(this);
         getChildren().add(durationPane);
-*/
+
         logger.debug("Built {}", getId());
     }
 

@@ -5,8 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scenes.eventlist.EventListPane;
 
-import static util.Util.setPaneSizeAsPercentage;
-import static util.Util.showSmallPaneBorder;
 import static util.app.colors.ColorScheme.getColor;
 
 public class EventListFilterPane extends GridPane {
@@ -39,7 +37,7 @@ public class EventListFilterPane extends GridPane {
         FilterTitlePane filterTitlePane = new FilterTitlePane(this);
         FilterTypePane filterTypePane = new FilterTypePane(this);
         FilterChannelPane filterChannelPane = new FilterChannelPane(this);
-        FilterVoicePane filterVoicePane = new FilterVoicePane(this);
+        FilterChannelControlPane filterCCPane = new FilterChannelControlPane(this);
         FilterSoundPane filterSoundPane = new FilterSoundPane(this);
 
         // 3. Definieer de rij-percentages RECHTSTREEKS op deze pane
@@ -52,18 +50,18 @@ public class EventListFilterPane extends GridPane {
         rowType.setFillHeight(true);
 
         RowConstraints rowChannel = new RowConstraints();
-        rowChannel.setPercentHeight(20);
+        rowChannel.setPercentHeight(30);
         rowChannel.setFillHeight(true);
 
-        RowConstraints rowVoice = new RowConstraints();
-        rowVoice.setPercentHeight(30);
-        rowVoice.setFillHeight(true);
+        RowConstraints rowCC = new RowConstraints();
+        rowCC.setPercentHeight(20);
+        rowCC.setFillHeight(true);
 
         RowConstraints rowSound = new RowConstraints();
         rowSound.setPercentHeight(10);
         rowSound.setFillHeight(true);
 
-        this.getRowConstraints().addAll(rowTitle, rowType, rowChannel, rowVoice, rowSound);
+        this.getRowConstraints().addAll(rowTitle, rowType, rowChannel, rowCC, rowSound);
 
         // 4. Zorg dat de kolom de volledige breedte vult
         ColumnConstraints col = new ColumnConstraints();
@@ -74,14 +72,14 @@ public class EventListFilterPane extends GridPane {
         this.add(filterTitlePane, 0, 0);
         this.add(filterTypePane, 0, 1);
         this.add(filterChannelPane, 0, 2);
-        this.add(filterVoicePane, 0, 3);
+        this.add(filterCCPane, 0, 3);
         this.add(filterSoundPane, 0, 4);
 
         // 6. Optioneel: Dwing de subpanes om vertikaal mee te groeien binnen hun cel
         GridPane.setVgrow(filterTitlePane, Priority.ALWAYS);
         GridPane.setVgrow(filterTypePane, Priority.ALWAYS);
         GridPane.setVgrow(filterChannelPane, Priority.ALWAYS);
-        GridPane.setVgrow(filterVoicePane, Priority.ALWAYS);
+        GridPane.setVgrow(filterCCPane, Priority.ALWAYS);
         GridPane.setVgrow(filterSoundPane, Priority.ALWAYS);
 
         logger.debug("Built {}", getId());

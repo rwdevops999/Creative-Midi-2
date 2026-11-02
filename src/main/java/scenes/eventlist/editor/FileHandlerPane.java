@@ -4,6 +4,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -32,6 +33,10 @@ public class FileHandlerPane extends HBox {
 
         setAlignment(Pos.CENTER_LEFT);
         setSpacing(5);
+
+        setFillHeight(false);
+
+        setPadding(new Insets(0, 0, 0, 5));
     }
 
     private EventListEditorPane parent;
@@ -41,8 +46,6 @@ public class FileHandlerPane extends HBox {
         this.parent = owner;
 
         setPaneBackgroundWithColor(this, Color.DARKGRAY.darker());
-
-        showSmallPaneBorder(this, getColor("border", "red"));
 
         buildPane();
     }
@@ -54,7 +57,7 @@ public class FileHandlerPane extends HBox {
     private  void buildPane() {
         logger.debug("Building {}", getId());
 
-/*        Label staticFileLabel = new Label("File");
+        Label staticFileLabel = new Label("MIDI");
         getChildren().add(staticFileLabel);
 
         FileChooser fileChooser = new FileChooser();
@@ -63,7 +66,8 @@ public class FileHandlerPane extends HBox {
             new FileChooser.ExtensionFilter("MIDI", "*.mid")
         );
 
-        Button fileSelectButton = new Button("...");
+        Button fileSelectButton = new Button("Upload ...");
+        fileSelectButton.setMaxHeight(Button.USE_PREF_SIZE);
         fileSelectButton.setOnAction(e -> {
             selectedFile = fileChooser.showOpenDialog(AppInfo.INSTANCE.getPrimaryStage());
 
@@ -78,14 +82,10 @@ public class FileHandlerPane extends HBox {
         Button fileSaveButton = new Button("Save");
         fileSaveButton.disableProperty().bind(saveDisable);
         fileSaveButton.setOnAction(e -> {
-// TODO            handleSaveFile();
+            handleSaveFile();
         });
         getChildren().add(fileSaveButton);
 
-        Label selectedFileLabel = new Label();
-        selectedFileLabel.textProperty().bind(fileName);
-        getChildren().add(selectedFileLabel);
-*/
         logger.debug("Built {}", getId());
     }
 
