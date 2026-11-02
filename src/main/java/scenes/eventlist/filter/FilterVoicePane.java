@@ -1,12 +1,10 @@
 package scenes.eventlist.filter;
 
+import javafx.scene.control.Button;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static util.Util.setPaneHeightAsPercentage;
-import static util.Util.showSmallPaneBorder;
-import static util.app.colors.ColorScheme.getColor;
 
 public class FilterVoicePane extends VBox {
     private static final Logger logger = LoggerFactory.getLogger(FilterVoicePane.class);
@@ -18,17 +16,26 @@ public class FilterVoicePane extends VBox {
     }
 
     private EventListFilterPane parent;
+    private FilterVoicePane pane;
     public FilterVoicePane(EventListFilterPane owner) {
         this();
 
-        showSmallPaneBorder(this, getColor("border", "blue"));
-
         this.parent = owner;
+
+        pane = this;
 
         buildPane();
     }
 
     private  void buildPane() {
-
+        Button testButton = new Button("Test");
+        getChildren().add(testButton);
+        testButton.setOnAction(e -> {
+            double width = pane.getWidth();   // Breedte in pixels
+            double height = pane.getHeight();
+            System.out.println("width: " + width + " height: " + height);
+        });
+//        VoiceFilterPane voiceFilterPane = new VoiceFilterPane(this);
+//        getChildren().add(voiceFilterPane);
     }
 }

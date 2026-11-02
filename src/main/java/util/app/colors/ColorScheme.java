@@ -46,6 +46,14 @@ public class ColorScheme {
         colors.put(new ColorKey("communication", "outbound", null), Color.BLUEVIOLET);
 
         colors.put(new ColorKey("communication", "unknown", null), Color.BLACK);
+
+        // led simulator
+        colors.put(new ColorKey("voice", "ledRed", "on"), Color.RED);
+        colors.put(new ColorKey("voice", "ledRed", "off"), Color.DARKRED);
+        colors.put(new ColorKey("voice", "ledGreen", "on"), Color.GREEN);
+        colors.put(new ColorKey("voice", "ledGreen", "off"), Color.DARKGREEN);
+        colors.put(new ColorKey("voice", "ledBlue", "on"), Color.BLUE);
+        colors.put(new ColorKey("voice", "ledBlue", "off"), Color.DARKBLUE);
     }
 
     public static Color getColor(ColorKey key) {

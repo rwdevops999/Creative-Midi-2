@@ -1,8 +1,10 @@
 package scenes.eventlist.filter;
 
+import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scenes.eventlist.filter.subpanes.MidiTypeFilterPane;
 
 import static util.Util.setPaneHeightAsPercentage;
 import static util.Util.showSmallPaneBorder;
@@ -17,18 +19,20 @@ public class FilterTypePane extends VBox {
         setId("FilterTypePane");
     }
 
+    private FilterTypePane pane;
     private EventListFilterPane parent;
     public FilterTypePane(EventListFilterPane owner) {
         this();
 
-        showSmallPaneBorder(this, getColor("border", "green"));
-
         this.parent = owner;
+
+        pane = this;
 
         buildPane();
     }
 
     private  void buildPane() {
-
+        MidiTypeFilterPane midiTypeFilterPane = new MidiTypeFilterPane(this);
+        getChildren().add(midiTypeFilterPane);
     }
 }

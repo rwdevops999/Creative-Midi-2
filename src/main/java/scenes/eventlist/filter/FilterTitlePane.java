@@ -33,8 +33,6 @@ public class FilterTitlePane extends VBox {
 
         this.parent = owner;
 
-        showSmallPaneBorder(this, getColor("border", "red"));
-
         buildPane();
     }
 
