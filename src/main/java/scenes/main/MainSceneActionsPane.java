@@ -4,12 +4,14 @@ import fx.component.SceneSelectButton;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.VPos;
+import javafx.scene.Scene;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scenes.eventlist.EventListScene;
 import scenes.sysex.SysexScene;
 import util.app.AppInfo;
 import util.app.scene.IScene;
@@ -59,6 +61,7 @@ public class MainSceneActionsPane extends GridPane {
         logger.debug("Building {}", getId());
 
         add(new SceneSelectButton(parentScene, ICON_SIZE, "sysexButton", "create sysex banks", "sysex", new SysexScene()), 1, 0);
+        add(new SceneSelectButton(parentScene, ICON_SIZE, "eventListButton", "handle events", "event-list", new EventListScene()), 2, 0);
 
         if (AppInfo.INSTANCE.isTestMode()) {
             add(new SceneSelectButton(parentScene, ICON_SIZE, "test1Button", "test 1", "test1", "Test1"), 3, 1);

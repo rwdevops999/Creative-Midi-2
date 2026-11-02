@@ -10,13 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scenes.sysex.container.SysexContainer;
 import scenes.sysex.statemachine.States;
-import util.Util;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static util.Util.*;
-import static util.app.colors.ColorScheme.getColor;
 
 public class SysexListPane extends VBox {
     private static final Logger logger = LoggerFactory.getLogger(SysexListPane.class);
@@ -34,7 +29,6 @@ public class SysexListPane extends VBox {
         this.parent = owner;
 
         setPaneSizeAsPercentage(this, owner, width, height);
-        showPaneBorder(this, getColor("border", "red"));
 
         setPaneBackground(this);
 

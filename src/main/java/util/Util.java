@@ -30,7 +30,7 @@ public class Util {
         control.prefWidthProperty().bind(parent.widthProperty().multiply(width));
     }
 
-    public static void setPaneSizeAsPercentage(Pane child, Pane parent, int width,int height) {
+    public static void setPaneSizeAsPercentage(Pane child, Pane parent, int width, int height) {
         setPaneWidthAsPercentage(child, parent, width);
         setPaneHeightAsPercentage(child, parent, height);
     }
@@ -52,4 +52,8 @@ public class Util {
         )));
     }
 
+    public static void showSmallPaneBorder (Pane pane, Color color) {
+        String s = ColorScheme.toWebColor(color);
+        pane.setStyle("-fx-border-color: " + s + "; -fx-border-width: 1;");
+    }
 }

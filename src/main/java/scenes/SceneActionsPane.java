@@ -5,20 +5,17 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scenes.sysex.SysexPane;
-import util.Util;
 
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 import static util.Util.*;
-import static util.app.colors.ColorScheme.getColor;
 
 public class SceneActionsPane extends VBox {
     private static final Logger logger = LoggerFactory.getLogger(SceneActionsPane.class);
@@ -41,7 +38,6 @@ public class SceneActionsPane extends VBox {
         this.parent = owner;
 
         setPaneSizeAsPercentage(this, owner, width, height);
-        showPaneBorder(this, getColor("border", "blue"));
 
         setPaneBackground(this);
 
@@ -62,12 +58,7 @@ public class SceneActionsPane extends VBox {
                 button.setMinWidth(BUTTON_WIDTH);
                 button.setId(nameConsumer.getName());
                 button.setVisible(false);
-                button.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent event) {
-                        consumer.accept(supplier.get(), pane);
-                    }
-                });
+                button.setOnAction(event -> consumer.accept(supplier.get(), pane));
                 getChildren().add(button);
             }
         }

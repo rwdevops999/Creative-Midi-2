@@ -16,7 +16,6 @@ import util.registry.Registry;
 
 import java.util.List;
 
-import static util.app.colors.ColorScheme.getColor;
 import static util.Util.*;
 
 public class MonitorPane extends VBox {
@@ -36,8 +35,6 @@ public class MonitorPane extends VBox {
 
         setPaneSizeAsPercentage(this, parent, width, height);
         setPaneBackground(this);
-
-        showPaneBorder(this, getColor("border", "green"));
 
         buildPane();
     }
