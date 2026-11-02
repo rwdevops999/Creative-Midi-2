@@ -2,6 +2,7 @@ package entity.sysex;
 
 import app.CreativeApp;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
@@ -11,6 +12,7 @@ import java.util.Arrays;
 import java.util.HexFormat;
 import java.util.Objects;
 
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class SysexContent {
     private static final Logger logger = LoggerFactory.getLogger(SysexContent.class);
 
@@ -19,6 +21,7 @@ public class SysexContent {
 
     @Getter
     @Setter
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private Boolean parametrized;
 
     @Getter

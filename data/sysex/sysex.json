@@ -1,8 +1,13 @@
 [ {
+  "name" : "Registration+",
   "content" : {
+    "sysex" : "F0 43 73 01 52 25 11 00 02 00 00 F7"
+  }
+}, {
+  "name" : "Tempo",
+  "content" : {
+    "sysex" : "F0 43 7E 01 t4 t3 t2 t1 F7",
     "parametrized" : true,
-    "parametrizedFunction" : "Tempo",
-    "sysex" : "F0 43 7E 01 t4 t3 t2 t1 F7"
-  },
-  "name" : "Tempo"
+    "parametrizedFunction" : "Tempo"
+  }
 } ]

@@ -3,7 +3,6 @@ package scenes.sysex.parametrized;
 import entity.NameEntity;
 import fx.dialog.DialogFactory;
 import lombok.Getter;
-import tools.jackson.core.util.Named;
 
 import java.util.function.Function;
 
