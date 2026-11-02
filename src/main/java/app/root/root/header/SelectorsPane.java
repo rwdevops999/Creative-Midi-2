@@ -175,9 +175,10 @@ public class SelectorsPane extends HBox {
         getChildren().add(keyboardSelector);
     }
 
-    private List<KeyboardVoice> getVoiceFiles() {
-        List<KeyboardVoice> voiceFiles = new ArrayList<>();
+    private List<KeyboardVoice> voiceFiles = new ArrayList<>();
 
+    private List<KeyboardVoice> getVoiceFiles() {
+        voiceFiles = new ArrayList<>();
         Path folderPath = Paths.get(AppProperties.getInstance().getPropertyAsString(VOICES_DIR, "./data/voices"));
 
         try (Stream<Path> stream = Files.list(folderPath)) {
@@ -201,15 +202,14 @@ public class SelectorsPane extends HBox {
     }
 
     private synchronized void printDebugInfoOfVoice(String filename, String extension) {
-        System.out.println("-=> Voice file: " + ANSI_RED + filename + ANSI_RESET + " <=-");
-        System.out.println("    Voice type: " + ANSI_BLUE + (extension.equals("ins") ? "INS" : "MS2S") + ANSI_RESET);
+        System.out.println("-=> Voice file: " + ANSI_RED + filename + ANSI_RESET + " Voice type: " + ANSI_BLUE + (extension.equals("ins") ? "INS" : "MS2S") + ANSI_RESET);
     }
 
     private KeyboardVoice getDefaultVoiceFile() {
         String keyboard = AppProperties.getInstance().getPropertyAsString(PropertyKeys.KEYBOARD, "PSR-SX600");
         String voiceType = AppProperties.getInstance().getPropertyAsString(PropertyKeys.VOICE_TYPE, "MS2S");
 
-        return getVoiceFiles().stream().filter(v -> v.getName().equalsIgnoreCase(keyboard) && v.getVoiceType().name().equalsIgnoreCase(voiceType)).findFirst().orElse(null);
+        return voiceFiles.stream().filter(v -> v.getName().equalsIgnoreCase(keyboard) && v.getVoiceType().name().equalsIgnoreCase(voiceType)).findFirst().orElse(null);
     }
 
     // ACCESSORS
