@@ -60,20 +60,18 @@ public class SysexListPane extends VBox {
     }
 
     private void setListviewItems() {
-        // TestData
-        List<Sysex> sysexList = new ArrayList<>();
-
-        Sysex s1 = new Sysex("Test1");
-        s1.getContent().setSysex("F0 01 02 03 F7");
-        sysexList.add(s1);
-
-        Sysex s2 = new Sysex("Test2");
-        s2.getContent().setSysex("F0 0A 0B 11 C3 F7");
-        sysexList.add(s2);
-
         sysexListView.getItems().clear();
-//        sysexListView.setItems(FXCollections.observableArrayList(SysexContainer.getSysexList()));
-        sysexListView.setItems(FXCollections.observableArrayList(sysexList));
+        sysexListView.setItems(FXCollections.observableArrayList(SysexContainer.getInstance().getSysexList()));
+    }
+
+    public void reload(Sysex sysexToSelect) {
+        setListviewItems();
+        if (sysexToSelect != null) {
+            sysexListView.getSelectionModel().select(sysexToSelect);
+        } else {
+            sysexListView.getSelectionModel().clearSelection();
+            getSysexPane().changeState(States.IDLE);
+        }
     }
 
     // ACCESSORS

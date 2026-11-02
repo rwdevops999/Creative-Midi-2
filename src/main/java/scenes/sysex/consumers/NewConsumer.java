@@ -1,10 +1,15 @@
 package scenes.sysex.consumers;
 
 import entity.NameEntity;
+import entity.sysex.Sysex;
 import javafx.scene.layout.Pane;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scenes.SceneActionsPane;
+import scenes.sysex.SysexListPane;
+import scenes.sysex.SysexPane;
+import scenes.sysex.statemachine.States;
 
 import java.util.function.BiConsumer;
 
@@ -18,19 +23,13 @@ public class NewConsumer<T extends NameEntity, P extends Pane> extends NameEntit
     @Override
     public void accept(T entity, P pane) {
         logger.debug("Handling new sysex");
-/*
+
+        Sysex sysex = new Sysex();
+
         SceneActionsPane sceneActionsPane = (SceneActionsPane) pane;
         SysexPane sysexPane = sceneActionsPane.getSysexPane();
 
-        Sysex sysex = new Sysex("Unknown");
-        sysex.getList().add(new SysexContent(""));
-
-        ApplicationInfo.getInstance().setCurrentSysex(sysex);
-
-        SysexDetailsPane sysexDetailsPane = new SysexDetailsPane(sysexPane, sysex);
-        sysexPane.setCenter(sysexDetailsPane);
-
-        SysexStateMachine stateMachine = sysexPane.getSysexDetailsPane().getStateMachine();
-        stateMachine.transitionTo(SysexState.NEW, true, sysexPane.getSysexDetailsPane().getSupplier()); */
+        sysexPane.getSysexDetailsPane().setSysex(sysex);
+        sysexPane.changeState(States.NEW);
     }
 }

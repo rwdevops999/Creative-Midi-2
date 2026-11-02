@@ -15,4 +15,19 @@ public class SysexContainer {
 
     private SysexContainer() {
     }
+
+    public void addSysex(Sysex sysex) {
+        // If we add a sysex already in the list, it replaces the sysex
+        Sysex sysexInList = sysexList.stream().filter(s -> s.getName().equals(sysex.getName())).findFirst().orElse(null);
+        if (sysexInList != null) {
+            int index = sysexList.indexOf(sysexInList);
+            sysexList.set(index, sysex);
+        } else {
+            sysexList.add(sysex);
+        }
+    }
+
+    public void deleteSysex(Sysex sysex) {
+        sysexList.remove(sysex);
+    }
 }

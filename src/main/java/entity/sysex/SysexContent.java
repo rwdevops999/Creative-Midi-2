@@ -34,7 +34,10 @@ public class SysexContent {
 
     public SysexContent(SysexContent content) {
         this.sysex = content.getSysex();
-        this.bytes = content.getBytes().clone();
+        this.bytes = null;
+        if (content.getBytes() != null) {
+            this.bytes = content.getBytes().clone();
+        }
     }
 
     private byte[] setBytes(String sysex) {

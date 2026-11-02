@@ -11,13 +11,13 @@ public class Sysex extends NameEntity {
 
     public Sysex() {
         super();
+        this.content = new SysexContent();
     }
 
     public Sysex(String name) {
         this();
 
         this.name = name;
-        this.content = new SysexContent();
     }
 
     public Sysex(Sysex other) {

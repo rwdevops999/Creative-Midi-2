@@ -74,19 +74,25 @@ public class SysexDetailsPane extends VBox {
                     checkChanges();
                 }
             });
-
+        } else {
+            getChildren().clear();
         }
 
         logger.debug("Built {}", getId());
     }
 
     public void setSysex(Sysex sysex) {
-        AppInfo.INSTANCE.setSysex(new Sysex(sysex));
+        if (sysex != null) {
+            AppInfo.INSTANCE.setSysex(new Sysex(sysex));
+            dsName.setValue(sysex.getName());
+            dsSysex.setValue(sysex.getContent().getSysex());
+        } else {
+            AppInfo.INSTANCE.setSysex(null);
+            dsName.setValue("");
+            dsSysex.setValue("");
+        }
 
         this.currentSysex = sysex;
-
-        dsName.setValue(sysex.getName());
-        dsSysex.setValue(sysex.getContent().getSysex());
 
         buildPane();
     }
@@ -109,6 +115,10 @@ public class SysexDetailsPane extends VBox {
                 getSysexPane().changeState(States.SELECT);
             }
         }
+    }
+
+    public Sysex getSysex() {
+        return currentSysex;
     }
 
     // ACCESSORS

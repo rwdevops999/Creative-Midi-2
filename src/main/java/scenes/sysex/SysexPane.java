@@ -51,8 +51,7 @@ public class SysexPane extends BorderPane {
     }
 
     public NameEntity getEntity() {
-//        return getSysexDetailsPane().getSysex();
-        return null;
+        return getSysexDetailsPane().getSysex();
     }
 
     public void changeState(States state) {

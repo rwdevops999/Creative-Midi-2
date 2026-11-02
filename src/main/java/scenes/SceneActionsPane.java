@@ -1,6 +1,8 @@
 package scenes;
 
 import entity.NameEntity;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -43,12 +45,14 @@ public class SceneActionsPane extends VBox {
 
         setPaneBackground(this);
 
-        buildPane(consumers);
+        buildPane(consumers, supplier);
     }
 
     private static final int BUTTON_WIDTH = 100;
-    private void buildPane(BiConsumer<NameEntity, Pane>[] consumers) {
+    private void buildPane(BiConsumer<NameEntity, Pane>[] consumers, Supplier<NameEntity> supplier) {
         logger.debug("Building {}", getId());
+
+        final Pane pane = this;
 
         for (BiConsumer<NameEntity, Pane> consumer : consumers) {
             if (consumer instanceof NameEntity nameConsumer) {
@@ -58,6 +62,12 @@ public class SceneActionsPane extends VBox {
                 button.setMinWidth(BUTTON_WIDTH);
                 button.setId(nameConsumer.getName());
                 button.setVisible(false);
+                button.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        consumer.accept(supplier.get(), pane);
+                    }
+                });
                 getChildren().add(button);
             }
         }
