@@ -21,6 +21,8 @@ public class FilterTypePane extends VBox {
     public FilterTypePane(EventListFilterPane owner) {
         this();
 
+        showSmallPaneBorder(this, getColor("border", "green"));
+
         this.parent = owner;
 
         buildPane();

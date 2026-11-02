@@ -21,6 +21,8 @@ public class FilterVoicePane extends VBox {
     public FilterVoicePane(EventListFilterPane owner) {
         this();
 
+        showSmallPaneBorder(this, getColor("border", "blue"));
+
         this.parent = owner;
 
         buildPane();

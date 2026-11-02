@@ -30,6 +30,7 @@ public class ColorScheme {
         colors.put(new ColorKey("button", "border on", "green"), Color.CHARTREUSE);
 
         // borders
+        colors.put(new ColorKey("border", "black", null), Color.BLACK);
         colors.put(new ColorKey("border", "red", null), Color.RED);
         colors.put(new ColorKey("border", "green", null), Color.GREEN);
         colors.put(new ColorKey("border", "blue", null), Color.BLUE);

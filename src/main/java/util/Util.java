@@ -40,6 +40,11 @@ public class Util {
         pane.setBackground(background);
     }
 
+    public static void setPaneBackgroundWithColor(Pane pane, Color color) {
+        Background background = new Background(new BackgroundFill(color, null, null));
+        pane.setBackground(background);
+    }
+
     // This is for development only
     private static final int BORDER_SIZE=3;
     public static void showPaneBorder (Pane pane, Color color) {

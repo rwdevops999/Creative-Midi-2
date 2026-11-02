@@ -4,6 +4,7 @@ import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static util.Util.setPaneHeightAsPercentage;
 import static util.Util.showSmallPaneBorder;
 import static util.app.colors.ColorScheme.getColor;
 
@@ -19,6 +20,8 @@ public class FilterChannelPane extends VBox {
     private EventListFilterPane parent;
     public FilterChannelPane(EventListFilterPane owner) {
         this();
+
+        showSmallPaneBorder(this, getColor("border", "gold"));
 
         this.parent = owner;
 

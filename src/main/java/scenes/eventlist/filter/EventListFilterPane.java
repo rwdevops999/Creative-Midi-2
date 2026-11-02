@@ -9,7 +9,7 @@ import static util.Util.setPaneSizeAsPercentage;
 import static util.Util.showSmallPaneBorder;
 import static util.app.colors.ColorScheme.getColor;
 
-public class EventListFilterPane extends VBox {
+public class EventListFilterPane extends GridPane {
     private static final Logger logger = LoggerFactory.getLogger(EventListFilterPane.class);
 
     public EventListFilterPane() {
@@ -30,28 +30,25 @@ public class EventListFilterPane extends VBox {
     private void buildPane() {
         logger.debug("Building {}", getId());
 
-        // Maak de sub-panes aan
+        // 1. Wis eventuele oude children en restricties van DEZE GridPane
+        getChildren().clear();
+        getRowConstraints().clear();
+        getColumnConstraints().clear();
+
+        // 2. Maak de sub-panes aan
         FilterTitlePane filterTitlePane = new FilterTitlePane(this);
         FilterTypePane filterTypePane = new FilterTypePane(this);
         FilterVoicePane filterVoicePane = new FilterVoicePane(this);
         FilterChannelPane filterChannelPane = new FilterChannelPane(this);
         FilterSoundPane filterSoundPane = new FilterSoundPane(this);
 
-        // Maak een interne GridPane aan die de percentages regelt
-        GridPane gridLayout = new GridPane();
-
-        // Zorg dat de GridPane de volledige breedte en hoogte van deze VBox gebruikt
-        gridLayout.setMaxWidth(Double.MAX_VALUE);
-        gridLayout.setMaxHeight(Double.MAX_VALUE);
-        VBox.setVgrow(gridLayout, Priority.ALWAYS);
-
-        // Definieer de rij-percentages (bijv. 20%, 50%, 30%)
+        // 3. Definieer de rij-percentages RECHTSTREEKS op deze pane
         RowConstraints rowTitle = new RowConstraints();
-        rowTitle.setPercentHeight(10);
+        rowTitle.setPercentHeight(12);
         rowTitle.setFillHeight(true);
 
         RowConstraints rowType = new RowConstraints();
-        rowType.setPercentHeight(30);
+        rowType.setPercentHeight(28);
         rowType.setFillHeight(true);
 
         RowConstraints rowVoice = new RowConstraints();
@@ -66,23 +63,26 @@ public class EventListFilterPane extends VBox {
         rowSound.setPercentHeight(10);
         rowSound.setFillHeight(true);
 
-        gridLayout.getRowConstraints().addAll(rowTitle, rowType, rowVoice, rowChannel, rowSound);
+        this.getRowConstraints().addAll(rowTitle, rowType, rowVoice, rowChannel, rowSound);
 
-        // Zorg dat de kolom de volledige breedte vult
+        // 4. Zorg dat de kolom de volledige breedte vult
         ColumnConstraints col = new ColumnConstraints();
         col.setPercentWidth(100);
-        gridLayout.getColumnConstraints().add(col);
+        this.getColumnConstraints().add(col);
 
-        // Voeg de panes toe aan de juiste rij (node, columnIndex, rowIndex)
-        gridLayout.add(filterTitlePane, 0, 0);
-        gridLayout.add(filterTypePane, 0, 1);
-        gridLayout.add(filterVoicePane, 0, 2);
-        gridLayout.add(filterChannelPane, 0, 3);
-        gridLayout.add(filterSoundPane, 0, 4);
+        // 5. Voeg de panes toe aan DEZE GridPane (node, columnIndex, rowIndex)
+        this.add(filterTitlePane, 0, 0);
+        this.add(filterTypePane, 0, 1);
+        this.add(filterVoicePane, 0, 2);
+        this.add(filterChannelPane, 0, 3);
+        this.add(filterSoundPane, 0, 4);
 
-        // Wis eventuele oude children en voeg de gridLayout toe aan deze VBox
-        getChildren().clear();
-        getChildren().add(gridLayout);
+        // 6. Optioneel: Dwing de subpanes om vertikaal mee te groeien binnen hun cel
+        GridPane.setVgrow(filterTitlePane, Priority.ALWAYS);
+        GridPane.setVgrow(filterTypePane, Priority.ALWAYS);
+        GridPane.setVgrow(filterVoicePane, Priority.ALWAYS);
+        GridPane.setVgrow(filterChannelPane, Priority.ALWAYS);
+        GridPane.setVgrow(filterSoundPane, Priority.ALWAYS);
 
         logger.debug("Built {}", getId());
     }
