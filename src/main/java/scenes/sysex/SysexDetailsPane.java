@@ -69,7 +69,7 @@ public class SysexDetailsPane extends VBox {
             getChildren().add(sysexLabelValuePane);
 
             dsSysex.addListener((observable, oldValue, newValue) -> {
-                if (newValue != null) {
+                if (newValue != null && currentSysex != null) {
                     currentSysex.getContent().setSysex(newValue);
                     checkChanges();
                 }

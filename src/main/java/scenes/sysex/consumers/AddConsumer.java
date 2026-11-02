@@ -36,20 +36,5 @@ public class AddConsumer<T extends NameEntity, P extends Pane>  extends NameEnti
             SysexPane sysexPane = sceneActionsPane.getSysexPane();
             sysexPane.getSysexListPane().reload(sysex);
         }
-
-/*
-        SceneActionsPane sceneActionsPane = (SceneActionsPane) pane;
-        SysexPane sysexPane = sceneActionsPane.getSysexPane();
-
-        Sysex sysex = new Sysex("Unknown");
-        sysex.getList().add(new SysexContent(""));
-
-        ApplicationInfo.getInstance().setCurrentSysex(sysex);
-
-        SysexDetailsPane sysexDetailsPane = new SysexDetailsPane(sysexPane, sysex);
-        sysexPane.setCenter(sysexDetailsPane);
-
-        SysexStateMachine stateMachine = sysexPane.getSysexDetailsPane().getStateMachine();
-        stateMachine.transitionTo(SysexState.NEW, true, sysexPane.getSysexDetailsPane().getSupplier()); */
     }
 }

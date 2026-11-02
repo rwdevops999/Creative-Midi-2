@@ -20,6 +20,8 @@ public class SysexContent {
     private byte[] bytes;
 
     public SysexContent() {
+        this.sysex = "";
+        this.bytes = new byte[0];
     }
 
     public SysexContent(String sysex) {
