@@ -30,4 +30,9 @@ public class SysexContainer {
     public void deleteSysex(Sysex sysex) {
         sysexList.remove(sysex);
     }
+
+    public void replace(Sysex originalSysex, Sysex newSysex) {
+        int index = sysexList.indexOf(originalSysex);
+        sysexList.set(index, newSysex);
+    }
 }

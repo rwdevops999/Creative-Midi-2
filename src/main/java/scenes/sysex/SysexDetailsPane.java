@@ -58,7 +58,7 @@ public class SysexDetailsPane extends VBox {
             getChildren().add(nameLabelValuePane);
 
             dsName.addListener((observable, oldValue, newValue) -> {
-                if (newValue != null) {
+                if (newValue != null && currentSysex != null) {
                     currentSysex.setName(newValue);
                     checkChanges();
                 }
@@ -86,33 +86,35 @@ public class SysexDetailsPane extends VBox {
             AppInfo.INSTANCE.setSysex(new Sysex(sysex));
             dsName.setValue(sysex.getName());
             dsSysex.setValue(sysex.getContent().getSysex());
+            this.currentSysex = new Sysex(sysex);
         } else {
             AppInfo.INSTANCE.setSysex(null);
             dsName.setValue("");
             dsSysex.setValue("");
+            this.currentSysex = null;
         }
-
-        this.currentSysex = sysex;
 
         buildPane();
     }
 
     private void checkChanges() {
-        boolean originalEmpty = AppInfo.INSTANCE.getSysex().isEmpty();
-        boolean currentEmpty = currentSysex.isEmpty();
+        if (AppInfo.INSTANCE.getSysex() != null) {
+            boolean originalEmpty = AppInfo.INSTANCE.getSysex().isEmpty();
+            boolean currentEmpty = currentSysex.isEmpty();
 
-        if (originalEmpty) {
-            if (! currentEmpty) {
-                getSysexPane().changeState(States.ADD);
+            if (originalEmpty) {
+                if (! currentEmpty) {
+                    getSysexPane().changeState(States.ADD);
+                } else {
+                    getSysexPane().changeState(States.NEW);
+                }
             } else {
-                getSysexPane().changeState(States.NEW);
-            }
-        } else {
-            boolean equal = AppInfo.INSTANCE.getSysex().equals(currentSysex);
-            if (!equal) {
-                getSysexPane().changeState(States.UPDATE);
-            } else {
-                getSysexPane().changeState(States.SELECT);
+                boolean equal = AppInfo.INSTANCE.getSysex().equals(currentSysex);
+                if (!equal) {
+                    getSysexPane().changeState(States.UPDATE);
+                } else {
+                    getSysexPane().changeState(States.SELECT);
+                }
             }
         }
     }

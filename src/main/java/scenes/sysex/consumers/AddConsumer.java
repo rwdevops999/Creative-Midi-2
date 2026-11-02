@@ -26,9 +26,9 @@ public class AddConsumer<T extends NameEntity, P extends Pane>  extends NameEnti
     public void accept(T entity, P pane) {
         logger.debug("Handling add sysex");
 
-        Sysex sysex = (Sysex) entity;
+        Sysex sysex = new Sysex((Sysex) entity);
         if (sysex.getName().isEmpty()) {
-            DialogFactory.getInstance().renderErrorDialog("Unable to add a  sysex without name");
+            DialogFactory.getInstance().renderErrorDialog("Unable to add a sysex with empty name");
         } else {
             SysexContainer.getInstance().addSysex(sysex);
 
