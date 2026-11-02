@@ -31,8 +31,8 @@ public class IconButton extends HBox {
 
         Image icon = new Image(Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(iconName)));
         ImageView imageView = new ImageView(icon);
-        imageView.setFitWidth(20);
-        imageView.setFitHeight(20);
+        imageView.setFitWidth(24);
+        imageView.setFitHeight(24);
 
         Button button = new Button();
         button.setId(name);

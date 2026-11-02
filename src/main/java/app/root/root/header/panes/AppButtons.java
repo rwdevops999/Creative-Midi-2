@@ -6,6 +6,7 @@ import javafx.geometry.HPos;
 import javafx.geometry.VPos;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.ColumnConstraints;
@@ -48,7 +49,7 @@ public class AppButtons extends GridPane {
     }
 
     private void buildPane() {
-        IconButton exitButton = new IconButton("exit", "exit Creative Midi", "icons/exit.png", e -> {
+        IconButton exitButton = new IconButton("exit", "Exit creative midi", "icons/exit.png", e -> {
             // 1. Save User data
             // TODO Add User Data Save
             // 2. Shut-up midi playing
@@ -58,7 +59,7 @@ public class AppButtons extends GridPane {
             System.exit(0);
         });
         add(exitButton, 1, 0);
-        IconButton midiResetButton = new IconButton("midiReset", "shutup midi", "icons/midi.png", e -> {
+        IconButton midiResetButton = new IconButton("midiReset", "Shut-up midi", "icons/midi.png", e -> {
             if (AppInfo.INSTANCE.getSelectedDevice() != null) {
                 Registry.getInstance().showStatus("Resetting midi");
                 MidiWriter.getInstance().reset();
@@ -67,7 +68,7 @@ public class AppButtons extends GridPane {
             }
         });
         add(midiResetButton, 1, 1);
-        IconButton midiSoundButton = new IconButton("midiSound", "sound midi", "icons/tuning-fork.png", e -> {
+        IconButton midiSoundButton = new IconButton("midiSound", "Play midi sound", "icons/tuning-fork.png", e -> {
             if (AppInfo.INSTANCE.getSelectedDevice() != null) {
                 Registry.getInstance().showStatus("Testing midi");
                 MidiWriter.getInstance().testTone();
@@ -82,6 +83,8 @@ public class AppButtons extends GridPane {
         ToggleButton themeButton = new ToggleButton();
         themeButton.setSelected(!themeInstance.isModeLight());
         setButtonIcon(themeButton, themeInstance.getThemeIcon());
+        Tooltip tooltipField = new Tooltip("Change theme");
+        themeButton.setTooltip(tooltipField);
         themeButton.setOnAction(e -> {
             Theme.getInstance().switchMode(!themeButton.isSelected());
             setButtonIcon(themeButton, themeInstance.getThemeIcon());
@@ -93,8 +96,8 @@ public class AppButtons extends GridPane {
     public static void setButtonIcon (ButtonBase button, String iconname) {
         Image icon = new Image(Objects.requireNonNull(Util.class.getClassLoader().getResourceAsStream(iconname)));
         ImageView imageView = new ImageView(icon);
-        imageView.setFitWidth(20);
-        imageView.setFitHeight(20);
+        imageView.setFitWidth(24);
+        imageView.setFitHeight(24);
 
         button.setGraphic(imageView);
     }
