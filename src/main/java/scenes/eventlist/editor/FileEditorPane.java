@@ -1,5 +1,6 @@
 package scenes.eventlist.editor;
 
+import entity.events.FilterBlock;
 import entity.midi.MidiEventInfo;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -47,6 +48,8 @@ public class FileEditorPane extends VBox {
 
     private final int[] columnSizes = {10,4,24,13,7,10,32};
     private TableView<MidiEventInfo> table;
+
+    private FilterBlock filterBlock;
 
     private  void buildPane() {
         logger.debug("Building {}", getId());
@@ -226,26 +229,27 @@ public class FileEditorPane extends VBox {
         }
     }
 
-    private int currentChannelPattern = 0;
     private void executeFiltering() {
         List<MidiEventInfo> filteredEvents = new ArrayList<>(currentEvents);
 
         if (! filteredEvents.isEmpty()) {
             // TODO handle Filtering here
 
-            /*
-             * Filter on channels using the pattern
-             */
-            if (currentChannelPattern != 0) {
-                int check = 0x1;
-                for (int i = 0; i < 16; i++) {
-                    final int val = i+1;
-                    boolean filterOut = (currentChannelPattern & check) != 0;
-                    if (filterOut) {
-                        filteredEvents = filteredEvents.stream().filter(e -> e.getChannel() != val).toList();
-                    }
+            if (filterBlock != null) {
+                /*
+                 * Filter on channels using the pattern
+                 */
+                if (filterBlock.getFilterChannels() != 0) {
+                    int check = 0x1;
+                    for (int i = 0; i < 16; i++) {
+                        final int val = i+1;
+                        boolean filterOut = (filterBlock.getFilterChannels() & check) != 0;
+                        if (filterOut) {
+                            filteredEvents = filteredEvents.stream().filter(e -> e.getChannel() != val).toList();
+                        }
 
-                    check <<= 1;
+                        check <<= 1;
+                    }
                 }
             }
 
@@ -264,10 +268,11 @@ public class FileEditorPane extends VBox {
         }
     }
 
-    public void setChannelFilter(int pattern) {
-        currentChannelPattern = pattern;
+    public void filter(FilterBlock filterBlock) {
+        this.filterBlock = filterBlock;
+
         executeFiltering();
-    };
+    }
 
     // ACCESSORS
     public EventListEditorPane getEventListEditorPane() {

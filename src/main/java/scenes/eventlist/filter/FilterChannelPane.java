@@ -38,10 +38,10 @@ public class FilterChannelPane extends VBox {
     private  void buildPane() {
         channelFilterPane = new ChannelFilterPane(this, dsMask);
         dsMask.addListener((observable, oldValue, newValue) -> {
-            getEventListFilterPane().getEventListPane().getEventListEditorPane().getFileEditorPane().setChannelFilter(newValue.intValue());
             if (AppInfo.INSTANCE.isDebugMode()) {
                  printBits(dsMask.get());
             }
+            getEventListFilterPane().getEventListPane().setFilterChannels(newValue.intValue());
         });
 
         getChildren().add(channelFilterPane);

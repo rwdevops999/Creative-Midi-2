@@ -23,7 +23,7 @@ public class EventListEditorPane extends GridPane {
     }
 
     private EventListPane parent;
-    public EventListEditorPane(EventListPane owner) {
+    public  EventListEditorPane(EventListPane owner) {
         this();
 
         this.parent = owner;

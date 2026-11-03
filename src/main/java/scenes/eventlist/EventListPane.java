@@ -1,5 +1,6 @@
 package scenes.eventlist;
 
+import entity.events.FilterBlock;
 import javafx.scene.layout.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,8 @@ import static util.app.colors.ColorScheme.getColor;
 
 public class EventListPane extends GridPane {
     private static final Logger logger = LoggerFactory.getLogger(EventListPane.class);
+
+    private FilterBlock filterBlock = new FilterBlock();
 
     public EventListPane() {
         super();
@@ -52,6 +55,24 @@ public class EventListPane extends GridPane {
         logger.debug("Built {}", getId());
     }
 
+    /*
+     * Functionality starts here
+     */
+    public void setFilterMidiOut(boolean filterOut) {
+        filterBlock.setFilterMidiOut(filterOut);
+
+        handleFiltering();
+    }
+
+    public void setFilterChannels(int filterChannels) {
+        filterBlock.setFilterChannels(filterChannels);
+
+        handleFiltering();
+    }
+
+    private void handleFiltering() {
+        getEventListEditorPane().getFileEditorPane().filter(filterBlock);
+    }
     // ACCESSORS
     public EventListEditorPane getEventListEditorPane() {
         return eventListEditorPane;
