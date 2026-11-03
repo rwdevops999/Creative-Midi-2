@@ -252,10 +252,18 @@ public class FileEditorPane extends VBox {
                         check <<= 1;
                     }
                 }
-            }
 
-            if (filterBlock.isFilterMidiOut()) {
-                filteredEvents = filteredEvents.stream().filter(e -> ! e.getRootEventKey().equals(EventKeyType.MIDI)).toList();
+                if (filterBlock.isFilterMidiOut()) {
+                    filteredEvents = filteredEvents.stream().filter(e -> ! e.getRootEventKey().equals(EventKeyType.MIDI)).toList();
+                }
+
+                if (filterBlock.isFilterMetaOut()) {
+                    filteredEvents = filteredEvents.stream().filter(e -> ! e.getRootEventKey().equals(EventKeyType.META)).toList();
+                }
+
+                if (filterBlock.isFilterSysexOut()) {
+                    filteredEvents = filteredEvents.stream().filter(e -> ! e.getRootEventKey().equals(EventKeyType.SYSEX)).toList();
+                }
             }
 
             List<MidiEventInfo> sortedQueue = filteredEvents.stream()

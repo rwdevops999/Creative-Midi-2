@@ -7,5 +7,7 @@ import lombok.Setter;
 @Setter
 public class FilterBlock {
     private boolean filterMidiOut = false;
+    private boolean filterMetaOut = false;
+    private boolean filterSysexOut = false;
     private int filterChannels = 0x0;
 }

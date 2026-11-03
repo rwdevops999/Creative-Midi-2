@@ -64,6 +64,18 @@ public class EventListPane extends GridPane {
         handleFiltering();
     }
 
+    public void setFilterMetaOut(boolean filterOut) {
+        filterBlock.setFilterMetaOut(filterOut);
+
+        handleFiltering();
+    }
+
+    public void setFilterSysexOut(boolean filterOut) {
+        filterBlock.setFilterSysexOut(filterOut);
+
+        handleFiltering();
+    }
+
     public void setFilterChannels(int filterChannels) {
         filterBlock.setFilterChannels(filterChannels);
 
