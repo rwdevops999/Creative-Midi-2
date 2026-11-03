@@ -12,6 +12,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.paint.Color;
+import scenes.eventlist.filter.FilterTypePane;
 
 import static util.Util.showSmallPaneBorder;
 
@@ -48,8 +49,11 @@ public class MidiTypeFilterPane extends GridPane {
         }
     }
 
-    public MidiTypeFilterPane(Pane owner) {
+    private FilterTypePane parent;
+    public MidiTypeFilterPane(FilterTypePane owner) {
         this();
+
+        this.parent = owner;
 
         buildPane();
     }
@@ -61,12 +65,21 @@ public class MidiTypeFilterPane extends GridPane {
     public void buildPane() {
         LightIndicatorButton lib1 = new LightIndicatorButton("MIDI", 50, "blue");
         lib1.selectedProperty().bindBidirectional(dsSelected1);
+        lib1.setOnAction(e -> {
+            getFilterTypePane().getEventListFilterPane().getEventListPane().setFilterMidiOut(!dsSelected1.get());
+        });
         add(lib1, 0, 0);
         LightIndicatorButton lib2 = new LightIndicatorButton("META", 50, "blue");
         lib2.selectedProperty().bindBidirectional(dsSelected2);
+        lib2.setOnAction(e -> {
+//            getFilterTypePane().getEventListFilterPane().getEventListPane().setFilterMidiOut(dsSelected2.get());
+        });
         add(lib2, 1, 0);
         LightIndicatorButton lib3 = new LightIndicatorButton("SYSEX", 50, "blue");
         lib3.selectedProperty().bindBidirectional(dsSelected3);
+        lib3.setOnAction(e -> {
+//            getFilterTypePane().getEventListFilterPane().getEventListPane().setFilterMidiOut(dsSelected3.get());
+        });
         add(lib3, 2, 0);
 
         Button det1 = new Button("Details");
@@ -80,5 +93,10 @@ public class MidiTypeFilterPane extends GridPane {
         Button det3 = new Button("Details");
         det3.setPrefWidth(60);
         add(det3, 2, 1);
+    }
+
+    // ACCESSOR
+    public FilterTypePane getFilterTypePane() {
+        return parent;
     }
 }

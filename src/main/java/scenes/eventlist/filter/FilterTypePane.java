@@ -35,4 +35,9 @@ public class FilterTypePane extends VBox {
         MidiTypeFilterPane midiTypeFilterPane = new MidiTypeFilterPane(this);
         getChildren().add(midiTypeFilterPane);
     }
+
+    // ACCESSORS
+    public EventListFilterPane getEventListFilterPane() {
+        return parent;
+    }
 }

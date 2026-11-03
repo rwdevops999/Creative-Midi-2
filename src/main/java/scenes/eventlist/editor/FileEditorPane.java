@@ -13,6 +13,7 @@ import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.app.colors.ColorScheme;
+import util.midi.EventKeyType;
 
 import javax.sound.midi.Sequence;
 import java.io.File;
@@ -251,6 +252,10 @@ public class FileEditorPane extends VBox {
                         check <<= 1;
                     }
                 }
+            }
+
+            if (filterBlock.isFilterMidiOut()) {
+                filteredEvents = filteredEvents.stream().filter(e -> ! e.getRootEventKey().equals(EventKeyType.MIDI)).toList();
             }
 
             List<MidiEventInfo> sortedQueue = filteredEvents.stream()
