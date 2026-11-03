@@ -1,12 +1,11 @@
 package scenes.eventlist.editor;
 
 import entity.midi.MidiEventInfo;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.SelectionMode;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -60,7 +59,7 @@ public class FileEditorPane extends VBox {
         table.setMaxHeight(Double.MAX_VALUE);
 
         createEventColumns(table);
-//        createContextMenu(table);
+        createContextMenu(table);
 
         getChildren().add(table);
 
@@ -174,7 +173,41 @@ public class FileEditorPane extends VBox {
         };
     }
 
+    private final BooleanProperty contextMenuItemDisable = new SimpleBooleanProperty(true);
     private void createContextMenu(TableView<MidiEventInfo> table) {
+        ContextMenu contextMenu = new ContextMenu();
+        MenuItem deleteEvent = new MenuItem("Delete");
+        deleteEvent.disableProperty().bindBidirectional(contextMenuItemDisable);
+        deleteEvent.setOnAction(e -> {
+/*            List<MidiEventInfo> selectedEvents = table.getSelectionModel().getSelectedItems();
+
+            for (MidiEventInfo selectedEvent : selectedEvents) {
+                deleteEvent(selectedEvent, currentSequence);
+            }
+
+            getEventsPane().getEventlistPane().getFileSelectionPane().updateSequence(currentSequence);
+            executeFiltering();
+
+            ApplicationInfo.getInstance().setMidiChanged(true);
+
+            setFileHasChangedCallback(); */
+        });
+        contextMenu.getItems().add(deleteEvent);
+
+        SeparatorMenuItem sep = new SeparatorMenuItem();
+        contextMenu.getItems().add(sep);
+
+        MenuItem infoEvent = new MenuItem("Info");
+        infoEvent.disableProperty().bindBidirectional(contextMenuItemDisable);
+        infoEvent.setOnAction(e -> {
+/*            List<MidiEventInfo> selectedEvents = table.getSelectionModel().getSelectedItems();
+
+            EventDetailDialog dialog = new EventDetailDialog(selectedEvents.get(0));
+            dialog.showAndWait(); */
+        });
+        contextMenu.getItems().add(infoEvent);
+
+        table.setContextMenu(contextMenu);
     }
 
     private List<MidiEventInfo> currentEvents = new ArrayList<>();
@@ -201,12 +234,15 @@ public class FileEditorPane extends VBox {
             List<MidiEventInfo> sortedQueue = filteredEvents.stream()
                     .sorted(Comparator.comparing(MidiEventInfo::getMbtPosition)).toList();
 
+            contextMenuItemDisable.set(filteredEvents.isEmpty());
+
             ObservableList<MidiEventInfo> data = FXCollections.observableArrayList(sortedQueue);
             table.getItems().clear();
             table.setItems(data);
             table.scrollTo(0);
         } else {
             table.getItems().clear();
+            contextMenuItemDisable.set(true);
         }
 
     }
