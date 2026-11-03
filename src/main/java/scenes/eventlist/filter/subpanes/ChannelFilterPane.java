@@ -1,5 +1,6 @@
 package scenes.eventlist.filter.subpanes;
 
+import javafx.beans.property.IntegerProperty;
 import javafx.geometry.Insets;
 import javafx.scene.control.CheckBox;
 import javafx.scene.layout.GridPane;
@@ -15,16 +16,22 @@ public class ChannelFilterPane extends VBox {
         setMinSize(307.0, 153.0);
         setPrefSize(307.0, 153.0);
         setMaxSize(307.0, 153.0);
-
     }
 
-    public ChannelFilterPane(Pane owner) {
+    private IntegerProperty dsLocalMask;
+    public ChannelFilterPane(Pane owner, IntegerProperty dsMask) {
         this();
 
-        buildPane();
+        dsLocalMask = dsMask;
+
+        buildPane(dsMask);
     }
 
-    public void buildPane() {
+    private static void toggleBit(IntegerProperty dsMask, int bitPosition) {
+        dsMask.set(dsMask.get() ^ (1 << bitPosition));
+    }
+
+    public void buildPane(IntegerProperty dsMask) {
         GridPane grid = new GridPane();
         grid.setHgap(15);
         grid.setVgap(10);
@@ -32,6 +39,10 @@ public class ChannelFilterPane extends VBox {
 
         for (int i = 1; i <= 16; i++) {
             CheckBox checkBox = new CheckBox("Ch " + i);
+            final int val = i-1;
+            checkBox.setOnAction(event -> {
+                toggleBit(dsMask, val);
+            });
             checkBox.setId("Ch" + i);
 
             // Finalize the bitmask for this checkbox
@@ -52,5 +63,39 @@ public class ChannelFilterPane extends VBox {
         }
 
         getChildren().add(grid);
+    }
+
+    public void selectAll() {
+        for (int i = 1; i <= 16; i++) {
+            CheckBox cb = (CheckBox)lookup("#Ch" + i);
+            cb.setSelected(true);
+        }
+
+        dsLocalMask.set(0xFFFF);
+    }
+
+    public void selectNone() {
+        for (int i = 1; i <= 16; i++) {
+            CheckBox cb = (CheckBox)lookup("#Ch" + i);
+            cb.setSelected(false);
+        }
+
+        dsLocalMask.set(0x0000);
+    }
+
+    public void selectVoices() {
+        for (int i = 1; i <= 16; i++) {
+            CheckBox cb = (CheckBox)lookup("#Ch" + i);
+            cb.setSelected(i > 3);
+            dsLocalMask.set(0xFFF8);
+        }
+    }
+
+    public void selectRythms() {
+        for (int i = 1; i <= 16; i++) {
+            CheckBox cb = (CheckBox)lookup("#Ch" + i);
+            cb.setSelected(i < 9);
+            dsLocalMask.set(0x00FF);
+        }
     }
 }

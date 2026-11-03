@@ -2,6 +2,7 @@ package scenes.tests.panes;
 
 import entity.sysex.Sysex;
 import javafx.scene.layout.HBox;
+import scenes.eventlist.filter.subpanes.ChannelControlPane;
 import scenes.eventlist.filter.subpanes.ChannelFilterPane;
 import scenes.eventlist.filter.subpanes.MidiTypeFilterPane;
 import scenes.sysex.container.SysexContainer;
@@ -25,8 +26,8 @@ public class Test4Pane extends HBox {
     }
 
     private  void  setupTest() {
-        ChannelControlPane channelControlPane = new ChannelControlPane(this);
-        getChildren().add(channelControlPane);
+/*        ChannelControlPane channelControlPane = new ChannelControlPane(this);
+        getChildren().add(channelControlPane); */
     }
 
     private void runTest() {

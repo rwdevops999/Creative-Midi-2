@@ -25,22 +25,23 @@ public class EventListFilterPane extends GridPane {
         buildPane();
     }
 
+    private FilterChannelPane filterChannelPane;
+
     private void buildPane() {
         logger.debug("Building {}", getId());
 
-        // 1. Wis eventuele oude children en restricties van DEZE GridPane
+        // 1. Clear eventual old children en constraints on this GridPane
         getChildren().clear();
         getRowConstraints().clear();
         getColumnConstraints().clear();
 
-        // 2. Maak de sub-panes aan
+        // 2. Create the sub-panes
         FilterTitlePane filterTitlePane = new FilterTitlePane(this);
         FilterTypePane filterTypePane = new FilterTypePane(this);
-        FilterChannelPane filterChannelPane = new FilterChannelPane(this);
+        filterChannelPane = new FilterChannelPane(this);
         FilterChannelControlPane filterCCPane = new FilterChannelControlPane(this);
-        FilterSoundPane filterSoundPane = new FilterSoundPane(this);
 
-        // 3. Definieer de rij-percentages RECHTSTREEKS op deze pane
+        // 3. Set the row percentages
         RowConstraints rowTitle = new RowConstraints();
         rowTitle.setPercentHeight(10);
         rowTitle.setFillHeight(true);
@@ -57,30 +58,18 @@ public class EventListFilterPane extends GridPane {
         rowCC.setPercentHeight(20);
         rowCC.setFillHeight(true);
 
-        RowConstraints rowSound = new RowConstraints();
-        rowSound.setPercentHeight(10);
-        rowSound.setFillHeight(true);
+        this.getRowConstraints().addAll(rowTitle, rowType, rowChannel, rowCC);
 
-        this.getRowConstraints().addAll(rowTitle, rowType, rowChannel, rowCC, rowSound);
-
-        // 4. Zorg dat de kolom de volledige breedte vult
+        // 4. Fill the column completly
         ColumnConstraints col = new ColumnConstraints();
         col.setPercentWidth(100);
         this.getColumnConstraints().add(col);
 
-        // 5. Voeg de panes toe aan DEZE GridPane (node, columnIndex, rowIndex)
+        // 5. Add the panes to the GridPane
         this.add(filterTitlePane, 0, 0);
         this.add(filterTypePane, 0, 1);
         this.add(filterChannelPane, 0, 2);
         this.add(filterCCPane, 0, 3);
-        this.add(filterSoundPane, 0, 4);
-
-        // 6. Optioneel: Dwing de subpanes om vertikaal mee te groeien binnen hun cel
-        GridPane.setVgrow(filterTitlePane, Priority.ALWAYS);
-        GridPane.setVgrow(filterTypePane, Priority.ALWAYS);
-        GridPane.setVgrow(filterChannelPane, Priority.ALWAYS);
-        GridPane.setVgrow(filterCCPane, Priority.ALWAYS);
-        GridPane.setVgrow(filterSoundPane, Priority.ALWAYS);
 
         logger.debug("Built {}", getId());
     }
@@ -88,5 +77,9 @@ public class EventListFilterPane extends GridPane {
      // ACCESSORS
     public EventListPane getEventListPane() {
         return parent;
+    }
+
+    public FilterChannelPane getFilterChannelPane() {
+        return filterChannelPane;
     }
 }

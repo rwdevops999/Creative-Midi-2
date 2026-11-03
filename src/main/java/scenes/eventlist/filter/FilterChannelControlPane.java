@@ -1,11 +1,9 @@
 package scenes.eventlist.filter;
 
-import javafx.geometry.Pos;
-import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import scenes.tests.panes.ChannelControlPane;
+import scenes.eventlist.filter.subpanes.ChannelControlPane;
 
 public class FilterChannelControlPane extends VBox {
     private static final Logger logger = LoggerFactory.getLogger(FilterChannelControlPane.class);
@@ -28,5 +26,10 @@ public class FilterChannelControlPane extends VBox {
     private  void buildPane() {
         ChannelControlPane channelControlPane = new ChannelControlPane(this);
         getChildren().add(channelControlPane);
+    }
+
+    // ACCESSOR
+    public EventListFilterPane getEventListFilterPane() {
+        return parent;
     }
 }

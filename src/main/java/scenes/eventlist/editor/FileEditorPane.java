@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Queue;
+import java.util.stream.Collectors;
 
 import static util.Util.setPaneHeightAsPercentage;
 import static util.Util.showSmallPaneBorder;
@@ -225,11 +226,28 @@ public class FileEditorPane extends VBox {
         }
     }
 
+    private int currentChannelPattern = 0;
     private void executeFiltering() {
         List<MidiEventInfo> filteredEvents = new ArrayList<>(currentEvents);
 
         if (! filteredEvents.isEmpty()) {
             // TODO handle Filtering here
+
+            /*
+             * Filter on channels using the pattern
+             */
+            if (currentChannelPattern != 0) {
+                int check = 0x1;
+                for (int i = 0; i < 16; i++) {
+                    final int val = i+1;
+                    boolean filterOut = (currentChannelPattern & check) != 0;
+                    if (filterOut) {
+                        filteredEvents = filteredEvents.stream().filter(e -> e.getChannel() != val).toList();
+                    }
+
+                    check <<= 1;
+                }
+            }
 
             List<MidiEventInfo> sortedQueue = filteredEvents.stream()
                     .sorted(Comparator.comparing(MidiEventInfo::getMbtPosition)).toList();
@@ -244,8 +262,12 @@ public class FileEditorPane extends VBox {
             table.getItems().clear();
             contextMenuItemDisable.set(true);
         }
-
     }
+
+    public void setChannelFilter(int pattern) {
+        currentChannelPattern = pattern;
+        executeFiltering();
+    };
 
     // ACCESSORS
     public EventListEditorPane getEventListEditorPane() {
