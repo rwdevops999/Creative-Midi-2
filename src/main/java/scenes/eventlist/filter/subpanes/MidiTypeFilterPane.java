@@ -83,6 +83,9 @@ public class MidiTypeFilterPane extends GridPane {
         add(lib3, 2, 0);
 
         Button det1 = new Button("Details");
+        det1.setOnAction(e -> {
+
+        });
         det1.setPrefWidth(60);
         add(det1, 0, 1);
 
