@@ -18,7 +18,7 @@ import static util.midi.EventKeyType.*;
 
 public class MidiProcessor {
     @Getter
-    private static MidiProcessor instance = new MidiProcessor();
+    private static final MidiProcessor instance = new MidiProcessor();
 
     private MidiProcessor() {
     }
@@ -42,6 +42,8 @@ public class MidiProcessor {
         colors.put(new ColorScheme.ColorKey("midi", "bank select lsb"), Color.GOLD); // 2 of 3
         colors.put(new ColorScheme.ColorKey("midi", "program change"), Color.GOLD);  // 3 of 3
 
+        colors.put(new ColorScheme.ColorKey("midi", "note"), Color.BROWN);
+
         colors.put(new ColorScheme.ColorKey("midi", "pitch bend"), Color.MEDIUMSPRINGGREEN);
         colors.put(new ColorScheme.ColorKey("midi", "main volume"), Color.LIGHTSKYBLUE);
         colors.put(new ColorScheme.ColorKey("midi", "panpot"), Color.DARKORANGE);
@@ -52,7 +54,7 @@ public class MidiProcessor {
 
         ColorScheme.addColorsToScheme(colors);
 
-        // MSB and LSB array initialisation
+        // MSB and LSB array initialization
         java.util.Arrays.fill(currentMSB, 0);
         java.util.Arrays.fill(currentLSB, 0);
     }
@@ -65,13 +67,10 @@ public class MidiProcessor {
     private int getLSB(int channel) { return currentLSB[channel]; }
     private void setLSB(int channel, int value) { currentLSB[channel] = value; }
 
+    /**
+     * All these message are MIDI messages
+     */
     public boolean processMessage(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
-
-        /**
-         * All these message are MIDI messages
-         */
-
         midiEventInfo.setRootEventKey(EventKeyType.MIDI);
 
         midiEventInfo.setColor(getColor("midi"));
@@ -79,7 +78,7 @@ public class MidiProcessor {
 
         int statusBytes = message.getStatus() & 0xF0;
 
-        result = switch (statusBytes) {
+        return switch (statusBytes) {
             case
                 0x80,
                 0x90,
@@ -92,20 +91,18 @@ public class MidiProcessor {
                 0xF0 -> processRealtimeMessage(message, midiEventInfo);
             default -> processUnknowMessage(message, midiEventInfo);
         };
-
-        return result;
     }
 
     /**
      * Processing of Channel Messages
      */
     private boolean processChannelMessage(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result;
 
         // get the raw bytes
         byte[] rawBytes = message.getMessage();
 
-        /**
+        /*
          * this is the command message (is actually the same as status byte without channel information)
          */
         int command = rawBytes[0] & 0xF0;
@@ -130,11 +127,11 @@ public class MidiProcessor {
     private final MidiNoteMatcher midiNoteMatcher = MidiNoteMatcher.getInstance();
 
     private boolean handleNoteOffEvent(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result;
 
         midiEventInfo.setEventEventKey(MIDI_NOTE_OFF);
 
-        /**
+        /*
          * We give this event a note color (this is used to close a note on,
          * so the note matching note on will be returned)
          */
@@ -165,7 +162,7 @@ public class MidiProcessor {
     }
 
     private boolean handleNoteOnEvent(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result;
 
         midiEventInfo.setEventEventKey(MIDI_NOTE_OFF);
 
@@ -205,7 +202,7 @@ public class MidiProcessor {
     }
 
     private boolean handleControlChangeOrModeMessageEvent(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result;
 
         byte[] rawBytes = message.getMessage();
         int byte1 = rawBytes[1] & 0xFF; // Tells us over what change it goes here
@@ -269,7 +266,7 @@ public class MidiProcessor {
 
         midiEventInfo.setEventEventKey(MIDI_PROGRAM_CHANGE);
 
-        /**
+        /*
          * Program change get a color (because it is important)
          */
         midiEventInfo.setColor(getColor("midi", "program change"));
@@ -283,7 +280,7 @@ public class MidiProcessor {
         // voice number
         midiEventInfo.setValue(pc);
 
-        /**
+        /*
          * Lookup the matching MSB/LSB value which together with PC defines voice
          */
         int msb = getMSB(message.getChannel());
@@ -333,7 +330,7 @@ public class MidiProcessor {
      * Control Change Control
      */
     private boolean handleControlChangeMessage(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result;
 
         byte[] rawBytes = message.getMessage();
 
@@ -989,7 +986,7 @@ public class MidiProcessor {
      */
 
     private boolean handleModeChangeMessage(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result;
 
         byte[] rawBytes = message.getMessage();
 
@@ -1127,7 +1124,7 @@ public class MidiProcessor {
      * Real-Time Control
      */
     private boolean processRealtimeMessage(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result;
 
         byte[] rawBytes = message.getMessage();
 

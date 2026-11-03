@@ -78,4 +78,9 @@ public class MBTCalculator {
 
         return ticks * secondsPerTick1;
     }
+
+    public static void setTargetPPQ(int targetPPQ) {
+        MBTCalculator.targetPPQ = targetPPQ;
+        ppqScalingFactor = (double)targetPPQ / ppq;
+    }
 }

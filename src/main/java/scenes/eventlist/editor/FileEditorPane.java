@@ -1,14 +1,25 @@
 package scenes.eventlist.editor;
 
 import entity.midi.MidiEventInfo;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import util.app.colors.ColorScheme;
 
+import javax.sound.midi.Sequence;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Queue;
 
 import static util.Util.setPaneHeightAsPercentage;
 import static util.Util.showSmallPaneBorder;
@@ -48,7 +59,7 @@ public class FileEditorPane extends VBox {
         VBox.setVgrow(table, Priority.ALWAYS);
         table.setMaxHeight(Double.MAX_VALUE);
 
-//        createEventColumns(table);
+        createEventColumns(table);
 //        createContextMenu(table);
 
         getChildren().add(table);
@@ -56,10 +67,148 @@ public class FileEditorPane extends VBox {
         logger.debug("Built {}", getId());
     }
 
+    private void setColumnSize(TableColumn column, int size) {
+        double dsize = size / 100.0;
+        column.prefWidthProperty().bind(table.widthProperty().multiply(dsize));
+        column.minWidthProperty().bind(table.widthProperty().multiply(dsize));
+    }
+
     private void createEventColumns(TableView<MidiEventInfo> table) {
+        TableColumn<MidiEventInfo, String> mbtColumn = new TableColumn<>("MBT");
+        setColumnSize(mbtColumn, columnSizes[0]);
+        mbtColumn.setCellValueFactory(new PropertyValueFactory<>("mbtPosition"));
+        mbtColumn.setCellFactory(column -> createStringTableCell());
+        table.getColumns().add(mbtColumn);
+
+        TableColumn<MidiEventInfo, Integer> channelColumn = new TableColumn<>("Ch");
+        setColumnSize(channelColumn, columnSizes[1]);
+        channelColumn.setCellValueFactory(new PropertyValueFactory<>("channel"));
+        channelColumn.setCellFactory(column -> createIntegerTableCell());
+        table.getColumns().add(channelColumn);
+
+        TableColumn<MidiEventInfo, String> kindColumn = new TableColumn<>("Description");
+        setColumnSize(kindColumn, columnSizes[2]);
+        kindColumn.setCellValueFactory(new PropertyValueFactory<>("description"));
+        kindColumn.setCellFactory(column -> createStringTableCell());
+        table.getColumns().add(kindColumn);
+
+        TableColumn<MidiEventInfo, String> data2Column = new TableColumn<>("Comment");
+        setColumnSize(data2Column, columnSizes[3]);
+        data2Column.setCellValueFactory(new PropertyValueFactory<>("comment"));
+        data2Column.setCellFactory(column -> createStringTableCell());
+        table.getColumns().add(data2Column);
+
+        TableColumn<MidiEventInfo, Integer> dataColumn = new TableColumn<>("Value");
+        setColumnSize(dataColumn, columnSizes[4]);
+        dataColumn.setCellValueFactory(new PropertyValueFactory<>("value"));
+        dataColumn.setCellFactory(column -> createIntegerTableCell());
+        table.getColumns().add(dataColumn);
+
+        TableColumn<MidiEventInfo, String> durationColumn = new TableColumn<>("Duration");
+        setColumnSize(durationColumn, columnSizes[5]);
+        durationColumn.setCellValueFactory(new PropertyValueFactory<>("duration"));
+        durationColumn.setCellFactory(column -> createStringTableCell());
+        table.getColumns().add(durationColumn);
+
+        TableColumn<MidiEventInfo, String> messageColumn = new TableColumn<>("Message");
+        setColumnSize(messageColumn, columnSizes[6]);
+        messageColumn.setCellValueFactory(new PropertyValueFactory<>("message"));
+        messageColumn.setCellFactory(column -> createStringTableCell());
+        table.getColumns().add(messageColumn);
+    }
+
+    /**
+     * Column display cells
+     */
+    private TableCell<MidiEventInfo, String> createStringTableCell() {
+        return new TableCell<>() {
+            // Create a single label reuse instance per cell container
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+
+                if (empty || item == null) {
+                    // Clear both text and graphic to prevent color bleed artifacts
+                    setStyle("-fx-text-fill: black;");
+                    setText(null);
+                } else {
+                    MidiEventInfo eventInfo = getTableRow() != null ? getTableRow().getItem() : null;
+
+                    if (eventInfo != null) {
+                        setText(item);
+                        String hexColor = ColorScheme.toWebColor(eventInfo.getColor());
+                        setStyle("-fx-text-fill: " + hexColor + ";");
+                    } else {
+                        setText(null);
+                        setStyle("-fx-text-fill: black;");
+                    }
+                }
+            }
+        };
+    }
+
+    private TableCell<MidiEventInfo, Integer> createIntegerTableCell() {
+        return new TableCell<MidiEventInfo, Integer>() {
+            // Create a single label reuse instance per cell container
+            @Override
+            protected void updateItem(Integer item, boolean empty) {
+                super.updateItem(item, empty);
+
+                if (empty || item == null) {
+                    // Clear both text and graphic to prevent color bleed artifacts
+                    setStyle("-fx-text-fill: black;");
+                    setText(null);
+                } else {
+                    MidiEventInfo eventInfo = getTableRow() != null ? getTableRow().getItem() : null;
+
+                    if (eventInfo != null) {
+                        setText(item.toString());
+                        String hexColor = ColorScheme.toWebColor(eventInfo.getColor());
+                        setStyle("-fx-text-fill: " + hexColor + ";");
+                    } else {
+                        setText(null);
+                        setStyle("-fx-text-fill: black;");
+                    }
+                }
+            }
+        };
     }
 
     private void createContextMenu(TableView<MidiEventInfo> table) {
+    }
+
+    private List<MidiEventInfo> currentEvents = new ArrayList<>();
+    private Sequence currentSequence = null;
+    public void setEventInfo(Sequence sequence, Queue<MidiEventInfo> events) {
+        currentEvents = new ArrayList<>(events);
+        currentSequence = sequence;
+
+        // Pass this information also to the File Handling Pane (just in case for saving)
+
+        getEventListEditorPane().getFileHandlerPane().setEventInfo(sequence, events);
+
+        if (table != null) {
+            executeFiltering();
+        }
+    }
+
+    private void executeFiltering() {
+        List<MidiEventInfo> filteredEvents = new ArrayList<>(currentEvents);
+
+        if (! filteredEvents.isEmpty()) {
+            // TODO handle Filtering here
+
+            List<MidiEventInfo> sortedQueue = filteredEvents.stream()
+                    .sorted(Comparator.comparing(MidiEventInfo::getMbtPosition)).toList();
+
+            ObservableList<MidiEventInfo> data = FXCollections.observableArrayList(sortedQueue);
+            table.getItems().clear();
+            table.setItems(data);
+            table.scrollTo(0);
+        } else {
+            table.getItems().clear();
+        }
+
     }
 
     // ACCESSORS

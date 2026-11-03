@@ -37,12 +37,27 @@ public class EventListPane extends GridPane {
         buildPane();
     }
 
+    private EventListEditorPane eventListEditorPane;
+    private EventListFilterPane eventListFilterPane;
+
     private void buildPane() {
         logger.debug("Building {}", getId());
 
-        add(new EventListEditorPane(this), 0, 0);
-        add(new EventListFilterPane(this), 1, 0);
+        eventListEditorPane = new EventListEditorPane(this);
+        eventListFilterPane = new EventListFilterPane(this);
+
+        add(eventListEditorPane, 0, 0);
+        add(eventListFilterPane, 1, 0);
 
         logger.debug("Built {}", getId());
+    }
+
+    // ACCESSORS
+    public EventListEditorPane getEventListEditorPane() {
+        return eventListEditorPane;
+    }
+
+    public EventListFilterPane getEventListFilterPane() {
+        return eventListFilterPane;
     }
 }

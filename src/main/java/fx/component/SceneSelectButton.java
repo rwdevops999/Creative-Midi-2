@@ -9,10 +9,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import scenes.tests.TestScene;
-import scenes.tests.panes.Test1Pane;
-import scenes.tests.panes.Test2Pane;
-import scenes.tests.panes.Test3Pane;
-import scenes.tests.panes.Test4Pane;
+import scenes.tests.panes.*;
 import util.app.routing.Router;
 import util.app.scene.IScene;
 
@@ -53,6 +50,7 @@ public class SceneSelectButton extends Button {
                 case "Test2" -> new Test2Pane();
                 case "Test3" -> new Test3Pane();
                 case "Test4" -> new Test4Pane();
+                case "Test5" -> new Test5Pane();
                 default -> null;
             };
 

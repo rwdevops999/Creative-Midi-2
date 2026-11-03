@@ -62,13 +62,9 @@ public class MidiEventInfo extends NameEntity {
     /**
      * The color of the event (converted to long)
      */
-    @Setter
     @Getter
-    private long colorAsLong;
-
-    public void setColor(Color color) {
-        this.colorAsLong = colorToLong(color);
-    }
+    @Setter
+    private Color color;
 
     /**
      * Color to Long = RRGGBBAA

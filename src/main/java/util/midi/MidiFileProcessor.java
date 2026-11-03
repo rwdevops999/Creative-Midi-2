@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import util.midi.eventprocessors.MetaProcessor;
 import util.midi.eventprocessors.MidiProcessor;
 import util.midi.eventprocessors.SysexProcessor;
+import util.properties.AppProperties;
 
 import javax.sound.midi.*;
 import java.util.LinkedList;
@@ -84,26 +85,21 @@ public class MidiFileProcessor {
                     // This is a META event
                     midiEventInfo.setRootEventKey(META);
 
-                    isProcessed = MetaProcessor.processMessage(metaMessage, midiEventInfo);
+//                    isProcessed = MetaProcessor.processMessage(metaMessage, midiEventInfo);
                 } else if (message instanceof SysexMessage sysexMessage) {
                     // It is a SYSEX event
                     midiEventInfo.setRootEventKey(SYSEX);
 
-                    isProcessed = SysexProcessor.processMessage(sysexMessage, midiEventInfo);
+//                    isProcessed = SysexProcessor.processMessage(sysexMessage, midiEventInfo);
                 }  else {
                     // Unknown event
                     logger.error("Error. Unknown event message type: {}", message.getClass().getName());
                 }
 
-
-
-
-                    if (isProcessed) {
+                if (isProcessed) {
                     events.add(midiEventInfo);
                 }
             }
-
         }
-
     }
 }

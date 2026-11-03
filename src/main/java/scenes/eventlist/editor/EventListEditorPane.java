@@ -77,11 +77,6 @@ public class EventListEditorPane extends GridPane {
         logger.debug("Built {}", getId());
     }
 
-     // ACCESSORS
-    public EventListPane getEventListPane() {
-        return parent;
-    }
-
     public void processFile (File midiFile) {
         getFileInfoPane().setFilename(midiFile.getName());
         Registry.getInstance().showStatus("Loaded midi file " + midiFile.getName());
@@ -114,10 +109,15 @@ public class EventListEditorPane extends GridPane {
 
             MidiFileProcessor.processMidi(sequence);
 
-            getEventsDisplayPane().setEventInfo(sequence, MidiFileProcessor.getEvents());
+            getEventListPane().getEventListEditorPane().getFileEditorPane().setEventInfo(sequence, MidiFileProcessor.getEvents());
         } catch (Exception e) {
             logger.debug("Exception. CAUSE {}", e.getMessage());
         }
+    }
+
+    // ACCESSORS
+    public EventListPane getEventListPane() {
+        return parent;
     }
 
     public FileHandlerPane getFileHandlerPane() {

@@ -1,5 +1,6 @@
 package scenes.eventlist.editor;
 
+import entity.midi.MidiEventInfo;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -18,7 +19,10 @@ import org.slf4j.LoggerFactory;
 import util.Util;
 import util.app.AppInfo;
 
+import javax.sound.midi.Sequence;
 import java.io.File;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import static util.Util.*;
 import static util.app.colors.ColorScheme.getColor;
@@ -87,6 +91,13 @@ public class FileHandlerPane extends HBox {
         getChildren().add(fileSaveButton);
 
         logger.debug("Built {}", getId());
+    }
+
+    private LinkedList<MidiEventInfo> currentEvents = null;
+    private Sequence currentSequence = null;
+    public void setEventInfo(Sequence sequence, Queue<MidiEventInfo> events) {
+        currentEvents = new LinkedList<>(events);
+        currentSequence = sequence;
     }
 
     public void setFileHasChanged() {

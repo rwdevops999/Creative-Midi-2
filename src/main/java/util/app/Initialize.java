@@ -3,7 +3,10 @@ package util.app;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.device.DeviceScanner;
+import util.midi.MBTCalculator;
 import util.properties.AppProperties;
+
+import static util.properties.PropertyKeys.TARGET_PPQ;
 
 public class Initialize {
     private static final Logger logger = LoggerFactory.getLogger(Initialize.class);
@@ -23,5 +26,8 @@ public class Initialize {
         DeviceScanner task = new DeviceScanner();
         Thread thread = new Thread(task);
         thread.start();
+
+        int targetPPQ = AppProperties.getInstance().getPropertyAsInteger(TARGET_PPQ, 480);
+        MBTCalculator.setTargetPPQ(targetPPQ);
     }
 }
