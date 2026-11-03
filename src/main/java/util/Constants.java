@@ -15,4 +15,6 @@ public class Constants {
     // Midi Constants
     public static final int TEMPO_EVENT = 0x51;
     public static final int TIME_SIGNATURE_EVENT = 0x58;
+
+    public final static String[] BASE_NOTES = {"C", "C#", "D", "E♭", "E", "F", "F#", "G", "G#", "A", "B♭", "B"};
 }

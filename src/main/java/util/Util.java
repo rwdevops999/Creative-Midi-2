@@ -1,9 +1,14 @@
 package util;
 
+import entity.NoteEntity;
 import javafx.scene.control.Control;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import util.app.colors.ColorScheme;
+import util.properties.AppProperties;
+
+import static util.Constants.BASE_NOTES;
+import static util.properties.PropertyKeys.BASE_OCTAVE;
 
 public class Util {
     public static void setPaneHeightAsPercentage(Pane child, Pane parent, int size) {
@@ -60,5 +65,13 @@ public class Util {
     public static void showSmallPaneBorder (Pane pane, Color color) {
         String s = ColorScheme.toWebColor(color);
         pane.setStyle("-fx-border-color: " + s + "; -fx-border-width: 1;");
+    }
+
+    public static NoteEntity calcNote (int notevalue) {
+        int baseOctave = AppProperties.getInstance().getPropertyAsInteger(BASE_OCTAVE, 0);
+
+        int noteIndex = notevalue % 12;
+        int octave = -2 + baseOctave + (notevalue / 12);
+        return new NoteEntity(notevalue, String.format("%s%d", BASE_NOTES[noteIndex], octave));
     }
 }

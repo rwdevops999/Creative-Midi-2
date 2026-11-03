@@ -8,7 +8,16 @@ import java.util.Map;
 public class ColorScheme {
     private static final Map<ColorKey, Color> colors = new HashMap<>();
 
-    public record ColorKey(String arg1, String arg2, String arg3) {}
+    public record ColorKey(String arg1, String arg2, String arg3) {
+        // Extra constructor die arg2 en arg3 op null zet
+        public ColorKey(String arg1) {
+            this(arg1, null, null);
+        }
+
+        public ColorKey(String arg1, String arg2) {
+            this(arg1, arg2, null);
+        }
+    }
 
     // Define the colors here
     static {

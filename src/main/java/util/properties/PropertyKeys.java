@@ -12,6 +12,7 @@ public class PropertyKeys {
 
     public static String KEYBOARD = "keyboard";
     public static String VOICE_TYPE = "voice.type";
+    public static String BASE_OCTAVE = "base.octave";
 
     public static String VOICES_DIR = "voices.dir";
     public static String EXPORT_DIR = "export.dir";

@@ -17,12 +17,10 @@ public class TimeSignature {
         this.denominator = denominator;
     }
 
-    // TODO Change this because this is Beats Per Measure
     public int getBeatValue() {
         return this.numerator;
     }
 
-    // TODO Change this because this is the beat value
     public int getBeatsPerMeasure() {
         return this.denominator;
     }
