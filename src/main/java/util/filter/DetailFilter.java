@@ -23,7 +23,7 @@ public class DetailFilter {
         List<EventKeyType> srcTypeList = new ArrayList<>(Arrays.asList(EventKeyType.values()));
         srcTypeList.removeAll(dstTypeList);
 
-        List<String> srcEvents = srcTypeList.stream().map(Enum::toString).filter(s -> s.contains(key)).toList();
+        List<String> srcEvents = srcTypeList.stream().map(Enum::toString).filter(s -> s.startsWith(key)).toList();
 
         // 2. Make list readable;
         // - This means remove key from the elements

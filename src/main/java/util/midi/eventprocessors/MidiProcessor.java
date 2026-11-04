@@ -3,6 +3,7 @@ package util.midi.eventprocessors;
 import entity.midi.MidiEventInfo;
 import javafx.scene.paint.Color;
 import lombok.Getter;
+import lombok.Setter;
 import util.SysexToHexStringConvertor;
 import util.app.colors.ColorScheme;
 import util.midi.EventKeyType;
@@ -23,6 +24,10 @@ public class MidiProcessor {
     private MidiProcessor() {
     }
 
+    @Getter
+    @Setter
+    private int errors = 0;
+
     /**
      * These are colors specific to midi events (they are added to the colorScheme)
      * - midi events are normally BLUE except the ones that are unknown/invalid which are RED
@@ -42,7 +47,7 @@ public class MidiProcessor {
         colors.put(new ColorScheme.ColorKey("midi", "bank select lsb"), Color.GOLD); // 2 of 3
         colors.put(new ColorScheme.ColorKey("midi", "program change"), Color.GOLD);  // 3 of 3
 
-        colors.put(new ColorScheme.ColorKey("midi", "note"), Color.BROWN);
+        colors.put(new ColorScheme.ColorKey("midi", "note"), Color.NAVAJOWHITE);
 
         colors.put(new ColorScheme.ColorKey("midi", "pitch bend"), Color.MEDIUMSPRINGGREEN);
         colors.put(new ColorScheme.ColorKey("midi", "main volume"), Color.LIGHTSKYBLUE);
@@ -76,9 +81,9 @@ public class MidiProcessor {
         midiEventInfo.setColor(getColor("midi"));
         midiEventInfo.setMessage(SysexToHexStringConvertor.convertToHexString(message.getMessage()));
 
-        int statusBytes = message.getStatus() & 0xF0;
+        int statusByte = message.getStatus() & 0xF0;
 
-        return switch (statusBytes) {
+        return switch (statusByte) {
             case
                 0x80,
                 0x90,
@@ -254,6 +259,7 @@ public class MidiProcessor {
                 0x7D,
                 0x7E,
                 0x7F -> handleModeChangeMessage(message, midiEventInfo);
+            case 0x56 -> false;
             default -> handleUnknownControlOrModeMessage(message, midiEventInfo);
 
         };
@@ -1216,7 +1222,9 @@ public class MidiProcessor {
          * From here the problem cases
          */
     private boolean processUnknowMessage(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result = true;
+
+        errors++;
 
         midiEventInfo.setColor(getColor("midi", "unknown or error"));
 
@@ -1227,7 +1235,9 @@ public class MidiProcessor {
     }
 
     private boolean handleInvalidChannelMessage(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result = true;
+
+        errors++;
 
         midiEventInfo.setColor(getColor("midi", "unknown or error"));
 
@@ -1238,7 +1248,9 @@ public class MidiProcessor {
     }
 
     private boolean handleUnknownControlOrModeMessage(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result = true;
+
+        errors++;
 
         midiEventInfo.setColor(getColor("midi", "unknown or error"));
 
@@ -1249,7 +1261,9 @@ public class MidiProcessor {
     }
 
     private boolean handleUnknownRealTimeMessage(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result = true;
+
+        errors++;
 
         midiEventInfo.setColor(getColor("midi", "unknown or error"));
 
@@ -1260,7 +1274,9 @@ public class MidiProcessor {
     }
 
     private boolean handleUnknownControlChangeMessage(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result = true;
+
+        errors++;
 
         midiEventInfo.setColor(getColor("midi", "unknown or error"));
 
@@ -1271,7 +1287,9 @@ public class MidiProcessor {
     }
 
     private boolean handleUnknownModeChangeMessage(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result = true;
+
+        errors++;
 
         midiEventInfo.setColor(getColor("midi", "unknown or error"));
 

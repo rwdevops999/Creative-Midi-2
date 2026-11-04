@@ -79,9 +79,7 @@ public class EventListEditorPane extends GridPane {
 
     public void processFile (File midiFile) {
         getFileInfoPane().setFilename(midiFile.getName());
-        Registry.getInstance().showStatus("Loaded midi file " + midiFile.getName());
 
-        // TODO HERE WE ARE GOING TO PROCESSS THE FILE
         /**
          * parse the events from the file and put them in the custom sequence
          */
@@ -107,7 +105,7 @@ public class EventListEditorPane extends GridPane {
 
             getFileInfoPane().setDuration(MidiFileHelper.getDuration());
 
-            MidiFileProcessor.processMidi(sequence);
+            MidiFileProcessor.processMidi(sequence, midiFile.getName());
 
             getEventListPane().getEventListEditorPane().getFileEditorPane().setEventInfo(sequence, MidiFileProcessor.getEvents());
         } catch (Exception e) {

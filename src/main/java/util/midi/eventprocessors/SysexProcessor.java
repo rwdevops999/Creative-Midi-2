@@ -3,6 +3,7 @@ package util.midi.eventprocessors;
 import entity.midi.MidiEventInfo;
 import javafx.scene.paint.Color;
 import lombok.Getter;
+import lombok.Setter;
 import util.ByteHelper;
 import util.SysexToHexStringConvertor;
 import util.app.colors.ColorScheme;
@@ -19,6 +20,10 @@ public class SysexProcessor {
     @Getter
     private static final SysexProcessor instance = new SysexProcessor();
 
+    @Getter
+    @Setter
+    private int errors = 0;
+
     private SysexProcessor() {
     }
 
@@ -31,7 +36,7 @@ public class SysexProcessor {
 
     static {
         // Global Color
-        colors.put(new ColorScheme.ColorKey("sysex"), Color.IVORY);
+        colors.put(new ColorScheme.ColorKey("sysex"), Color.TAN);
 
         // Event Colors
 
@@ -69,7 +74,7 @@ public class SysexProcessor {
     /*
      * FO ...
      */
-    private static boolean handleSysexMessage(StringBuilder sysex, MidiEventInfo midiEventInfo) {
+    private boolean handleSysexMessage(StringBuilder sysex, MidiEventInfo midiEventInfo) {
         boolean result;
 
         String selector = ByteHelper.getAndStrip(sysex, 1);
@@ -88,7 +93,7 @@ public class SysexProcessor {
     /*
      * FO 7F...
      */
-    private static boolean handleUniversalRealTimeMessage(StringBuilder sysex, MidiEventInfo midiEventInfo) {
+    private boolean handleUniversalRealTimeMessage(StringBuilder sysex, MidiEventInfo midiEventInfo) {
         boolean result = false;
 
         // skip the XN bytes
@@ -113,7 +118,7 @@ public class SysexProcessor {
     /**
      * F0 7F XN 04 01...
      */
-    private static boolean handleMasterVolume(StringBuilder sysex, MidiEventInfo midiEventInfo) {
+    private boolean handleMasterVolume(StringBuilder sysex, MidiEventInfo midiEventInfo) {
         boolean result = true;
 
         midiEventInfo.setEventEventKey(SYSEX_MASTER_VOLUME);
@@ -131,7 +136,7 @@ public class SysexProcessor {
     /**
      * F0 7F XN 04 03...
      */
-    private static boolean handleMasterFineTuning(StringBuilder sysex, MidiEventInfo midiEventInfo) {
+    private boolean handleMasterFineTuning(StringBuilder sysex, MidiEventInfo midiEventInfo) {
         boolean result = true;
 
         midiEventInfo.setEventEventKey(SYSEX_MASTER_FINE_TUNING);
@@ -149,7 +154,7 @@ public class SysexProcessor {
     /**
      * F0 7F XN 04 04...
      */
-    private static boolean handleMasterCoarseTuning(StringBuilder sysex, MidiEventInfo midiEventInfo) {
+    private boolean handleMasterCoarseTuning(StringBuilder sysex, MidiEventInfo midiEventInfo) {
         boolean result = true;
 
         midiEventInfo.setEventEventKey(SYSEX_MASTER_COARSE_TUNING);
@@ -169,7 +174,7 @@ public class SysexProcessor {
     /**
      * F0 7F XN 04 05...
      */
-    private static boolean handleReverbChorusParameter(StringBuilder sysex, MidiEventInfo midiEventInfo) {
+    private boolean handleReverbChorusParameter(StringBuilder sysex, MidiEventInfo midiEventInfo) {
         boolean result = true;
 
         // Strip the 01 01 01 01
@@ -188,7 +193,7 @@ public class SysexProcessor {
     /**
      * F0 7F XN 04 05 01 01 01 01 01 ...
      */
-    private static boolean handleReverbParameter(StringBuilder sysex, MidiEventInfo midiEventInfo) {
+    private boolean handleReverbParameter(StringBuilder sysex, MidiEventInfo midiEventInfo) {
         boolean result = true;
 
         midiEventInfo.setEventEventKey(SYSEX_REVERB_PARAMETER);
@@ -200,7 +205,7 @@ public class SysexProcessor {
     /**
      * F0 7F XN 04 05 01 01 01 01 02 ...
      */
-    private static boolean handleChorusParameter(StringBuilder sysex, MidiEventInfo midiEventInfo) {
+    private boolean handleChorusParameter(StringBuilder sysex, MidiEventInfo midiEventInfo) {
         boolean result = true;
 
         midiEventInfo.setEventEventKey(SYSEX_CHORUS_PARAMETER);
@@ -212,7 +217,7 @@ public class SysexProcessor {
     /**
      * F0 7F XN 09 01...
      */
-    private static boolean handleChannelPressure(StringBuilder sysex, MidiEventInfo midiEventInfo) {
+    private boolean handleChannelPressure(StringBuilder sysex, MidiEventInfo midiEventInfo) {
         boolean result = true;
 
         midiEventInfo.setEventEventKey(SYSEX_CHANNEL_PRESSURE);
@@ -227,7 +232,7 @@ public class SysexProcessor {
     /**
      * F0 7F XN 09 03...
      */
-    private static boolean handleControlChange(StringBuilder sysex, MidiEventInfo midiEventInfo) {
+    private boolean handleControlChange(StringBuilder sysex, MidiEventInfo midiEventInfo) {
         boolean result = true;
 
         midiEventInfo.setEventEventKey(SYSEX_CONTROLLER);
@@ -242,7 +247,7 @@ public class SysexProcessor {
     /**
      * F0 7F XN 0A 01...
      */
-    private static boolean handleKeybasedInstrumentControl(StringBuilder sysex, MidiEventInfo midiEventInfo) {
+    private boolean handleKeybasedInstrumentControl(StringBuilder sysex, MidiEventInfo midiEventInfo) {
         boolean result = true;
 
         midiEventInfo.setEventEventKey(SYSEX_KEYBASED_INSTRUMENT_CONTROL);
@@ -260,7 +265,7 @@ public class SysexProcessor {
     /*
      * FO 7E...
      */
-    private static boolean handleUniversalNonRealTimeMessage(StringBuilder sysex, MidiEventInfo midiEventInfo) {
+    private boolean handleUniversalNonRealTimeMessage(StringBuilder sysex, MidiEventInfo midiEventInfo) {
         boolean result = false;
 
         // skip the XN bytes
@@ -282,7 +287,7 @@ public class SysexProcessor {
     /**
      * F0 7E XN 09 01...
      */
-    private static boolean handleGM1SystemOn(StringBuilder sysex, MidiEventInfo midiEventInfo) {
+    private boolean handleGM1SystemOn(StringBuilder sysex, MidiEventInfo midiEventInfo) {
         boolean result = true;
 
         midiEventInfo.setEventEventKey(SYSEX_GM1_SYSTEM_ON);
@@ -294,7 +299,7 @@ public class SysexProcessor {
     /**
      * F0 7E XN 09 03...
      */
-    private static boolean handleGM2SystemOn(StringBuilder sysex, MidiEventInfo midiEventInfo) {
+    private boolean handleGM2SystemOn(StringBuilder sysex, MidiEventInfo midiEventInfo) {
         boolean result = true;
 
         midiEventInfo.setEventEventKey(SYSEX_GM2_SYSTEM_ON);
@@ -306,7 +311,7 @@ public class SysexProcessor {
     /**
      * F0 7E XN 09 02...
      */
-    private static boolean handleGeneralMidiSystemOff(StringBuilder sysex, MidiEventInfo midiEventInfo) {
+    private boolean handleGeneralMidiSystemOff(StringBuilder sysex, MidiEventInfo midiEventInfo) {
         boolean result = true;
 
         midiEventInfo.setEventEventKey(SYSEX_GM_SYSTEM_OFF);
@@ -318,7 +323,7 @@ public class SysexProcessor {
     /**
      * F0 7E XN 08 08...
      */
-    private static boolean handleScaleOctaveTuning(StringBuilder sysex, MidiEventInfo midiEventInfo) {
+    private boolean handleScaleOctaveTuning(StringBuilder sysex, MidiEventInfo midiEventInfo) {
         boolean result = true;
 
         midiEventInfo.setEventEventKey(SYSEX_SCALE_OCTAVE_TUNING);
@@ -330,7 +335,7 @@ public class SysexProcessor {
     /*
      * FO 43(or 41)...
      */
-    private static boolean handleManufacturerMessage(String selector, StringBuilder sysex, MidiEventInfo midiEventInfo) {
+    private boolean handleManufacturerMessage(String selector, StringBuilder sysex, MidiEventInfo midiEventInfo) {
         boolean result = false;
 
         result = switch (selector) {
@@ -346,7 +351,7 @@ public class SysexProcessor {
     /*
      * FO 41...
      */
-    private static boolean handleRolandMessage(StringBuilder sysex, MidiEventInfo midiEventInfo) {
+    private boolean handleRolandMessage(StringBuilder sysex, MidiEventInfo midiEventInfo) {
         boolean result = true;
 
         midiEventInfo.setDescription("Roland Message");
@@ -358,7 +363,7 @@ public class SysexProcessor {
     /*
      * FO 42...
      */
-    private static boolean handleKorgMessage(StringBuilder sysex, MidiEventInfo midiEventInfo) {
+    private boolean handleKorgMessage(StringBuilder sysex, MidiEventInfo midiEventInfo) {
         boolean result = true;
 
         midiEventInfo.setDescription("Korg Message");
@@ -370,10 +375,10 @@ public class SysexProcessor {
     /*
      * FO 43...
      */
-    private static boolean handleYamahaMessage(StringBuilder sysex, MidiEventInfo midiEventInfo) {
+    private boolean handleYamahaMessage(StringBuilder sysex, MidiEventInfo midiEventInfo) {
         boolean result = true;
 
-        String selector = ByteHelper.getAndStrip(sysex, 2);
+        String selector = ByteHelper.getAndStrip(sysex, 1);
 
         result = switch (selector) {
             case "7E" -> handleYamahaControls(sysex, midiEventInfo);
@@ -404,7 +409,7 @@ public class SysexProcessor {
     /*
      * FO 43 7E...
      */
-    private static boolean handleYamahaControls(StringBuilder sysex, MidiEventInfo midiEventInfo) {
+    private boolean handleYamahaControls(StringBuilder sysex, MidiEventInfo midiEventInfo) {
         boolean result = true;
 
         String selector = ByteHelper.getAndStrip(sysex, 2);
@@ -422,7 +427,7 @@ public class SysexProcessor {
     /*
      * FO 43 7E 00...
      */
-    private static boolean handleSectionControl(StringBuilder sysex, MidiEventInfo midiEventInfo) {
+    private boolean handleSectionControl(StringBuilder sysex, MidiEventInfo midiEventInfo) {
         boolean result = true;
 
         midiEventInfo.setEventEventKey(SYSEX_SECTION_CONTROL);
@@ -466,7 +471,7 @@ public class SysexProcessor {
     /*
      * FO 43 7E 01...
      */
-    private static boolean handleTempoControl(StringBuilder sysex, MidiEventInfo midiEventInfo) {
+    private boolean handleTempoControl(StringBuilder sysex, MidiEventInfo midiEventInfo) {
         boolean result = true;
 
         midiEventInfo.setEventEventKey(SYSEX_TEMPO_CONTROL);
@@ -495,7 +500,7 @@ public class SysexProcessor {
     /*
      * FO 43 7E 02...
      */
-    private static boolean handleChordControlType1(StringBuilder sysex, MidiEventInfo midiEventInfo) {
+    private boolean handleChordControlType1(StringBuilder sysex, MidiEventInfo midiEventInfo) {
         boolean result = true;
 
         midiEventInfo.setEventEventKey(SYSEX_CHORD_CONTROL_1);
@@ -507,7 +512,7 @@ public class SysexProcessor {
     /*
      * FO 43 7E 03...
      */
-    private static boolean handleChordControlType2(StringBuilder sysex, MidiEventInfo midiEventInfo) {
+    private boolean handleChordControlType2(StringBuilder sysex, MidiEventInfo midiEventInfo) {
         boolean result = true;
 
         midiEventInfo.setEventEventKey(SYSEX_CHORD_CONTROL_2);
@@ -518,7 +523,7 @@ public class SysexProcessor {
     /*
      * FO 43 73...
      */
-    private static boolean handleYamahaSystemMessages(StringBuilder sysex, MidiEventInfo midiEventInfo) {
+    private boolean handleYamahaSystemMessages(StringBuilder sysex, MidiEventInfo midiEventInfo) {
         boolean result = true;
 
         /*
@@ -544,7 +549,7 @@ public class SysexProcessor {
     /*
      * FO 43 73 01 52...
      */
-    private static boolean handleScaleMessages(StringBuilder sysex, MidiEventInfo midiEventInfo) {
+    private boolean handleScaleMessages(StringBuilder sysex, MidiEventInfo midiEventInfo) {
         boolean result = true;
 
         /*
@@ -566,7 +571,7 @@ public class SysexProcessor {
     /*
      * FO 43 73 01 73 2F 02 (00/01)...
      */
-    private static boolean handleScaleTuningMessages(String type, StringBuilder sysex, MidiEventInfo midiEventInfo) {
+    private boolean handleScaleTuningMessages(String type, StringBuilder sysex, MidiEventInfo midiEventInfo) {
         boolean result = true;
 
         String selector = ByteHelper.getAndStrip(sysex, 1);
@@ -613,7 +618,7 @@ public class SysexProcessor {
     /*
      * FO 43 73 01 73 2F 02 (00/01) 40...
      */
-    private static boolean handleScaleTuning(String type, StringBuilder sysex, MidiEventInfo midiEventInfo) {
+    private boolean handleScaleTuning(String type, StringBuilder sysex, MidiEventInfo midiEventInfo) {
         boolean result = true;
 
         midiEventInfo.setEventEventKey(SYSEX_SCALE_TUNING);
@@ -626,7 +631,7 @@ public class SysexProcessor {
     /*
      * FO 43 73 01 73 2F 02 (00/01) 4D...
      */
-    private static boolean handleScaleTuningBaseNote(String type, StringBuilder sysex, MidiEventInfo midiEventInfo) {
+    private boolean handleScaleTuningBaseNote(String type, StringBuilder sysex, MidiEventInfo midiEventInfo) {
         boolean result = true;
 
         midiEventInfo.setEventEventKey(SYSEX_SCALE_TUNING_BASE_NOTE);
@@ -650,7 +655,7 @@ public class SysexProcessor {
     /*
      * FO 43 73 01 02...
      */
-    private static boolean handleInternalClock(StringBuilder sysex, MidiEventInfo midiEventInfo) {
+    private boolean handleInternalClock(StringBuilder sysex, MidiEventInfo midiEventInfo) {
         boolean result = true;
 
         midiEventInfo.setEventEventKey(SYSEX_INTERNAL_CLOCK);
@@ -662,7 +667,7 @@ public class SysexProcessor {
     /*
      * FO 43 73 01 03...
      */
-    private static boolean handleExternalClock(StringBuilder sysex, MidiEventInfo midiEventInfo) {
+    private boolean handleExternalClock(StringBuilder sysex, MidiEventInfo midiEventInfo) {
         boolean result = true;
 
         midiEventInfo.setEventEventKey(SYSEX_EXTERNAL_CLOCK);
@@ -674,12 +679,30 @@ public class SysexProcessor {
     /*
      * FO 43 73 01 51...
      */
-    private static boolean handleStyleMessages(StringBuilder sysex, MidiEventInfo midiEventInfo) {
+    private boolean handleStyleMessages(StringBuilder sysex, MidiEventInfo midiEventInfo) {
         boolean result = true;
 
-        // F0 43 73 01 51 00 00 02 05 ... Display Control
-        // F0 43 73 01 51 00 00 03 10 ... Style Split Point
-        // F0 43 73 01 51 05 00 04 00 ... Style No
+        String selector = ByteHelper.getAndStrip(sysex, 3);
+        result = switch (selector) {
+            case "00 00 02" -> {
+                midiEventInfo.setEventEventKey(SYSEX_DISPLAY_CONTROL);
+                midiEventInfo.setDescription("Display Open/Close");
+                yield true;
+            }
+            case "00 00 03" -> {
+                midiEventInfo.setEventEventKey(SYSEX_SPLIT_POINT);
+                midiEventInfo.setDescription("Split Point");
+                yield true;
+            }
+            case "05 00 04" -> {
+                midiEventInfo.setEventEventKey(SYSEX_STYLE_CHANGE);
+                midiEventInfo.setDescription("Style change");
+                yield true;
+            }
+            default -> {
+                yield handleUnknownStyleMessage(selector, midiEventInfo);
+            }
+        };
 
         return result;
     }
@@ -687,7 +710,7 @@ public class SysexProcessor {
     /*
      * FO 43 73 01 1F...
      */
-    private static boolean handleGuideMessages(StringBuilder sysex, MidiEventInfo midiEventInfo) {
+    private boolean handleGuideMessages(StringBuilder sysex, MidiEventInfo midiEventInfo) {
         boolean result = true;
 
         midiEventInfo.setEventEventKey(SYSEX_GUIDE);
@@ -722,7 +745,7 @@ public class SysexProcessor {
     /*
      * FO 43 73 01 50...
      */
-    private static boolean handleScoreMessages(StringBuilder sysex, MidiEventInfo midiEventInfo) {
+    private boolean handleScoreMessages(StringBuilder sysex, MidiEventInfo midiEventInfo) {
         boolean result = true;
 
         String selector = ByteHelper.getAndStrip(sysex, 3);
@@ -956,8 +979,6 @@ public class SysexProcessor {
             }
             default -> handleUnknownScoreMessage(selector, midiEventInfo);
         };
-        // FO 43 73 01 50 19 00 00     Audio Song Control
-        // FO 43 73 01 50 12 00 (00-0B)
 
         return result;
     }
@@ -965,7 +986,7 @@ public class SysexProcessor {
     /*
      * FO 43 1n...
      */
-    private static boolean handleYamahaXGParameterChange(StringBuilder sysex, MidiEventInfo midiEventInfo) {
+    private boolean handleYamahaXGParameterChange(StringBuilder sysex, MidiEventInfo midiEventInfo) {
         boolean result = true;
 
         // Skip byte 4C
@@ -1020,13 +1041,13 @@ public class SysexProcessor {
     }
 
 
-
-
     /*
      * From here the problem cases
      */
-    private static boolean handleUnknownSysexMessage(String selector, MidiEventInfo midiEventInfo) {
+    private boolean handleUnknownSysexMessage(String selector, MidiEventInfo midiEventInfo) {
         boolean result = true;
+
+        errors++;
 
         midiEventInfo.setColor(getColor("sysex", "unknown or error"));
         midiEventInfo.setDescription("Unknown sysex");
@@ -1035,8 +1056,10 @@ public class SysexProcessor {
         return result;
     }
 
-    private static boolean handleUnknowUniversalRealTimeMessage(String selector, MidiEventInfo midiEventInfo) {
+    private boolean handleUnknowUniversalRealTimeMessage(String selector, MidiEventInfo midiEventInfo) {
         boolean result = true;
+
+        errors++;
 
         midiEventInfo.setColor(getColor("sysex", "unknown or error"));
         midiEventInfo.setDescription("Unknown URT message");
@@ -1045,8 +1068,10 @@ public class SysexProcessor {
         return result;
     }
 
-    private static boolean handleUnknownEffectParameter(String selector, MidiEventInfo midiEventInfo) {
+    private boolean handleUnknownEffectParameter(String selector, MidiEventInfo midiEventInfo) {
         boolean result = true;
+
+        errors++;
 
         midiEventInfo.setColor(getColor("sysex", "unknown or error"));
         midiEventInfo.setDescription("Unknown Parameter message");
@@ -1055,8 +1080,10 @@ public class SysexProcessor {
         return result;
     }
 
-    private static boolean handleUnknowUniversalNonRealTimeMessage(String selector, MidiEventInfo midiEventInfo) {
+    private boolean handleUnknowUniversalNonRealTimeMessage(String selector, MidiEventInfo midiEventInfo) {
         boolean result = true;
+
+        errors++;
 
         midiEventInfo.setColor(getColor("sysex", "unknown or error"));
         midiEventInfo.setDescription("Unknown Non-URT message");
@@ -1065,8 +1092,10 @@ public class SysexProcessor {
         return result;
     }
 
-    private static boolean handleUnknowManufacturerMessage(String selector, MidiEventInfo midiEventInfo) {
+    private boolean handleUnknowManufacturerMessage(String selector, MidiEventInfo midiEventInfo) {
         boolean result = true;
+
+        errors++;
 
         midiEventInfo.setColor(getColor("sysex", "unknown or error"));
         midiEventInfo.setDescription("Unknown Manufacturer message");
@@ -1075,8 +1104,10 @@ public class SysexProcessor {
         return result;
     }
 
-    private static boolean handleUnknownYamahaMessage(String selector, MidiEventInfo midiEventInfo) {
+    private boolean handleUnknownYamahaMessage(String selector, MidiEventInfo midiEventInfo) {
         boolean result = true;
+
+        errors++;
 
         midiEventInfo.setColor(getColor("sysex", "unknown or error"));
 
@@ -1086,8 +1117,10 @@ public class SysexProcessor {
         return result;
     }
 
-    private static boolean handleUnknownYamahaControl(String selector, MidiEventInfo midiEventInfo) {
+    private boolean handleUnknownYamahaControl(String selector, MidiEventInfo midiEventInfo) {
         boolean result = true;
+
+        errors++;
 
         midiEventInfo.setColor(getColor("sysex", "unknown or error"));
 
@@ -1097,8 +1130,10 @@ public class SysexProcessor {
         return result;
     }
 
-    private static boolean handleUnknownYamahaSystemMessage(String selector, MidiEventInfo midiEventInfo) {
+    private boolean handleUnknownYamahaSystemMessage(String selector, MidiEventInfo midiEventInfo) {
         boolean result = true;
+
+        errors++;
 
         midiEventInfo.setColor(getColor("sysex", "unknown or error"));
 
@@ -1108,8 +1143,10 @@ public class SysexProcessor {
         return result;
     }
 
-    private static boolean handleUnknownScaleMessages(String selector, MidiEventInfo midiEventInfo) {
+    private boolean handleUnknownScaleMessages(String selector, MidiEventInfo midiEventInfo) {
         boolean result = true;
+
+        errors++;
 
         midiEventInfo.setColor(getColor("sysex", "unknown or error"));
 
@@ -1119,8 +1156,10 @@ public class SysexProcessor {
         return result;
     }
 
-    private static boolean handleUnknownScaleTuningMessage(String selector, MidiEventInfo midiEventInfo) {
+    private boolean handleUnknownScaleTuningMessage(String selector, MidiEventInfo midiEventInfo) {
         boolean result = true;
+
+        errors++;
 
         midiEventInfo.setColor(getColor("sysex", "unknown or error"));
 
@@ -1130,12 +1169,27 @@ public class SysexProcessor {
         return result;
     }
 
-    private static boolean handleUnknownScoreMessage(String selector, MidiEventInfo midiEventInfo) {
+    private boolean handleUnknownScoreMessage(String selector, MidiEventInfo midiEventInfo) {
         boolean result = true;
+
+        errors++;
 
         midiEventInfo.setColor(getColor("sysex", "unknown or error"));
 
         midiEventInfo.setDescription("Unknown Score Message");
+        midiEventInfo.setComment(selector);
+
+        return result;
+    }
+
+    private boolean handleUnknownStyleMessage(String selector, MidiEventInfo midiEventInfo) {
+        boolean result = true;
+
+        errors++;
+
+        midiEventInfo.setColor(getColor("sysex", "unknown or error"));
+
+        midiEventInfo.setDescription("Unknown Style Message");
         midiEventInfo.setComment(selector);
 
         return result;

@@ -3,6 +3,7 @@ package util.midi.eventprocessors;
 import entity.midi.MidiEventInfo;
 import javafx.scene.paint.Color;
 import lombok.Getter;
+import lombok.Setter;
 import util.SysexToHexStringConvertor;
 import util.app.colors.ColorScheme;
 import util.midi.EventKeyType;
@@ -18,6 +19,10 @@ import static util.midi.EventKeyType.*;
 public class MetaProcessor {
     @Getter
     private static final MetaProcessor instance = new MetaProcessor();
+
+    @Getter
+    @Setter
+    private int errors = 0;
 
     private MetaProcessor() {
     }
@@ -35,8 +40,10 @@ public class MetaProcessor {
         colors.put(new ColorScheme.ColorKey("meta"), Color.INDIGO);
 
         // Event Colors
-        colors.put(new ColorScheme.ColorKey("meta", "tempo"), Color.LIMEGREEN);
-        colors.put(new ColorScheme.ColorKey("meta", "marker"), Color.AQUAMARINE);
+        colors.put(new ColorScheme.ColorKey("meta", "tempo"), Color.SEAGREEN);
+        colors.put(new ColorScheme.ColorKey("meta", "time signature"), Color.SEAGREEN);
+        colors.put(new ColorScheme.ColorKey("meta", "key signature"), Color.SEAGREEN);
+        colors.put(new ColorScheme.ColorKey("meta", "marker"), Color.DARKTURQUOISE);
 
         // Problem colors
         colors.put(new ColorScheme.ColorKey("meta", "unknown or error"), Color.RED);
@@ -86,6 +93,7 @@ public class MetaProcessor {
             case 0x05 -> handleLyric(data, midiEventInfo);
             case 0x06 -> handleMarker(data, midiEventInfo);
             case 0x07 -> handleCuePoint(data, midiEventInfo);
+            case 0x20 -> handleChannelPrefix(data, midiEventInfo);
             case 0x21 -> handleMIDIPort(data, midiEventInfo);
             case 0x2F -> result = false; // We don't want this in the events list, so KEEP this
             case 0x51 -> handleTempo(data, midiEventInfo);
@@ -158,6 +166,15 @@ public class MetaProcessor {
         midiEventInfo.setComment(new String(data, StandardCharsets.ISO_8859_1));
     }
 
+    private static void handleChannelPrefix(byte[] data, MidiEventInfo midiEventInfo) {
+        midiEventInfo.setEventEventKey(META_CHANNEL_PREFIX);
+
+        midiEventInfo.setDescription("Channel Prefix");
+
+        int prefix = data[0] & 0xFF;
+        midiEventInfo.setComment(SysexToHexStringConvertor.convertToHexString(new byte[]{(byte)(data[0] & 0xFF)}));
+    }
+
     private static void handleMIDIPort(byte[] data, MidiEventInfo midiEventInfo) {
         midiEventInfo.setEventEventKey(META_MIDI_PORT);
 
@@ -217,6 +234,7 @@ public class MetaProcessor {
     private static void handleTimeSignature(byte[] data, MidiEventInfo midiEventInfo) {
         midiEventInfo.setEventEventKey(META_TIME_SIGNATURE);
 
+        midiEventInfo.setColor(getColor("meta", "key signature"));
         midiEventInfo.setDescription("Time Signature");
 
         int numerator = data[0] & 0xFF;
@@ -229,6 +247,7 @@ public class MetaProcessor {
     private static void handleKeySignature(byte[] data, MidiEventInfo midiEventInfo) {
         midiEventInfo.setEventEventKey(META_KEY_SIGNATURE);
 
+        midiEventInfo.setColor(getColor("meta", "key signature"));
         midiEventInfo.setDescription("Key Signature");
 
         int sharpsFlats = data[0];
@@ -267,6 +286,8 @@ public class MetaProcessor {
      * Here come the problem messages
      */
     private void handleUnknowMessage(int type, MidiEventInfo midiEventInfo) {
+        errors++;
+
         midiEventInfo.setColor(getColor("meta", "unknown or error"));
 
         midiEventInfo.setDescription("Unknown META event");
