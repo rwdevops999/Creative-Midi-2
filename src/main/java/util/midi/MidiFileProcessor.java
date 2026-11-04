@@ -82,10 +82,7 @@ public class MidiFileProcessor {
 
                     isProcessed = metaProcessor.processMessage(metaMessage, midiEventInfo);
                 } else if (message instanceof SysexMessage sysexMessage) {
-                    // It is a SYSEX event
-                    midiEventInfo.setRootEventKey(SYSEX);
-
-//                    isProcessed = SysexProcessor.processMessage(sysexMessage, midiEventInfo);
+                    isProcessed = sysexProcessor.processMessage(sysexMessage, midiEventInfo);
                 }  else {
                     // Unknown event
                     logger.error("Error. Unknown event message type: {}", message.getClass().getName());
