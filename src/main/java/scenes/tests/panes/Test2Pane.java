@@ -41,7 +41,11 @@ public class Test2Pane extends HBox {
 
         Optional<List<String>> result = dialog.showAndWait();
         result.ifPresent(list -> {
-            System.out.println("Received something");
+            if (list.isEmpty()) {
+                System.out.println("EMPTY RESULT");
+            } else {
+                list.forEach(System.out::println);
+            }
         });
     }
 
