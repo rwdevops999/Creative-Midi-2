@@ -1669,8 +1669,8 @@
 [p3,24,127,0]Drums! ElectroKit
 [p3,49,126,0]LiveSFX! CymbalKit
 [p3,35,126,0]SFX! ArabicKit
-[p3,0,126,0]SFX! SFX! Kit1
-[p3,1,126,0]SFX! SFX! Kit2
+[p3,0,126,0]SFX! SFX Kit1
+[p3,1,126,0]SFX! SFX Kit2
 [p3,8,126,0]SFX! NoisesKit
 [p3,122,104,0]Live! SeaShore
 [p3,125,104,0]Live! Helicopter

@@ -527,8 +527,8 @@
 [p2,64,126,0]SFX! ArabicMixKit
 [p2,20,126,0]SFX! BassDrumKit
 [p2,21,126,0]SFX! ReverseBD Kit
-[p2,0,126,0]SFX! SFX! Kit1
-[p2,1,126,0]SFX! SFX! Kit2
+[p2,0,126,0]SFX! SFX Kit1
+[p2,1,126,0]SFX! SFX Kit2
 [g1]Legacy
 [g2]Piano
 [p3,0,0,113]Live! GrandPiano
