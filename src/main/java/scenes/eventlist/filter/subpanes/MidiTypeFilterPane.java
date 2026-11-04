@@ -1,5 +1,6 @@
 package scenes.eventlist.filter.subpanes;
 
+import entity.events.FilterBlock;
 import fx.component.LightIndicatorButton;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -13,6 +14,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.paint.Color;
 import scenes.eventlist.filter.FilterTypePane;
+import util.filter.DetailFilter;
 
 import static util.Util.showSmallPaneBorder;
 
@@ -84,7 +86,9 @@ public class MidiTypeFilterPane extends GridPane {
 
         Button det1 = new Button("Details");
         det1.setOnAction(e -> {
-
+            FilterBlock filterBlock = getFilterTypePane().getEventListFilterPane().getEventListPane().getFilterBlock();
+            filterBlock = DetailFilter.getInstance().executeFiltering("midi", filterBlock);
+            getFilterTypePane().getEventListFilterPane().getEventListPane().setFilterBlock(filterBlock);
         });
         det1.setPrefWidth(60);
         add(det1, 0, 1);

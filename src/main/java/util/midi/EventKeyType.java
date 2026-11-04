@@ -7,6 +7,7 @@ public enum EventKeyType {
 
     // MIDI EVENTS
     MIDI_NOTE_OFF,
+    MIDI_NOTE_ON,
     MIDI_PROGRAM_CHANGE,
     MIDI_CHANNEL_AFTERTOUCH,
     MIDI_KEY_AFTERTOUCH,

@@ -255,6 +255,11 @@ public class FileEditorPane extends VBox {
 
                 if (filterBlock.isFilterMidiOut()) {
                     filteredEvents = filteredEvents.stream().filter(e -> ! e.getRootEventKey().equals(EventKeyType.MIDI)).toList();
+                } else {
+                    List<EventKeyType> list = filterBlock.getEventsToFilter("midi");
+                    if (! list.isEmpty()) {
+                        filteredEvents = filteredEvents.stream().filter(e -> ! list.contains(e.getEventEventKey())).toList();
+                    }
                 }
 
                 if (filterBlock.isFilterMetaOut()) {
@@ -264,6 +269,7 @@ public class FileEditorPane extends VBox {
                 if (filterBlock.isFilterSysexOut()) {
                     filteredEvents = filteredEvents.stream().filter(e -> ! e.getRootEventKey().equals(EventKeyType.SYSEX)).toList();
                 }
+
             }
 
             List<MidiEventInfo> sortedQueue = filteredEvents.stream()

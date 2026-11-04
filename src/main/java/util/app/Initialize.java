@@ -3,6 +3,7 @@ package util.app;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.device.DeviceScanner;
+import util.filter.DetailFilter;
 import util.midi.MBTCalculator;
 import util.properties.AppProperties;
 
@@ -29,5 +30,8 @@ public class Initialize {
 
         int targetPPQ = AppProperties.getInstance().getPropertyAsInteger(TARGET_PPQ, 480);
         MBTCalculator.setTargetPPQ(targetPPQ);
+
+        // force creation of detail filter classes
+        DetailFilter.getInstance().printAlive();
     }
 }

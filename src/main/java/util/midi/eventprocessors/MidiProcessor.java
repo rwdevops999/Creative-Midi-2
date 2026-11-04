@@ -164,7 +164,7 @@ public class MidiProcessor {
     private boolean handleNoteOnEvent(ShortMessage message, MidiEventInfo midiEventInfo) {
         boolean result;
 
-        midiEventInfo.setEventEventKey(MIDI_NOTE_OFF);
+        midiEventInfo.setEventEventKey(MIDI_NOTE_ON);
 
         /*
          * We give this event a note color (this is used to close a note on,

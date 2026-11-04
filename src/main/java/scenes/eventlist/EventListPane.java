@@ -82,6 +82,16 @@ public class EventListPane extends GridPane {
         handleFiltering();
     }
 
+    public FilterBlock getFilterBlock() {
+        return filterBlock;
+    }
+
+    public void setFilterBlock(FilterBlock fb) {
+        filterBlock = fb;
+
+        handleFiltering();
+    }
+
     private void handleFiltering() {
         getEventListEditorPane().getFileEditorPane().filter(filterBlock);
     }
