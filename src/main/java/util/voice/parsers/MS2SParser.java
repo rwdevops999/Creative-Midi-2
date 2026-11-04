@@ -16,20 +16,17 @@ import java.util.*;
 public class MS2SParser {
     private static final Logger logger = LoggerFactory.getLogger(MS2SParser.class);
 
-    private InstrumentProvider provider;
     private File file;
 
     public MS2SParser() {
         super();
 
-        this.provider = null;
         file = null;
     }
 
-    public MS2SParser(InstrumentProvider prov, File file) {
+    public MS2SParser(File file) {
         this();
 
-        this.provider = prov;
         this.file = file;
         parse(this.file);
     }

@@ -1,16 +1,24 @@
 package util.voice;
 
 import entity.voice.Group;
+import util.properties.AppProperties;
+import util.voice.parsers.INSParser;
+import util.voice.parsers.MS2SParser;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
+import static util.properties.PropertyKeys.VOICES_DIR;
+
 public class InsProvider implements InstrumentProvider {
-    public InsProvider(File insFile) {
-    }
+
+    private INSParser parser;
 
     public InsProvider(String filename) {
-        this(new File(filename));
+        String voicesDir = AppProperties.getInstance().getPropertyAsString(VOICES_DIR," ././data/voices");
+        File file = new File(voicesDir, filename);
+        this.parser = new INSParser(file);
     }
 
     @Override
@@ -20,11 +28,11 @@ public class InsProvider implements InstrumentProvider {
 
     @Override
     public List<Group> getGroups() {
-        return List.of();
+        return this.parser.getRootGroups();
     }
 
     @Override
     public List<String> getTypes() {
-        return List.of();
+        return new ArrayList<>(this.parser.getTypes());
     }
 }
