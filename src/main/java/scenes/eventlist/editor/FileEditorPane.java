@@ -246,7 +246,7 @@ public class FileEditorPane extends VBox {
                         final int val = i+1;
                         boolean filterOut = (filterBlock.getFilterChannels() & check) != 0;
                         if (filterOut) {
-                            filteredEvents = filteredEvents.stream().filter(e -> e.getChannel() != val).toList();
+                            filteredEvents = filteredEvents.stream().filter(e -> e.getChannel() == null || (e.getChannel() != val)).toList();
                         }
 
                         check <<= 1;
@@ -264,12 +264,21 @@ public class FileEditorPane extends VBox {
 
                 if (filterBlock.isFilterMetaOut()) {
                     filteredEvents = filteredEvents.stream().filter(e -> ! e.getRootEventKey().equals(EventKeyType.META)).toList();
+                } else {
+                    List<EventKeyType> list = filterBlock.getEventsToFilter("meta");
+                    if (! list.isEmpty()) {
+                        filteredEvents = filteredEvents.stream().filter(e -> ! list.contains(e.getEventEventKey())).toList();
+                    }
                 }
 
                 if (filterBlock.isFilterSysexOut()) {
                     filteredEvents = filteredEvents.stream().filter(e -> ! e.getRootEventKey().equals(EventKeyType.SYSEX)).toList();
+                } else {
+                    List<EventKeyType> list = filterBlock.getEventsToFilter("sysex");
+                    if (! list.isEmpty()) {
+                        filteredEvents = filteredEvents.stream().filter(e -> ! list.contains(e.getEventEventKey())).toList();
+                    }
                 }
-
             }
 
             List<MidiEventInfo> sortedQueue = filteredEvents.stream()

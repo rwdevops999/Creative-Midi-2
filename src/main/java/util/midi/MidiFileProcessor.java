@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import util.midi.eventprocessors.MetaProcessor;
 import util.midi.eventprocessors.MidiProcessor;
 import util.midi.eventprocessors.SysexProcessor;
-import util.properties.AppProperties;
 
 import javax.sound.midi.*;
 import java.util.LinkedList;
@@ -77,15 +76,11 @@ public class MidiFileProcessor {
                  * Here we are going to process the events by type
                  */
                 if (message instanceof ShortMessage midiMessage) {
-                    // This is a normal MIDI event
-                    midiEventInfo.setRootEventKey(MIDI);
-
                     isProcessed = midiProcessor.processMessage(midiMessage, midiEventInfo);
                 } else if (message instanceof MetaMessage metaMessage) {
-                    // This is a META event
                     midiEventInfo.setRootEventKey(META);
 
-//                    isProcessed = MetaProcessor.processMessage(metaMessage, midiEventInfo);
+                    isProcessed = metaProcessor.processMessage(metaMessage, midiEventInfo);
                 } else if (message instanceof SysexMessage sysexMessage) {
                     // It is a SYSEX event
                     midiEventInfo.setRootEventKey(SYSEX);

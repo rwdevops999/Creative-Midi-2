@@ -6,10 +6,7 @@ import lombok.Getter;
 import util.app.AppInfo;
 import util.midi.EventKeyType;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 
 public class DetailFilter {
     @Getter
@@ -20,16 +17,21 @@ public class DetailFilter {
     public FilterBlock executeFiltering(String type, FilterBlock filterBlock) {
         String key = type.toUpperCase() + "_";
 
+        List<EventKeyType> dstTypeList = filterBlock.getEventsToFilter(type);
+
         // 1. Retrieve the events from EventKeyType
-        List<EventKeyType> srcTypeList = Arrays.asList(EventKeyType.values());
+        List<EventKeyType> srcTypeList = new ArrayList<>(Arrays.asList(EventKeyType.values()));
+        srcTypeList.removeAll(dstTypeList);
+
         List<String> srcEvents = srcTypeList.stream().map(Enum::toString).filter(s -> s.contains(key)).toList();
 
         // 2. Make list readable;
         // - This means remove key from the elements
         // - Change XXX_YYY to pascal case Xxx Yyy (e. NOTE_ON => Note On)
         srcEvents = srcEvents.stream().map(s -> toPascalCase(s.replaceFirst("_", "@#").split("@#")[1])).sorted().toList();
+
         // 3. Get the events from FilterBlock
-        List<EventKeyType> dstTypeList = filterBlock.getEventsToFilter(type);
+//        List<EventKeyType> dstTypeList = filterBlock.getEventsToFilter(type);
         List<String> dstEvents = dstTypeList.stream().map(Enum::toString).filter(s -> s.contains(key)).toList();
 
         // 4. Make List readable
@@ -39,7 +41,7 @@ public class DetailFilter {
         Optional<List<String>> result = dialog.showAndWait();
         result.ifPresent(list -> {
             if (list.isEmpty()) {
-                System.out.println("EMPTY RESULT");
+                filterBlock.setEventsToFilter(type, new ArrayList<>());
             } else {
                 // 5. Convert list back to EventTypeKey values
                 List<EventKeyType> res = list.stream().map(s -> {

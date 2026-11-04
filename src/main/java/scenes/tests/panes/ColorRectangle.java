@@ -25,7 +25,7 @@ public class ColorRectangle extends HBox {
     }
 
     private void buildPane(ObjectProperty<Color> dsColor) {
-        Label testLabel = new Label("This is a text");
+        Label testLabel = new Label("120 bpm");
         testLabel.textFillProperty().bind(dsColor);
         getChildren().add(testLabel);
     }

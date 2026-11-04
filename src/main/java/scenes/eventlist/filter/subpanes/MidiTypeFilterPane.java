@@ -74,13 +74,13 @@ public class MidiTypeFilterPane extends GridPane {
         LightIndicatorButton lib2 = new LightIndicatorButton("META", 50, "blue");
         lib2.selectedProperty().bindBidirectional(dsSelected2);
         lib2.setOnAction(e -> {
-            getFilterTypePane().getEventListFilterPane().getEventListPane().setFilterMetaOut(dsSelected2.get());
+            getFilterTypePane().getEventListFilterPane().getEventListPane().setFilterMetaOut(!dsSelected2.get());
         });
         add(lib2, 1, 0);
         LightIndicatorButton lib3 = new LightIndicatorButton("SYSEX", 50, "blue");
         lib3.selectedProperty().bindBidirectional(dsSelected3);
         lib3.setOnAction(e -> {
-            getFilterTypePane().getEventListFilterPane().getEventListPane().setFilterSysexOut(dsSelected3.get());
+            getFilterTypePane().getEventListFilterPane().getEventListPane().setFilterSysexOut(!dsSelected3.get());
         });
         add(lib3, 2, 0);
 
@@ -94,6 +94,11 @@ public class MidiTypeFilterPane extends GridPane {
         add(det1, 0, 1);
 
         Button det2 = new Button("Details");
+        det2.setOnAction(e -> {
+            FilterBlock filterBlock = getFilterTypePane().getEventListFilterPane().getEventListPane().getFilterBlock();
+            filterBlock = DetailFilter.getInstance().executeFiltering("meta", filterBlock);
+            getFilterTypePane().getEventListFilterPane().getEventListPane().setFilterBlock(filterBlock);
+        });
         det2.setPrefWidth(60);
         add(det2, 1, 1);
 
