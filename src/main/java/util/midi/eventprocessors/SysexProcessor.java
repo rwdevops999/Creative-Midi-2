@@ -36,7 +36,7 @@ public class SysexProcessor {
 
     static {
         // Global Color
-        colors.put(new ColorScheme.ColorKey("sysex"), Color.TAN);
+        colors.put(new ColorScheme.ColorKey("sysex"), Color.CHOCOLATE);
 
         // Event Colors
 
