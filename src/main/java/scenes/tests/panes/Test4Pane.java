@@ -26,10 +26,14 @@ public class Test4Pane extends HBox {
     }
 
     private  void  setupTest() {
-/*        ChannelControlPane channelControlPane = new ChannelControlPane(this);
-        getChildren().add(channelControlPane); */
     }
 
     private void runTest() {
+        int x = 15;
+
+        int y1 = x * 128;
+        int y2 = x << 7;
+
+        System.out.println("x: " + x + " y1: " + y1 + " y2: " + y2);
     }
 }

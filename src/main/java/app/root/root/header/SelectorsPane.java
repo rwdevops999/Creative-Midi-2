@@ -17,6 +17,8 @@ import util.properties.AppProperties;
 import util.properties.PropertyKeys;
 import util.registry.AppEvent;
 import util.registry.Registry;
+import util.voice.InstrumentProvider;
+import util.voice.InstrumentProviderFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -163,6 +165,8 @@ public class SelectorsPane extends HBox {
         keyboardSelector.getComboBox().getSelectionModel().selectedItemProperty().addListener((obs, oldVoice, newVoice) -> {
             if (newVoice != null) {
                 AppInfo.INSTANCE.setKeyboardVoice(newVoice);
+                // TODO Process the voices file
+                InstrumentProviderFactory.getProvider(newVoice);
                 Platform.runLater(() -> AppNotifications.showNotification("Keyboard Voice Selected", "'" + newVoice + "'"));
             }
         });
@@ -170,7 +174,7 @@ public class SelectorsPane extends HBox {
         KeyboardVoice defaultVoice = getDefaultVoiceFile();
         if (defaultVoice != null) {
             keyboardSelector.getComboBox().setValue(defaultVoice);
-            AppInfo.INSTANCE.setKeyboardVoice(defaultVoice);
+//            AppInfo.INSTANCE.setKeyboardVoice(defaultVoice);
         }
         getChildren().add(keyboardSelector);
     }
