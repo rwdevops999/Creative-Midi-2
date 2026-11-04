@@ -140,4 +140,36 @@ public class MS2SParser {
             System.out.println("Patches found in " + file.getName() + " = " + numPatches);
         }
     }
+
+    private List<Patch> findPatches(List<Group> groups) {
+        List<Patch> result = new ArrayList<>();
+
+        for (Group group : groups) {
+            result.addAll(group.getPatches());
+
+            if (! group.getGroups().isEmpty()) {
+                result.addAll(findPatches(group.getGroups()));
+            }
+        }
+
+        return result;
+    }
+
+    /*
+     * This information should be stored in the patch as linkedPatch (for INS patches)
+     */
+    public Patch findPatch(Patch inPatch) {
+        List<Patch> patches = findPatches(rootGroups);
+
+        return patches.stream().filter(p -> (p.getMsb().equals(inPatch.getMsb()) && p.getLsb().equals(inPatch.getLsb()) && p.getPc().equals(inPatch.getPc()))).findFirst().orElse(null);
+    }
+
+    /*
+     * This information should be stored in the patch as linkedPatch (for INS patches)
+     */
+    public Patch findPatch(int msb, int lsb, int pc) {
+        List<Patch> patches = findPatches(rootGroups);
+
+        return patches.stream().filter(p -> (p.getMsb() == msb && p.getLsb() == lsb && p.getPc() == pc)).findFirst().orElse(null);
+    }
 }

@@ -234,8 +234,6 @@ public class FileEditorPane extends VBox {
         List<MidiEventInfo> filteredEvents = new ArrayList<>(currentEvents);
 
         if (! filteredEvents.isEmpty()) {
-            // TODO handle Filtering here
-
             if (filterBlock != null) {
                 /*
                  * Filter on channels using the pattern

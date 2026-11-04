@@ -2,6 +2,7 @@ package util;
 
 import javafx.scene.Scene;
 import lombok.Getter;
+import lombok.Setter;
 
 public class Theme {
     @Getter
@@ -10,6 +11,7 @@ public class Theme {
     private Theme() {
     }
 
+    @Setter
     private ThemeType appTheme = ThemeType.LIGHT;
 
     public boolean isModeLight() {

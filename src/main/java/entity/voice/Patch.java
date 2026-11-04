@@ -35,7 +35,12 @@ public class Patch extends NameEntity implements Serializable {
     @Getter
     private Group parent;
 
+    @Getter
+    @Setter
+    private Patch linkedPatch;
+
     public Patch() {
+        linkedPatch = null;
     }
 
     public Patch(Group group, String type, String name, String msb, String lsb, String pc) {

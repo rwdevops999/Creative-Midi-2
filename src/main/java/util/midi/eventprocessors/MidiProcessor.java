@@ -1,13 +1,16 @@
 package util.midi.eventprocessors;
 
 import entity.midi.MidiEventInfo;
+import entity.voice.Patch;
 import javafx.scene.paint.Color;
 import lombok.Getter;
 import lombok.Setter;
 import util.SysexToHexStringConvertor;
+import util.app.AppInfo;
 import util.app.colors.ColorScheme;
 import util.midi.EventKeyType;
 import util.midi.MidiNoteMatcher;
+import util.voice.InstrumentProvider;
 
 import javax.sound.midi.ShortMessage;
 import java.util.HashMap;
@@ -51,7 +54,7 @@ public class MidiProcessor {
 
         colors.put(new ColorScheme.ColorKey("midi", "pitch bend"), Color.MEDIUMSPRINGGREEN);
         colors.put(new ColorScheme.ColorKey("midi", "main volume"), Color.LIGHTSKYBLUE);
-        colors.put(new ColorScheme.ColorKey("midi", "panpot"), Color.DARKORANGE);
+        colors.put(new ColorScheme.ColorKey("midi", "panpot"), Color.DARKGOLDENROD);
         colors.put(new ColorScheme.ColorKey("midi", "expression"), Color.DARKORCHID);
 
         // Problem colors
@@ -268,7 +271,7 @@ public class MidiProcessor {
     }
 
     private boolean handleProgramChangeEvent(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result = true;
 
         midiEventInfo.setEventEventKey(MIDI_PROGRAM_CHANGE);
 
@@ -292,17 +295,14 @@ public class MidiProcessor {
         int msb = getMSB(message.getChannel());
         int lsb = getLSB(message.getChannel());
 
-        // TODO When voice files are processed
-//        String voice = searchVoice(msb, lsb, pc);
-//        midiEventInfo.setComment(voice);
-
-        midiEventInfo.setComment("Voice Unknown MSB="+msb+", LSB="+lsb+", PC="+pc);
+        String voice = searchVoice(msb, lsb, pc);
+        midiEventInfo.setComment(voice);
 
         return result;
     }
 
     private boolean handleChannelAftertouchEvent(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result = true;
 
         midiEventInfo.setEventEventKey(MIDI_CHANNEL_AFTERTOUCH);
 
@@ -317,7 +317,7 @@ public class MidiProcessor {
     }
 
     private boolean handlePolyphonicAftertouchEvent(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result = true;
 
         midiEventInfo.setEventEventKey(MIDI_KEY_AFTERTOUCH);
 
@@ -389,7 +389,7 @@ public class MidiProcessor {
      * Here comes the Control Change Messages
      */
     private boolean handleBankSelectMSB(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result = true;
 
         midiEventInfo.setEventEventKey(MIDI_BANK_SELECT_MSB);
 
@@ -412,7 +412,7 @@ public class MidiProcessor {
     }
 
     private boolean handleModulation(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result = true;
 
         midiEventInfo.setEventEventKey(MIDI_MODULATION);
 
@@ -428,7 +428,7 @@ public class MidiProcessor {
     }
 
     private boolean handleBreath(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result = true;
 
         midiEventInfo.setEventEventKey(MIDI_BREATH);
 
@@ -444,7 +444,7 @@ public class MidiProcessor {
     }
 
     private boolean handlePortamentoTime(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result = true;
 
         midiEventInfo.setEventEventKey(MIDI_PORTAMENTO_TIME);
 
@@ -460,7 +460,7 @@ public class MidiProcessor {
     }
 
     private boolean handleDataEntryMSB(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result = true;
 
         midiEventInfo.setEventEventKey(MIDI_DATA_ENTRY_MSB);
 
@@ -476,7 +476,7 @@ public class MidiProcessor {
     }
 
     private boolean handleMainVolume(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result = true;
 
         midiEventInfo.setEventEventKey(MIDI_MAIN_VOLUME);
 
@@ -494,7 +494,7 @@ public class MidiProcessor {
     }
 
     private boolean handlePanPot(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result = true;
 
         midiEventInfo.setEventEventKey(MIDI_PANPOT);
 
@@ -522,7 +522,7 @@ public class MidiProcessor {
     }
 
     private boolean handleExpression(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result = true;
 
         midiEventInfo.setEventEventKey(MIDI_EXPRESSION);
 
@@ -539,7 +539,7 @@ public class MidiProcessor {
     }
 
     private boolean handleGeneralPurposeController(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result = true;
 
         midiEventInfo.setEventEventKey(MIDI_GENERAL_PURPOSE);
 
@@ -555,7 +555,7 @@ public class MidiProcessor {
     }
 
     private boolean handleBankSelectLSB(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result = true;
 
         midiEventInfo.setEventEventKey(MIDI_BANK_SELECT_LSB);
 
@@ -578,7 +578,7 @@ public class MidiProcessor {
     }
 
     private boolean handleDataEntryLSB(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result = true;
 
         midiEventInfo.setEventEventKey(MIDI_DATA_ENTRY_LSB);
 
@@ -594,7 +594,7 @@ public class MidiProcessor {
     }
 
     private boolean handleSustainDamper(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result = true;
 
         midiEventInfo.setEventEventKey(MIDI_SUSTAIN_DAMPER);
 
@@ -610,7 +610,7 @@ public class MidiProcessor {
     }
 
     private boolean handlePortamento(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result = true;
 
         midiEventInfo.setEventEventKey(MIDI_PORTAMENTO);
 
@@ -627,7 +627,7 @@ public class MidiProcessor {
     }
 
     private boolean handleSostenuto(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result = true;
 
         midiEventInfo.setEventEventKey(MIDI_SOSTENUTO);
 
@@ -644,7 +644,7 @@ public class MidiProcessor {
     }
 
     private boolean handleSoftPedal(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result = true;
 
         midiEventInfo.setEventEventKey(MIDI_SOFT_PEDAL);
 
@@ -661,7 +661,7 @@ public class MidiProcessor {
     }
 
     private boolean handleResonance(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result = true;
 
         midiEventInfo.setEventEventKey(MIDI_RESONANCE);
 
@@ -677,7 +677,7 @@ public class MidiProcessor {
     }
 
     private boolean handleReleaseTime(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result = true;
 
         midiEventInfo.setEventEventKey(MIDI_RELEASE_TIME);
 
@@ -693,7 +693,7 @@ public class MidiProcessor {
     }
 
     private boolean handleAttackTime(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result = true;
 
         midiEventInfo.setEventEventKey(MIDI_ATTACK_TIME);
 
@@ -709,7 +709,7 @@ public class MidiProcessor {
     }
 
     private boolean handleCutoff(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result = true;
 
         midiEventInfo.setEventEventKey(MIDI_CUTOFF);
 
@@ -725,7 +725,7 @@ public class MidiProcessor {
     }
 
     private boolean handleDecayTime(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result = true;
 
         midiEventInfo.setEventEventKey(MIDI_DECAY_TIME);
 
@@ -740,7 +740,7 @@ public class MidiProcessor {
     }
 
     private boolean handleVibratoRate(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result = true;
 
         midiEventInfo.setEventEventKey(MIDI_VIBRATO_RATE);
 
@@ -756,7 +756,7 @@ public class MidiProcessor {
     }
 
     private boolean handleVibratoDepth(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result = true;
 
         midiEventInfo.setEventEventKey(MIDI_VIBRATO_DEPTH);
 
@@ -771,7 +771,7 @@ public class MidiProcessor {
     }
 
     private boolean handleVibratoDelay(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result = true;
 
         midiEventInfo.setEventEventKey(MIDI_VIBRATO_DELAY);
 
@@ -786,7 +786,7 @@ public class MidiProcessor {
     }
 
     private boolean handleArticulation1(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result = true;
 
         midiEventInfo.setEventEventKey(MIDI_ARTICULATION_1);
 
@@ -803,7 +803,7 @@ public class MidiProcessor {
     }
 
     private boolean handleArticulation2(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result = true;
 
         midiEventInfo.setEventEventKey(MIDI_ARTICULATION_2);
 
@@ -820,7 +820,7 @@ public class MidiProcessor {
     }
 
     private boolean handleArticulation3(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result = true;
 
         midiEventInfo.setEventEventKey(MIDI_ARTICULATION_3);
 
@@ -836,7 +836,7 @@ public class MidiProcessor {
     }
 
     private boolean handlePortamentoControl(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result = true;
 
         midiEventInfo.setEventEventKey(MIDI_PORTAMENTO_CONTROL);
 
@@ -854,7 +854,7 @@ public class MidiProcessor {
     }
 
     private boolean handleReverbSendLevel(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result = true;
 
         midiEventInfo.setEventEventKey(MIDI_REVERB_SEND_LEVEL);
 
@@ -870,7 +870,7 @@ public class MidiProcessor {
     }
 
     private boolean handleChorusSendLevel(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result = true;
 
         midiEventInfo.setEventEventKey(MIDI_CHORUS_SEND_LEVEL);
 
@@ -886,7 +886,7 @@ public class MidiProcessor {
     }
 
     private boolean handleVariationSendLevel(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result = true;
 
         midiEventInfo.setEventEventKey(MIDI_VARIATION_SEND_LEVEL);
 
@@ -902,7 +902,7 @@ public class MidiProcessor {
     }
 
     private boolean handleRPNIncrement(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result = true;
 
         midiEventInfo.setEventEventKey(MIDI_RPN_INCREMENT);
 
@@ -913,7 +913,7 @@ public class MidiProcessor {
     }
 
     private boolean handleRPNDecrement(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result = true;
 
         midiEventInfo.setEventEventKey(MIDI_RPN_DECREMENT);
 
@@ -924,7 +924,7 @@ public class MidiProcessor {
     }
 
     private boolean handleNRPNLsb(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result = true;
 
         midiEventInfo.setEventEventKey(MIDI_NRPN_LSB);
 
@@ -940,7 +940,7 @@ public class MidiProcessor {
     }
 
     private boolean handleNRPNMsb(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result = true;
 
         midiEventInfo.setEventEventKey(MIDI_NRPN_MSB);
 
@@ -956,7 +956,7 @@ public class MidiProcessor {
     }
 
     private boolean handleRPNLsb(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result = true;
 
         midiEventInfo.setEventEventKey(MIDI_RPN_LSB);
 
@@ -972,7 +972,7 @@ public class MidiProcessor {
     }
 
     private boolean handleRPNMsb(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result = true;
 
         midiEventInfo.setEventEventKey(MIDI_RPN_MSB);
 
@@ -1108,7 +1108,7 @@ public class MidiProcessor {
      * Processing of Real-time Messages
      */
     private boolean handlePitchBendChangeEvent(ShortMessage message, MidiEventInfo midiEventInfo) {
-        boolean result = false;
+        boolean result = true;
 
         midiEventInfo.setEventEventKey(MIDI_PITCH_BEND);
 
@@ -1297,5 +1297,20 @@ public class MidiProcessor {
         midiEventInfo.setDescription("Unknown Mode Change");
 
         return result;
+    }
+
+    private static String searchVoice(int msb, int lsb, int pc) {
+        String voice = "Unknown voice";
+
+        InstrumentProvider instrumentProvider = AppInfo.INSTANCE.getInstrumentProvider();
+
+        if (instrumentProvider != null) {
+            Patch patch = instrumentProvider.findPatch(msb, lsb, pc);
+            if (patch != null) {
+                voice = patch.getName();
+            }
+        }
+
+        return voice;
     }
 }

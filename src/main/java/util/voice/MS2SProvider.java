@@ -1,6 +1,7 @@
 package util.voice;
 
 import entity.voice.Group;
+import entity.voice.Patch;
 import util.properties.AppProperties;
 import util.voice.parsers.MS2SParser;
 
@@ -32,5 +33,10 @@ public class MS2SProvider implements InstrumentProvider {
     @Override
     public List<String> getTypes() {
         return new ArrayList<>(parser.getTypes());
+    }
+
+    @Override
+    public Patch findPatch(int msb, int lsb, int pc) {
+        return parser.findPatch(msb, lsb, pc);
     }
 }

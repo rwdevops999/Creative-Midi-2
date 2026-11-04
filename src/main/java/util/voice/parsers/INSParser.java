@@ -6,6 +6,7 @@ import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.app.AppInfo;
+import util.voice.InsProvider;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,21 +16,25 @@ import java.util.*;
 public class INSParser {
     private static final Logger logger = LoggerFactory.getLogger(INSParser.class);
 
+    private InsProvider provider;
     private File file;
 
     public INSParser() {
         super();
 
+        provider = null;
         file = null;
     }
 
-    public INSParser(File file) {
+    public INSParser(InsProvider provider, File file) {
         this();
 
+        this.provider = provider; // we can use the provider to find the linkedpatch in the MS2S file
         this.file = file;
         parse(this.file);
     }
 
+    // for INS these are the banks as INS doesn't know groups like MS2S.
     @Getter
     private List<Group> rootGroups = new ArrayList<>();
 
@@ -47,6 +52,9 @@ public class INSParser {
     public void parse(File file) {
         numPatches = 0;
         rootGroups = new ArrayList<>();
+
+        // TODO add INS parsing
+
 
         if (AppInfo.INSTANCE.isDebugMode()) {
             System.out.println("Patches found in " + file.getName() + " = " + numPatches);

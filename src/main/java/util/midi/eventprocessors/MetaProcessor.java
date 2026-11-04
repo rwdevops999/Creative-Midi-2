@@ -43,7 +43,7 @@ public class MetaProcessor {
         colors.put(new ColorScheme.ColorKey("meta", "tempo"), Color.SEAGREEN);
         colors.put(new ColorScheme.ColorKey("meta", "time signature"), Color.SEAGREEN);
         colors.put(new ColorScheme.ColorKey("meta", "key signature"), Color.SEAGREEN);
-        colors.put(new ColorScheme.ColorKey("meta", "marker"), Color.DARKTURQUOISE);
+        colors.put(new ColorScheme.ColorKey("meta", "marker"), Color.DARKTURQUOISE.darker());
 
         // Problem colors
         colors.put(new ColorScheme.ColorKey("meta", "unknown or error"), Color.RED);

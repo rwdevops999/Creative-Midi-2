@@ -8,6 +8,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.Setter;
+import util.voice.InstrumentProvider;
 
 public enum AppInfo {
         INSTANCE; // The single instance
@@ -50,4 +51,8 @@ public enum AppInfo {
         @Getter
         @Setter
         private Sysex sysex;
+
+        @Getter
+        @Setter
+        private InstrumentProvider instrumentProvider;
 }
