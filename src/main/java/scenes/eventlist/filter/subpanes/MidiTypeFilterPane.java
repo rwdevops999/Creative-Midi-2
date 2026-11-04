@@ -103,6 +103,11 @@ public class MidiTypeFilterPane extends GridPane {
         add(det2, 1, 1);
 
         Button det3 = new Button("Details");
+        det3.setOnAction(e -> {
+            FilterBlock filterBlock = getFilterTypePane().getEventListFilterPane().getEventListPane().getFilterBlock();
+            filterBlock = DetailFilter.getInstance().executeFiltering("sysex", filterBlock);
+            getFilterTypePane().getEventListFilterPane().getEventListPane().setFilterBlock(filterBlock);
+        });
         det3.setPrefWidth(60);
         add(det3, 2, 1);
     }
