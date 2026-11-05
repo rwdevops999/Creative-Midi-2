@@ -58,4 +58,10 @@ public class InsProvider implements InstrumentProvider {
         return linkedParser.findPatch(msb, lsb, pc);
     }
 
+    @Override
+    public String getGroupingName() {
+        return "Banks";
+    }
+
+
 }

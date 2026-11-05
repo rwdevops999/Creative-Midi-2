@@ -40,4 +40,9 @@ public class MS2SProvider implements InstrumentProvider {
     public Patch findPatch(int msb, int lsb, int pc) {
         return parser.findPatch(msb, lsb, pc);
     }
+
+    @Override
+    public String getGroupingName() {
+        return "Groups";
+    }
 }

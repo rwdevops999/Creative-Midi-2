@@ -20,4 +20,6 @@ public interface InstrumentProvider {
         return null;
     }
 
+    String getGroupingName();
+
 }

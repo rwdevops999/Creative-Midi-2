@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.Util;
 
+import static util.Util.setPaneBackground;
+import static util.Util.setPaneBackgroundWithColor;
 import static util.app.colors.ColorScheme.getColor;
 
 public class VoiceSearchPane extends VBox {
@@ -23,6 +25,8 @@ public class VoiceSearchPane extends VBox {
 
         Util.setPaneWidthAsPercentage(this, owner, width);
         Util.showSmallPaneBorder(this, getColor("border", "green"));
+
+        setPaneBackground(this);
 
         parent = owner;
 
