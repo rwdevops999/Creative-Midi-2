@@ -16,22 +16,28 @@ import java.util.*;
 public class INSParser {
     private static final Logger logger = LoggerFactory.getLogger(INSParser.class);
 
+    @Getter
+    private static INSParser instance = new INSParser();
+
     private InsProvider provider;
     private File file;
 
-    public INSParser() {
-        super();
-
+    private INSParser() {
         provider = null;
         file = null;
     }
 
-    public INSParser(InsProvider provider, File file) {
-        this();
+    private String lastProcessedFile = null;
 
+    public void startParsing(InsProvider provider, File file) {
         this.provider = provider; // we can use the provider to find the linkedpatch in the MS2S file
         this.file = file;
-        parse(this.file);
+
+        if (lastProcessedFile == null || !lastProcessedFile.equals(file.getName())) {
+            System.out.println("PARSING: " + file.getName());
+            parse(this.file);
+            lastProcessedFile = file.getName();
+        }
     }
 
     // for INS these are the banks as INS doesn't know groups like MS2S.

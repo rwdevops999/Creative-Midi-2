@@ -14,18 +14,23 @@ import java.util.List;
 import static util.properties.PropertyKeys.VOICES_DIR;
 
 public class InsProvider implements InstrumentProvider {
-
     private INSParser parser;
     private MS2SParser linkedParser;
+
+    private InsProvider(INSParser parser) {
+        this.parser = parser;
+    }
 
     public InsProvider(String filename) {
         String voicesDir = AppProperties.getInstance().getPropertyAsString(VOICES_DIR," ././data/voices");
         String linkedFilename = FilenameUtils.removeExtension(filename);
         File linkedFile = new File(voicesDir, linkedFilename + ".txt");
-        this.linkedParser = new MS2SParser(linkedFile);
+        this.linkedParser = MS2SParser.getInstance();
+        this.linkedParser.startParsing(linkedFile);
 
         File file = new File(voicesDir, filename);
-        this.parser = new INSParser(this, file);
+        this.parser = INSParser.getInstance();
+        this.parser.startParsing(this, file);
     }
 
     @Override

@@ -16,19 +16,24 @@ import java.util.*;
 public class MS2SParser {
     private static final Logger logger = LoggerFactory.getLogger(MS2SParser.class);
 
+    @Getter
+    private static MS2SParser instance = new MS2SParser();
     private File file;
 
-    public MS2SParser() {
+    private MS2SParser() {
         super();
 
         file = null;
     }
 
-    public MS2SParser(File file) {
-        this();
-
+    private String lastProcessedFile = null;
+    public void startParsing(File file) {
         this.file = file;
-        parse(this.file);
+        if (lastProcessedFile == null || !lastProcessedFile.equals(file.getName())) {
+            System.out.println("PARSING: " + file.getName());
+            parse(this.file);
+            lastProcessedFile = file.getName();
+        }
     }
 
     @Getter

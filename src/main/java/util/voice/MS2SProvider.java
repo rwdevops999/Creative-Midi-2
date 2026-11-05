@@ -17,7 +17,8 @@ public class MS2SProvider implements InstrumentProvider {
     public MS2SProvider(String filename) {
         String voicesDir = AppProperties.getInstance().getPropertyAsString(VOICES_DIR," ././data/voices");
         File file = new File(voicesDir, filename);
-        this.parser = new MS2SParser(file);
+        this.parser = MS2SParser.getInstance();
+        this.parser.startParsing(file);
     }
 
     @Override
