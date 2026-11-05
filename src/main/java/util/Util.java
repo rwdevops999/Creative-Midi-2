@@ -1,6 +1,7 @@
 package util;
 
 import entity.NoteEntity;
+import javafx.scene.Node;
 import javafx.scene.control.Control;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -29,12 +30,44 @@ public class Util {
         child.prefWidthProperty().bind(parent.widthProperty().multiply(width));
     }
 
+    public static void setPaneHeightAsPercentage(Pane child, Pane parent, double size) {
+        double height = size / 100.0;
+
+        child.minHeightProperty().bind(parent.heightProperty().multiply(height));
+        child.maxHeightProperty().bind(parent.heightProperty().multiply(height));
+        child.prefHeightProperty().bind(parent.heightProperty().multiply(height));
+    }
+
+    public static void setPaneWidthAsPercentage(Pane child, Pane parent, double size) {
+        double width = size / 100.0;
+
+        child.minWidthProperty().bind(parent.widthProperty().multiply(width));
+        child.maxWidthProperty().bind(parent.widthProperty().multiply(width));
+        child.prefWidthProperty().bind(parent.widthProperty().multiply(width));
+    }
+
     public static void setControlWidthAsPercentage(Control control, Pane parent, int size) {
         double width = size / 100.0;
 
         control.minWidthProperty().bind(parent.widthProperty().multiply(width));
         control.maxWidthProperty().bind(parent.widthProperty().multiply(width));
         control.prefWidthProperty().bind(parent.widthProperty().multiply(width));
+    }
+
+    public static void setControlHeightAsPercentage(Control control, Pane parent, int size) {
+        double height = size / 100.0;
+
+        control.minHeightProperty().bind(parent.heightProperty().multiply(height));
+        control.maxHeightProperty().bind(parent.heightProperty().multiply(height));
+        control.prefHeightProperty().bind(parent.heightProperty().multiply(height));
+    }
+
+    public static void setControlHeightAsPercentage(Control control, Pane parent, double size) {
+        double height = size / 100.0;
+
+        control.minHeightProperty().bind(parent.heightProperty().multiply(height));
+        control.maxHeightProperty().bind(parent.heightProperty().multiply(height));
+        control.prefHeightProperty().bind(parent.heightProperty().multiply(height));
     }
 
     public static void setPaneSizeAsPercentage(Pane child, Pane parent, int width, int height) {
@@ -64,9 +97,9 @@ public class Util {
         )));
     }
 
-    public static void showSmallPaneBorder (Pane pane, Color color) {
+    public static void showSmallPaneBorder (Node node, Color color) {
         String s = ColorScheme.toWebColor(color);
-        pane.setStyle("-fx-border-color: " + s + "; -fx-border-width: 1;");
+        node.setStyle("-fx-border-color: " + s + "; -fx-border-width: 1;");
     }
 
     public static NoteEntity calcNote (int notevalue) {
