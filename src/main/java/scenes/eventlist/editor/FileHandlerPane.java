@@ -121,8 +121,9 @@ public class FileHandlerPane extends HBox {
 
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
             String timestamp = LocalDateTime.now().format(formatter);
+            String newFilename = insertTimestamp(selectedFile.getName(), timestamp);
 
-            String newFilename = FilenameUtils.removeExtension(selectedFile.getName()) + "_" + timestamp + ".mid";
+//            String newFilename = FilenameUtils.removeExtension(selectedFile.getName()) + "_" + timestamp + ".mid";
             String newMidiFilename = workPath + "/" + newFilename;
 
             File file = new File(newMidiFilename);
@@ -140,6 +141,21 @@ public class FileHandlerPane extends HBox {
                 logger.error("Exception. CAUSE {}", e.getMessage());
             }
         }
+    }
+
+    public String insertTimestamp(String fileName, String timestamp) {
+        int dotIndex = fileName.lastIndexOf('.');
+        String nameWithoutExt = (dotIndex == -1) ? fileName : fileName.substring(0, dotIndex);
+        String extension = (dotIndex == -1) ? "" : fileName.substring(dotIndex);
+
+        // Regex matches: underscore followed by 4 digits, 2 digits, 2 digits,
+        // and time digits separated by dashes (e.g., _2026-11-05_11-28-00)
+        String regex = "_\\d{4}-\\d{2}-\\d{2}_\\d{2}-\\d{2}-\\d{2}";
+
+        // Remove the old timestamp if it exists
+        nameWithoutExt = nameWithoutExt.replaceAll(regex, "");
+
+        return nameWithoutExt + "_" + timestamp + extension;
     }
 
     // ACCESSORS
