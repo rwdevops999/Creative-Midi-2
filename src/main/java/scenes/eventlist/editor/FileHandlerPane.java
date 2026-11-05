@@ -13,19 +13,26 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
+import javafx.util.Duration;
 import org.apache.commons.io.FilenameUtils;
+import org.controlsfx.control.Notifications;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.Util;
 import util.app.AppInfo;
+import util.midi.MidiFileWriter;
+import util.properties.AppProperties;
 
 import javax.sound.midi.Sequence;
 import java.io.File;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 import java.util.Queue;
 
 import static util.Util.*;
 import static util.app.colors.ColorScheme.getColor;
+import static util.properties.PropertyKeys.WORK_DIR;
 
 public class FileHandlerPane extends HBox {
     private static final Logger logger = LoggerFactory.getLogger(FileHandlerPane.class);
@@ -100,12 +107,39 @@ public class FileHandlerPane extends HBox {
         currentSequence = sequence;
     }
 
+    public void updateSequence(Sequence sequence) {
+        currentSequence = sequence;
+    }
+
     public void setFileHasChanged() {
         saveDisable.set(false);
     }
 
     public void handleSaveFile() {
+        if (selectedFile != null) {
+            String workPath = AppProperties.getInstance().getPropertyAsString(WORK_DIR, "./data/work");
 
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
+            String timestamp = LocalDateTime.now().format(formatter);
+
+            String newFilename = FilenameUtils.removeExtension(selectedFile.getName()) + "_" + timestamp + ".mid";
+            String newMidiFilename = workPath + "/" + newFilename;
+
+            File file = new File(newMidiFilename);
+            try {
+                MidiFileWriter writer = new MidiFileWriter();
+                writer.writeMidi(currentSequence, file);
+                Notifications.create()
+                        .title("File Saved")
+                        .text("Saved the midi file to '" +  newMidiFilename + "'")
+                        .hideAfter(Duration.seconds(3)) // Automatically hides after 5 seconds
+                        .position(Pos.TOP_LEFT)     // Set corner position on screen
+                        .showInformation();
+                AppInfo.INSTANCE.setMidifileChanged(false);
+            } catch (Exception e) {
+                logger.error("Exception. CAUSE {}", e.getMessage());
+            }
+        }
     }
 
     // ACCESSORS

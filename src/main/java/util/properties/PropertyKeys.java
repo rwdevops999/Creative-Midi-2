@@ -18,6 +18,7 @@ public class PropertyKeys {
 
     public static String VOICES_DIR = "voices.dir";
     public static String EXPORT_DIR = "export.dir";
+    public static String WORK_DIR = "work.dir";
 
     public static String SYSEX_DIR = "sysex.dir";
     public static String SYSEX_FILENAME = "sysex.filename";

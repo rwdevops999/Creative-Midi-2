@@ -84,10 +84,6 @@ public class MidiProcessor {
         midiEventInfo.setColor(getColor("midi"));
         midiEventInfo.setMessage(SysexToHexStringConvertor.convertToHexString(message.getMessage()));
 
-        if ("91 22 76".equals(midiEventInfo.getMessage())) {
-            System.out.println("BREAK");
-        }
-
         int statusByte = message.getStatus() & 0xF0;
 
         return switch (statusByte) {

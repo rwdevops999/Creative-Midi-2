@@ -55,4 +55,8 @@ public enum AppInfo {
         @Getter
         @Setter
         private InstrumentProvider instrumentProvider;
+
+        @Getter
+        @Setter
+        private boolean midifileChanged = false;
 }

@@ -1,11 +1,14 @@
 package scenes.eventlist;
 
 import entity.events.FilterBlock;
+import entity.midi.MidiSequence;
 import javafx.scene.layout.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scenes.eventlist.editor.EventListEditorPane;
 import scenes.eventlist.filter.EventListFilterPane;
+
+import javax.sound.midi.Sequence;
 
 import static util.Util.setPaneBackground;
 import static util.Util.showSmallPaneBorder;
@@ -95,6 +98,19 @@ public class EventListPane extends GridPane {
     private void handleFiltering() {
         getEventListEditorPane().getFileEditorPane().filter(filterBlock);
     }
+
+    public void updateSequence(Sequence sequence) {
+        getEventListEditorPane().getFileHandlerPane().updateSequence(sequence);
+    }
+
+    public void fileHasChanged() {
+        getEventListEditorPane().getFileHandlerPane().setFileHasChanged();
+    }
+
+    public void saveMidiFile() {
+        getEventListEditorPane().getFileHandlerPane().handleSaveFile();
+    }
+
     // ACCESSORS
     public EventListEditorPane getEventListEditorPane() {
         return eventListEditorPane;

@@ -76,8 +76,8 @@ public class BaseClosePane extends HBox {
         logger.debug("Built {}", getId());
     }
 
-/*    public void setActionHandler(EventHandler<ActionEvent> handler) {
+    public void setActionHandler(EventHandler<ActionEvent> handler) {
         closeHandler = handler;
     }
-*/
+
 }

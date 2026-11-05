@@ -36,4 +36,8 @@ public class Base extends BorderPane {
 
         logger.debug("[CM_BASE] Built {}", getId());
     }
+
+    public BaseClosePane getClosePane() {
+        return (BaseClosePane) getBottom();
+    }
 }
