@@ -122,7 +122,7 @@ public class INSParser {
                     String name = banks.get(bankName)[pc];
                     Patch linkedPatch = provider.findPatch(msb, lsb, pc);
                     if (linkedPatch != null) {
-                        Patch patch = new Patch(group, linkedPatch.getType(), name, ""+msb, ""+lsb, ""+pc);
+                        Patch patch = new Patch(group, linkedPatch.getType(), name, linkedPatch.getPath(), ""+msb, ""+lsb, ""+pc);
                         patch.setLinkedPatch(linkedPatch);
 
                         if (group != null) {

@@ -92,11 +92,14 @@ public class MS2SParser {
                             patchLine.indexOf(']')
                     );
 
+                    String path = createPathToVoice(currentGroup);
+
                     String[] dataArray = data.split(",");
                     Patch patch = new Patch(
                             currentGroup,
                             type,
                             patchName,
+                            path,
                             dataArray[1].trim(),
                             dataArray[2].trim(),
                             dataArray[0].trim());
@@ -126,6 +129,7 @@ public class MS2SParser {
 
     public void parse(File file) {
         numPatches = 0;
+
         rootGroups = new ArrayList<>();
 
         try (Scanner scanner =  new Scanner(file, StandardCharsets.UTF_8)) {
@@ -176,5 +180,17 @@ public class MS2SParser {
         List<Patch> patches = findPatches(rootGroups);
 
         return patches.stream().filter(p -> (p.getMsb() == msb && p.getLsb() == lsb && p.getPc() == pc)).findFirst().orElse(null);
+    }
+
+    private String createPathToVoice(Group currentGroup) {
+        String result = "";
+
+        result = "/" + currentGroup.getName();
+
+        if (currentGroup.getParent() != null) {
+            result = createPathToVoice(currentGroup.getParent()) + result;
+        }
+
+        return result;
     }
 }

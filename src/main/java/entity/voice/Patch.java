@@ -39,14 +39,18 @@ public class Patch extends NameEntity implements Serializable {
     @Setter
     private Patch linkedPatch;
 
+    @Getter
+    private String path;
+
     public Patch() {
         linkedPatch = null;
     }
 
-    public Patch(Group group, String type, String name, String msb, String lsb, String pc) {
+    public Patch(Group group, String type, String name, String path, String msb, String lsb, String pc) {
         this();
 
         this.name = name;
+        this.path = path;
         this.type = type;
         this.parent = group;
         this.msb = Integer.parseInt(msb);
@@ -78,26 +82,6 @@ public class Patch extends NameEntity implements Serializable {
         return sb.toString();
     }
 
-    private String getParentGroups(Group group) {
-        StringBuilder result = new StringBuilder();
-
-        if (group != null) {
-            result.append(getParentGroups(group.getParent())).append("/").append(group.getName());
-        }
-
-        return result.toString();
-    }
-
-    public String getPath() {
-        StringBuilder sb = new StringBuilder();
-
-        if (parent != null) {
-            sb.append(getParentGroups(parent));
-        }
-
-        return sb.toString();
-    }
-
     private void writeObject(ObjectOutputStream out) throws IOException {
         // 1. Schrijf de niet-transiente velden (zoals long serialVersionUID indien van toepassing)
         out.defaultWriteObject();
@@ -112,6 +96,7 @@ public class Patch extends NameEntity implements Serializable {
         } else {
             out.writeInt(pc);
         }
+        out.writeObject(path);
     }
 
     // Aangeroepen door ObjectInputStream achter de schermen
@@ -136,6 +121,8 @@ public class Patch extends NameEntity implements Serializable {
         } else {
             this.pc = rawPc;
         }
+
+        this.path = (String) in.readObject();
 
         // 3. Vergeet niet de bank property opnieuw te berekenen en te initialiseren!
         this.bank = (rawMsb << 7) | rawLsb;

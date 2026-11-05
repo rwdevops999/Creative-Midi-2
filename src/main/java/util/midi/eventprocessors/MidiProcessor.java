@@ -46,9 +46,9 @@ public class MidiProcessor {
         colors.put(new ColorScheme.ColorKey("midi"), Color.BLUE);
 
         // Event Colors
-        colors.put(new ColorScheme.ColorKey("midi", "bank select msb"), Color.GOLD); // 1 of 3
-        colors.put(new ColorScheme.ColorKey("midi", "bank select lsb"), Color.GOLD); // 2 of 3
-        colors.put(new ColorScheme.ColorKey("midi", "program change"), Color.GOLD);  // 3 of 3
+        colors.put(new ColorScheme.ColorKey("midi", "bank select msb"), Color.DARKCYAN); // 1 of 3
+        colors.put(new ColorScheme.ColorKey("midi", "bank select lsb"), Color.DARKCYAN); // 2 of 3
+        colors.put(new ColorScheme.ColorKey("midi", "program change"), Color.DARKCYAN);  // 3 of 3
 
         colors.put(new ColorScheme.ColorKey("midi", "note"), Color.NAVAJOWHITE);
 
