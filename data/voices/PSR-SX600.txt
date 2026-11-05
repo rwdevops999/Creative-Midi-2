@@ -376,7 +376,7 @@
 [p2,79,0,112]Regular! Ocarina
 [p2,78,0,112]Regular! Whistle
 [g1]Synth & Pad
-[p2,90,104,21]Regular! HandsUp!
+[p2,90,104,21]Regular! HandsUp
 [p2,90,104,20]Regular! Gemini
 [p2,90,104,24]Regular! PunchyChordz
 [p2,84,104,2]Regular! LektroCodes
