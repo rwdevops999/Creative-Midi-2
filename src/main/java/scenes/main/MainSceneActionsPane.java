@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scenes.eventlist.EventListScene;
 import scenes.sysex.SysexScene;
+import scenes.voice.VoiceScene;
 import util.app.AppInfo;
 import util.app.scene.IScene;
 
@@ -62,6 +63,7 @@ public class MainSceneActionsPane extends GridPane {
 
         add(new SceneSelectButton(parentScene, ICON_SIZE, "sysexButton", "create sysex banks", "sysex", new SysexScene()), 1, 0);
         add(new SceneSelectButton(parentScene, ICON_SIZE, "eventListButton", "handle events", "event-list", new EventListScene()), 2, 0);
+        add(new SceneSelectButton(parentScene, ICON_SIZE, "voiceButton", "search voices", "voice_search", new VoiceScene()), 3, 0);
 
         if (AppInfo.INSTANCE.isTestMode()) {
             add(new SceneSelectButton(parentScene, ICON_SIZE, "test1Button", "test 1", "test1", "Test1"), 3, 1);
