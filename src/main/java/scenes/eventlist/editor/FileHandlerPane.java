@@ -144,9 +144,8 @@ public class FileHandlerPane extends HBox {
     }
 
     public String insertTimestamp(String fileName, String timestamp) {
-        int dotIndex = fileName.lastIndexOf('.');
-        String nameWithoutExt = (dotIndex == -1) ? fileName : fileName.substring(0, dotIndex);
-        String extension = (dotIndex == -1) ? "" : fileName.substring(dotIndex);
+        String nameWithoutExt = FilenameUtils.removeExtension(fileName);
+        String extension = FilenameUtils.getExtension(fileName);
 
         // Regex matches: underscore followed by 4 digits, 2 digits, 2 digits,
         // and time digits separated by dashes (e.g., _2026-11-05_11-28-00)
@@ -155,7 +154,7 @@ public class FileHandlerPane extends HBox {
         // Remove the old timestamp if it exists
         nameWithoutExt = nameWithoutExt.replaceAll(regex, "");
 
-        return nameWithoutExt + "_" + timestamp + extension;
+        return nameWithoutExt + "_" + timestamp + "." + extension;
     }
 
     // ACCESSORS

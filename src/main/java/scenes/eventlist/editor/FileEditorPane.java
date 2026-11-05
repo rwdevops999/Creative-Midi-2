@@ -265,6 +265,10 @@ public class FileEditorPane extends VBox {
                         }
                     }
                 }
+
+                for (MidiEvent event : eventsToRemove) {
+                    track.remove(event);
+                }
             }
         } else {
             // Zoek de track waar dit specifieke object in zit en verwijder het direct
