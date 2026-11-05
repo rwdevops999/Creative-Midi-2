@@ -2,6 +2,7 @@ package scenes.eventlist.editor;
 
 import entity.events.FilterBlock;
 import entity.midi.MidiEventInfo;
+import fx.dialog.EventDetailDialog;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
@@ -205,10 +206,10 @@ public class FileEditorPane extends VBox {
         MenuItem infoEvent = new MenuItem("Info");
         infoEvent.disableProperty().bindBidirectional(contextMenuItemDisable);
         infoEvent.setOnAction(e -> {
-/*            List<MidiEventInfo> selectedEvents = table.getSelectionModel().getSelectedItems();
+            List<MidiEventInfo> selectedEvents = table.getSelectionModel().getSelectedItems();
 
             EventDetailDialog dialog = new EventDetailDialog(selectedEvents.get(0));
-            dialog.showAndWait(); */
+            dialog.showAndWait();
         });
         contextMenu.getItems().add(infoEvent);
 

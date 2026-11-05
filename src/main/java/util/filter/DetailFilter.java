@@ -8,6 +8,8 @@ import util.midi.EventKeyType;
 
 import java.util.*;
 
+import static util.Util.toPascalCase;
+
 public class DetailFilter {
     @Getter
     private static DetailFilter instance = new DetailFilter();
@@ -54,26 +56,6 @@ public class DetailFilter {
         });
 
         return filterBlock;
-    }
-
-    private static String toPascalCase(String input) {
-        if (input == null || input.isEmpty()) {
-            return "";
-        }
-
-        // Split by underscores, spaces, or hyphens
-        String[] words = input.split("[_\\s-]+");
-        StringBuilder pascalCaseString = new StringBuilder();
-
-        for (String word : words) {
-            if (!word.isEmpty()) {
-                // Capitalize first letter, lowercase the rest
-                pascalCaseString.append(" ").append(Character.toUpperCase(word.charAt(0)))
-                        .append(word.substring(1).toLowerCase());
-            }
-        }
-
-        return pascalCaseString.toString().trim();
     }
 
     public void printAlive() {

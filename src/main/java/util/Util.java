@@ -74,4 +74,24 @@ public class Util {
         int octave = -2 + baseOctave + (notevalue / 12);
         return new NoteEntity(notevalue, String.format("%s%d", BASE_NOTES[noteIndex], octave));
     }
+
+    public static String toPascalCase(String input) {
+        if (input == null || input.isEmpty()) {
+            return "";
+        }
+
+        // Split by underscores, spaces, or hyphens
+        String[] words = input.split("[_\\s-]+");
+        StringBuilder pascalCaseString = new StringBuilder();
+
+        for (String word : words) {
+            if (!word.isEmpty()) {
+                // Capitalize first letter, lowercase the rest
+                pascalCaseString.append(" ").append(Character.toUpperCase(word.charAt(0)))
+                        .append(word.substring(1).toLowerCase());
+            }
+        }
+
+        return pascalCaseString.toString().trim();
+    }
 }

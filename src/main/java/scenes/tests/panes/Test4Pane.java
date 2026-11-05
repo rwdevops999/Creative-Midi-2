@@ -11,6 +11,7 @@ import scenes.sysex.parametrized.ParametrizedFunctionFactory;
 
 import java.util.function.Function;
 
+import static util.Util.calcNote;
 import static util.Util.setPaneBackground;
 
 public class Test4Pane extends HBox {
@@ -29,12 +30,13 @@ public class Test4Pane extends HBox {
     }
 
     private void runTest() {
-        int banknr = 15489;
+        int keyNo = 60;
+        System.out.println("NOTE = " + calcNote(keyNo).getName());
 
-        int msb = (banknr >> 7);
-        int lsb = (banknr & 0x7F);
+        keyNo = 118;
+        System.out.println("NOTE = " + calcNote(keyNo).getName());
 
-        System.out.println("msb: " + msb);
-        System.out.println("lsb: " + lsb);
+        keyNo = 76;
+        System.out.println("NOTE = " + calcNote(keyNo).getName());
     }
 }
