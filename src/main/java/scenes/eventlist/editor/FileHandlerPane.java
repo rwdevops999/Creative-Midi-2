@@ -85,10 +85,10 @@ public class FileHandlerPane extends HBox {
             }
             selectedFile = fileChooser.showOpenDialog(AppInfo.INSTANCE.getPrimaryStage());
 
-            String lastPath = FilenameUtils.getFullPath(selectedFile.getPath());
-            AppInfo.INSTANCE.setLastVisitedFolder(lastPath);
-
             if (selectedFile != null) {
+                String lastPath = FilenameUtils.getFullPath(selectedFile.getPath());
+                AppInfo.INSTANCE.setLastVisitedFolder(lastPath);
+
                 fileName.set(FilenameUtils.removeExtension(selectedFile.getName()));
 
                 getEventListEditorPane().processFile(selectedFile);
