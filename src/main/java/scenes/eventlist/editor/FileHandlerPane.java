@@ -80,7 +80,13 @@ public class FileHandlerPane extends HBox {
         Button fileSelectButton = new Button("Upload ...");
         fileSelectButton.setMaxHeight(Button.USE_PREF_SIZE);
         fileSelectButton.setOnAction(e -> {
+            if (AppInfo.INSTANCE.getLastVisitedFolder() != null) {
+                fileChooser.setInitialDirectory(new File(AppInfo.INSTANCE.getLastVisitedFolder()));
+            }
             selectedFile = fileChooser.showOpenDialog(AppInfo.INSTANCE.getPrimaryStage());
+
+            String lastPath = FilenameUtils.getFullPath(selectedFile.getPath());
+            AppInfo.INSTANCE.setLastVisitedFolder(lastPath);
 
             if (selectedFile != null) {
                 fileName.set(FilenameUtils.removeExtension(selectedFile.getName()));

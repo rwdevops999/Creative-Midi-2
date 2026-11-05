@@ -59,4 +59,8 @@ public enum AppInfo {
         @Getter
         @Setter
         private boolean midifileChanged = false;
+
+        @Getter
+        @Setter
+        private String lastVisitedFolder; // last visited by any FileChooser
 }
