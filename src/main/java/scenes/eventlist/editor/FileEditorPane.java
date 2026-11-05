@@ -213,8 +213,10 @@ public class FileEditorPane extends VBox {
         infoEvent.setOnAction(e -> {
             List<MidiEventInfo> selectedEvents = table.getSelectionModel().getSelectedItems();
 
-            EventDetailDialog dialog = new EventDetailDialog(selectedEvents.get(0));
-            dialog.showAndWait();
+            if (!selectedEvents.isEmpty()) {
+                EventDetailDialog dialog = new EventDetailDialog(selectedEvents.get(0));
+                dialog.showAndWait();
+            }
         });
         contextMenu.getItems().add(infoEvent);
 

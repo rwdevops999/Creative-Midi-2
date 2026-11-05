@@ -8,7 +8,7 @@ import util.midi.EventKeyType;
 
 import java.util.*;
 
-import static util.Util.toPascalCase;
+import static util.Util.toPascalCaseWithAcronyms;
 
 public class DetailFilter {
     @Getter
@@ -16,7 +16,7 @@ public class DetailFilter {
     private DetailFilter() {
     }
 
-    public FilterBlock executeFiltering(String type, FilterBlock filterBlock) {
+    public FilterBlock executeFiltering(String type, FilterBlock filterBlock, List<String> acronyms) {
         String key = type.toUpperCase() + "_";
 
         List<EventKeyType> dstTypeList = filterBlock.getEventsToFilter(type);
@@ -30,14 +30,14 @@ public class DetailFilter {
         // 2. Make list readable;
         // - This means remove key from the elements
         // - Change XXX_YYY to pascal case Xxx Yyy (e. NOTE_ON => Note On)
-        srcEvents = srcEvents.stream().map(s -> toPascalCase(s.replaceFirst("_", "@#").split("@#")[1])).sorted().toList();
+        srcEvents = srcEvents.stream().map(s -> toPascalCaseWithAcronyms(s.replaceFirst("_", "@#").split("@#")[1], acronyms)).sorted().toList();
 
         // 3. Get the events from FilterBlock
 //        List<EventKeyType> dstTypeList = filterBlock.getEventsToFilter(type);
         List<String> dstEvents = dstTypeList.stream().map(Enum::toString).filter(s -> s.contains(key)).toList();
 
         // 4. Make List readable
-        dstEvents = dstEvents.stream().map(s -> toPascalCase(s.replaceFirst("_", "@#").split("@#")[1])).sorted().toList();
+        dstEvents = dstEvents.stream().map(s -> toPascalCaseWithAcronyms(s.replaceFirst("_", "@#").split("@#")[1], acronyms)).sorted().toList();
 
         SrcDstListDialog<String> dialog = new SrcDstListDialog<>("Filter " + type + " events", "Determine the events to be shown or hidden", "Filter", "Visible", "Hidden", srcEvents, dstEvents);
         Optional<List<String>> result = dialog.showAndWait();

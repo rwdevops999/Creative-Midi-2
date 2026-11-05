@@ -16,6 +16,9 @@ import javafx.scene.paint.Color;
 import scenes.eventlist.filter.FilterTypePane;
 import util.filter.DetailFilter;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static util.Util.showSmallPaneBorder;
 
 public class MidiTypeFilterPane extends GridPane {
@@ -87,7 +90,10 @@ public class MidiTypeFilterPane extends GridPane {
         Button det1 = new Button("Details");
         det1.setOnAction(e -> {
             FilterBlock filterBlock = getFilterTypePane().getEventListFilterPane().getEventListPane().getFilterBlock();
-            filterBlock = DetailFilter.getInstance().executeFiltering("midi", filterBlock);
+
+            List<String> acronyms = Arrays.asList("RPN", "NRPN", "MSB", "LSB");
+
+            filterBlock = DetailFilter.getInstance().executeFiltering("midi", filterBlock, acronyms);
             getFilterTypePane().getEventListFilterPane().getEventListPane().setFilterBlock(filterBlock);
         });
         det1.setPrefWidth(60);
@@ -96,7 +102,8 @@ public class MidiTypeFilterPane extends GridPane {
         Button det2 = new Button("Details");
         det2.setOnAction(e -> {
             FilterBlock filterBlock = getFilterTypePane().getEventListFilterPane().getEventListPane().getFilterBlock();
-            filterBlock = DetailFilter.getInstance().executeFiltering("meta", filterBlock);
+            List<String> acronyms = Arrays.asList("SMPTE");
+            filterBlock = DetailFilter.getInstance().executeFiltering("meta", filterBlock, acronyms);
             getFilterTypePane().getEventListFilterPane().getEventListPane().setFilterBlock(filterBlock);
         });
         det2.setPrefWidth(60);
@@ -105,7 +112,8 @@ public class MidiTypeFilterPane extends GridPane {
         Button det3 = new Button("Details");
         det3.setOnAction(e -> {
             FilterBlock filterBlock = getFilterTypePane().getEventListFilterPane().getEventListPane().getFilterBlock();
-            filterBlock = DetailFilter.getInstance().executeFiltering("sysex", filterBlock);
+            List<String> acronyms = Arrays.asList("GM1", "GM2", "GM", "XG");
+            filterBlock = DetailFilter.getInstance().executeFiltering("sysex", filterBlock, acronyms);
             getFilterTypePane().getEventListFilterPane().getEventListPane().setFilterBlock(filterBlock);
         });
         det3.setPrefWidth(60);
