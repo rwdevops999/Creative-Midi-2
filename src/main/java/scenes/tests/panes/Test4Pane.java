@@ -29,11 +29,12 @@ public class Test4Pane extends HBox {
     }
 
     private void runTest() {
-        int x = 15;
+        int banknr = 15489;
 
-        int y1 = x * 128;
-        int y2 = x << 7;
+        int msb = (banknr >> 7);
+        int lsb = (banknr & 0x7F);
 
-        System.out.println("x: " + x + " y1: " + y1 + " y2: " + y2);
+        System.out.println("msb: " + msb);
+        System.out.println("lsb: " + lsb);
     }
 }

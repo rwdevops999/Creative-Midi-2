@@ -111,7 +111,7 @@ public class INSParser {
             for (int pc = 0; pc < banks.get(bankName).length; pc++) {
                 if (banks.get(bankName)[pc] != null) {
                     int msb = (banknr >> 7);
-                    int lsb = (banknr & 0xFF);
+                    int lsb = (banknr & 0x7F);
 
                     String name = banks.get(bankName)[pc];
                     Patch linkedPatch = provider.findPatch(msb, lsb, pc);
@@ -124,6 +124,7 @@ public class INSParser {
                             numPatches++;
                         }
                     } else {
+                        System.out.println("Unmatched patch: " + name + "(" + msb + "," + lsb + "," + pc + ")");
                         unmatchedPatches++;
                     }
                 }
