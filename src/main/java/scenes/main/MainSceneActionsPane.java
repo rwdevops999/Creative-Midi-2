@@ -69,6 +69,7 @@ public class MainSceneActionsPane extends GridPane {
             add(new SceneSelectButton(parentScene, ICON_SIZE, "test3Button", "test 3", "test3", "Test3"), 5, 1);
             add(new SceneSelectButton(parentScene, ICON_SIZE, "test4Button", "test 4", "test4", "Test4"), 6, 1);
             add(new SceneSelectButton(parentScene, ICON_SIZE, "test5Button", "test 5", "test5", "Test5"), 7, 1);
+            add(new SceneSelectButton(parentScene, ICON_SIZE, "test6Button", "test 6", "test6", "Test6"), 8, 1);
         }
 
         logger.debug("Built {}", getId());

@@ -51,6 +51,7 @@ public class SceneSelectButton extends Button {
                 case "Test3" -> new Test3Pane();
                 case "Test4" -> new Test4Pane();
                 case "Test5" -> new Test5Pane();
+                case "Test6" -> new Test6Pane();
                 default -> null;
             };
 

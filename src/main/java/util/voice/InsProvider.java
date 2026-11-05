@@ -20,12 +20,12 @@ public class InsProvider implements InstrumentProvider {
 
     public InsProvider(String filename) {
         String voicesDir = AppProperties.getInstance().getPropertyAsString(VOICES_DIR," ././data/voices");
-        File file = new File(voicesDir, filename);
-        this.parser = new INSParser(this, file);
-
         String linkedFilename = FilenameUtils.removeExtension(filename);
         File linkedFile = new File(voicesDir, linkedFilename + ".txt");
         this.linkedParser = new MS2SParser(linkedFile);
+
+        File file = new File(voicesDir, filename);
+        this.parser = new INSParser(this, file);
     }
 
     @Override
