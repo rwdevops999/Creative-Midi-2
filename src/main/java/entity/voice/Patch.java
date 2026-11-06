@@ -62,6 +62,18 @@ public class Patch extends NameEntity implements Serializable {
         this.bank = (this.msb << 7) | this.lsb;
     }
 
+    public Patch(Patch patch) {
+        this();
+
+        this.name = patch.name;
+        this.path = patch.path;
+        this.type = patch.type;
+        this.msb = patch.msb;
+        this.lsb = patch.lsb;
+        this.pc = patch.pc;
+        this.bank = patch.bank;
+    }
+
     public Patch(String msb, String lsb, String pc) {
         this();
 

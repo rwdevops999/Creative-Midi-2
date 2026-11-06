@@ -35,7 +35,7 @@ import static util.app.colors.ColorScheme.getColor;
 public class VoiceListPane extends AnchorPane {
     private static final Logger logger = LoggerFactory.getLogger(VoiceListPane.class);
 
-    private final UserData userData = UserData.getINSTANCE();
+    private final UserData userData = UserData.getInstance();
     private final AppInfo appInfo = AppInfo.INSTANCE;
 
     public VoiceListPane() {
@@ -146,7 +146,23 @@ public class VoiceListPane extends AnchorPane {
                 userData.removeFromFavorites(selectedPatch.getLinkedPatch());
             } else {
                 userData.removeFromFavorites(selectedPatch);
+
+                if (getVoiceResultPane().getVoiceFilterPane().isFavoritesShown()) {
+
+                    // TODO remove from table if favorties is selected
+                    getVoiceResultPane().getVoiceListPane().showResultsNoStorage(new ArrayList<>(UserData.getInstance().getFavorites()));
+                    List<Patch> favorites = new ArrayList<>(userData.getFavorites());
+
+                    List<Patch> newData = favorites.stream().filter(patch -> ! excludes.contains(patch.getType())).toList();
+
+                    ObservableList<Patch> tableData = FXCollections.observableArrayList(newData);
+                    table.setItems(tableData);
+
+                    autoSizeColumn(table, nameColumn, 70);
+                }
+
             }
+
             table.refresh();
         });
         remove.disableProperty().bind(favoriteDisabled.not());
@@ -273,15 +289,32 @@ public class VoiceListPane extends AnchorPane {
         column.setGraphic(columnLabel);
     }
 
-    private List<Patch> currentData;
-    public void showResults (List<Patch> data) {
-        currentData = data;
-
-        if (data != null) {
-            data = data.stream().filter(patch -> ! excluded.contains(patch.getType())).toList();
+    private List<Patch> tableResults = new ArrayList<>();
+    private List<String> excludes = new ArrayList<>();
+    private List<Patch> oldData;
+    public void showResults (List<Patch> data, boolean areFavorites) {
+        if (data == null) {
+            tableResults = oldData;
+        } else if (areFavorites) {
+            oldData = tableResults;
+            tableResults = data;
+        } else {
+            tableResults = data;
         }
 
-        ObservableList<Patch> tableData = FXCollections.observableArrayList(data);
+        List<Patch> newData = tableResults.stream().filter(patch -> ! excludes.contains(patch.getType())).toList();
+
+        ObservableList<Patch> tableData = FXCollections.observableArrayList(newData);
+        table.setItems(tableData);
+
+        autoSizeColumn(table, nameColumn, 70);
+        table.refresh();
+    }
+
+    public void showResultsNoStorage (List<Patch> data) {
+        List<Patch> newData = data.stream().filter(patch -> ! excludes.contains(patch.getType())).toList();
+
+        ObservableList<Patch> tableData = FXCollections.observableArrayList(newData);
         table.setItems(tableData);
 
         autoSizeColumn(table, nameColumn, 70);
@@ -327,11 +360,9 @@ public class VoiceListPane extends AnchorPane {
         });
     }
 
-    private List<String> excluded = new ArrayList<>();
-
     public void setExcludedVoiceTypes(List<String> excludedVoiceTypes) {
-        this.excluded =  excludedVoiceTypes;
-        showResults(currentData);
+        this.excludes =  excludedVoiceTypes;
+        showResults(tableResults, false);
     }
 
     private static final Map<TableColumn<?, ?>, Double> originalWidths =

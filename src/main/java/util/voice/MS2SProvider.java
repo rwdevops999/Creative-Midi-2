@@ -14,7 +14,7 @@ import static util.properties.PropertyKeys.VOICES_DIR;
 
 public class MS2SProvider implements InstrumentProvider {
     private final MS2SParser parser;
-    private final UserData userData = UserData.getINSTANCE();
+    private final UserData userData = UserData.getInstance();
 
     public MS2SProvider(String filename) {
         String voicesDir = AppProperties.getInstance().getPropertyAsString(VOICES_DIR," ././data/voices");

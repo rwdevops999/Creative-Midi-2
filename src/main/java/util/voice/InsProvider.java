@@ -17,7 +17,7 @@ import static util.properties.PropertyKeys.VOICES_DIR;
 public class InsProvider implements InstrumentProvider {
     private INSParser parser;
     private MS2SParser linkedParser;
-    private final UserData userData = UserData.getINSTANCE();
+    private final UserData userData = UserData.getInstance();
 
     private InsProvider(INSParser parser) {
         this.parser = parser;

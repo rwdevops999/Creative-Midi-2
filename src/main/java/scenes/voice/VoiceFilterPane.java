@@ -11,6 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scenes.voice.subpanes.VoicesSelectorPane;
 import util.Util;
+import util.user.UserData;
+
+import java.util.ArrayList;
 
 import static util.Util.setPaneBackground;
 import static util.app.colors.ColorScheme.getColor;
@@ -30,6 +33,9 @@ public class VoiceFilterPane extends HBox {
     }
 
     private VoiceResultPane parent;
+
+    private LightIndicatorButton favorites;
+
     public VoiceFilterPane(VoiceResultPane owner, double height) {
         this();
 
@@ -50,14 +56,25 @@ public class VoiceFilterPane extends HBox {
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
         // 2. Zorg ervoor dat de spacer alle resterende horizontale ruimte inneemt
-        LightIndicatorButton favorites = new LightIndicatorButton("★", 43, "orange");
+        favorites = new LightIndicatorButton("★", 43, "orange");
         favorites.getButtonLabel().setTextFill(Color.GOLD);
+        favorites.setOnAction(e -> {
+            if (favorites.isSelected()) {
+                getVoiceResultPane().getVoiceListPane().showResults(new ArrayList<>(UserData.getInstance().getFavorites()), true);
+            } else {
+                getVoiceResultPane().getVoiceListPane().showResults(null, false);
+            }
+        });
 
         VoicesSelectorPane voicesSelectorPane = new VoicesSelectorPane(this);
 
         getChildren().addAll(favorites, spacer, voicesSelectorPane);
 
         logger.debug("built {}", getId());
+    }
+
+    public boolean isFavoritesShown() {
+        return favorites.isSelected();
     }
 
     // ACCESSORS

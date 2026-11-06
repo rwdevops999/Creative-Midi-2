@@ -358,7 +358,7 @@ public class VoiceSearchSelectionPane extends VBox {
                 }
             }
 
-            getVoiceSearchPane().getVoicePane().getVoiceResultPane().getVoiceListPane().showResults(result);
+            getVoiceSearchPane().getVoicePane().getVoiceResultPane().getVoiceListPane().showResults(result, false);
         } else if (selectedTIndex == TAB_BANK) {
             int bank = Integer.parseInt(bankChangedProperty.get());
             int msb = Integer.parseInt(msbChangedProperty.get());
@@ -376,7 +376,7 @@ public class VoiceSearchSelectionPane extends VBox {
 
             List<Patch> result = new ArrayList<>();
             result = VoiceFinder.findVoice(searchPatch);
-            getVoiceSearchPane().getVoicePane().getVoiceResultPane().getVoiceListPane().showResults(result);
+            getVoiceSearchPane().getVoicePane().getVoiceResultPane().getVoiceListPane().showResults(result, false);
         }  else if (selectedTIndex == TAB_GROUP) {
             List<Patch> result = new ArrayList<>();
 
@@ -386,7 +386,7 @@ public class VoiceSearchSelectionPane extends VBox {
                 result.addAll(VoiceFinder.getVoicesOfGroup(AppInfo.INSTANCE.getInstrumentProvider().getGroups(), groupName));
             }
 
-            getVoiceSearchPane().getVoicePane().getVoiceResultPane().getVoiceListPane().showResults(result);
+            getVoiceSearchPane().getVoicePane().getVoiceResultPane().getVoiceListPane().showResults(result, false);
         }
     }
 

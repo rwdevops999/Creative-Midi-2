@@ -29,12 +29,14 @@ public class VoiceResultPane extends VBox {
     }
 
     private VoiceListPane voiceListPane;
+    private VoiceFilterPane voiceFilterPane;
     private void buildPane() {
         logger.debug("building {}", getId());
 
         voiceListPane = new VoiceListPane(this, 79.9);
+        voiceFilterPane = new  VoiceFilterPane(this, 9.8);
 
-        getChildren().add(new  VoiceFilterPane(this, 9.8));
+        getChildren().add(voiceFilterPane);
         getChildren().add(voiceListPane);
         getChildren().add(new  VoicePlayPane(this, 9.8));
 
@@ -50,5 +52,8 @@ public class VoiceResultPane extends VBox {
         return voiceListPane;
     }
 
+    public VoiceFilterPane getVoiceFilterPane() {
+        return voiceFilterPane;
+    }
 }
 

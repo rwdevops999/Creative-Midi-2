@@ -10,10 +10,11 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 
 public class UserData extends UserDataBase {
     @Getter
-    private static final UserData INSTANCE = new UserData();
+    private static final UserData instance = new UserData();
 
     private UserData() {
     }
@@ -24,13 +25,15 @@ public class UserData extends UserDataBase {
 
     // ACCESSORS
     public void addAsFavorite(Patch patch) {
-        Patch favoritePatch = new Patch(patch.getMsb(), patch.getLsb(), patch.getPc());
+        Patch favoritePatch = new Patch(patch);
         favorites.add(favoritePatch);
     }
 
     public void removeFromFavorites(Patch patch) {
-        Patch found = favorites.stream().filter(p -> p.equals(patch)).findFirst().orElse(null);
-        favorites.remove(found);
+        List<Patch> found = favorites.stream().filter(p -> p.equals(patch)).toList();
+        if (! found.isEmpty()) {
+            found.forEach(favorites::remove);
+        };
     }
 
     public boolean isFavorite(Patch patch) {
