@@ -25,6 +25,7 @@ public class Patch extends NameEntity implements Serializable {
     @Setter
     private Integer lsb;
 
+    @Setter
     @Getter
     private transient Integer bank;
 

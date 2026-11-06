@@ -1,10 +1,15 @@
 package scenes.voice;
 
+import entity.voice.Patch;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.Util;
+
+import java.util.List;
 
 import static util.app.colors.ColorScheme.getColor;
 
@@ -34,6 +39,15 @@ public class VoiceListPane extends StackPane {
 
         logger.debug("built {}", getId());
     }
+
+    public void showResults (List<Patch> data) {
+        System.out.println("Showing Results: " + data.size());
+/*        ObservableList<Patch> tableData = FXCollections.observableArrayList(data);
+        table.setItems(tableData);
+
+        autoFitColumn(table, patchColumn); */
+    }
+
 
     // ACCESSORS
     public VoiceResultPane getVoiceResultPane() {

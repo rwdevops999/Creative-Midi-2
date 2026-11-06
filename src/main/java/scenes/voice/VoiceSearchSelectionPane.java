@@ -1,9 +1,15 @@
 package scenes.voice;
 
+import entity.voice.Patch;
 import fx.component.DynamicPane;
 import fx.component.GroupPane;
 import fx.component.TitledSearchPane;
 import fx.component.ValuePane;
+import javafx.application.Platform;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -17,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import util.Util;
 import util.app.AppInfo;
 import util.voice.InstrumentProvider;
+import util.voice.VoiceFinder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,17 +61,27 @@ public class VoiceSearchSelectionPane extends VBox {
         buildPane();
     }
 
+    private static final int TAB_PATCH = 0;
+    private static final int TAB_GROUP = 1;
+    private static final int TAB_BANK = 2;
+
+    private static int selectedTIndex = TAB_BANK;
+
     private void buildPane() {
         logger.debug("building {}", getId());
 
         TabPane tabPane = new TabPane();
         tabPane.getSelectionModel().selectedIndexProperty().addListener((obs, oldIdx, newIdx) -> {
+            if (selectedTIndex != (int)newIdx) {
+                handleSearch(true);
+            }
 /*            if (selectedTabIndex.get() != newIdx.intValue()) {
                 selectedTIndex = newIdx.intValue();
                 selectedTabIndex.set(newIdx.intValue());
                 handleSearch(true);
             } */
         });
+//        selectedTabIndex.bindBidirectional(tabPane.getSelectionModel().selectedIndexProperty());
 
         Tab tab1 = new Tab("Patch");
         VBox tab1Content = new VBox();
@@ -85,6 +102,16 @@ public class VoiceSearchSelectionPane extends VBox {
         tab3.setContent(tab3Content);
 
         tabPane.getTabs().addAll(tab1, tab2, tab3);
+
+        Platform.runLater(() -> {
+            tabPane.getSelectionModel().select(selectedTIndex);
+        });
+
+/*        selectedTabIndex.addListener((obs, oldIdx, newIdx) -> {
+            if (tabPane.getSelectionModel().getSelectedIndex() != newIdx.intValue()) {
+                tabPane.getSelectionModel().select(newIdx.intValue());
+            }
+        }); */
 
         getChildren().add(tabPane);
 
@@ -146,7 +173,7 @@ public class VoiceSearchSelectionPane extends VBox {
 
             getChildren().clear();
             buildPane();
-//            handleSearch(false);
+            handleSearch(false);
         }
     }
 
@@ -182,20 +209,23 @@ public class VoiceSearchSelectionPane extends VBox {
         pane.getChildren().add(titleSearchPane);
 
         Button searchButton = titleSearchPane.getSearchButton();
+        searchButton.setOnAction(event -> {
+            handleSearch(true);
+        });
 
-        ValuePane valuePane = new ValuePane(this, "Bank", "0");
+        ValuePane valuePane = new ValuePane(this, "Bank", bankChangedProperty.get());
         valuePane.addLinkedSearchButton(searchButton);
         valuePanes.add(valuePane);
 
-        valuePane = new ValuePane(this, "MSB", "0");
+        valuePane = new ValuePane(this, "MSB", msbChangedProperty.get());
         valuePane.addLinkedSearchButton(searchButton);
         valuePanes.add(valuePane);
 
-        valuePane = new ValuePane(this, "LSB", "0");
+        valuePane = new ValuePane(this, "LSB", lsbChangedProperty.get());
         valuePane.addLinkedSearchButton(searchButton);
         valuePanes.add(valuePane);
 
-        valuePane = new ValuePane(this, "PC", null);
+        valuePane = new ValuePane(this, "PC", pcChangedProperty.get());
         valuePane.addLinkedSearchButton(searchButton);
         valuePanes.add(valuePane);
 
@@ -203,8 +233,149 @@ public class VoiceSearchSelectionPane extends VBox {
             pane.getChildren().add(p);
         }
 
-//        setupValuePanes();
+        setupValuePanes();
     }
+
+    private static final int BANK_PANE = 0;
+    private static final int MSB_PANE = 1;
+    private static final int LSB_PANE = 2;
+    private static final int PC_PANE = 3;
+
+    private StringProperty bankChangedProperty = new SimpleStringProperty("" + 0);
+    private StringProperty msbChangedProperty = new SimpleStringProperty("" + 0);
+    private StringProperty lsbChangedProperty = new SimpleStringProperty(""+ 0);
+    private StringProperty pcChangedProperty = new SimpleStringProperty();
+
+    private void setupValuePanes() {
+        ValuePane bankPane = valuePanes.get(BANK_PANE);
+        bankPane.addLinkedProperty(bankChangedProperty);
+
+        bankChangedProperty.addListener((obs, oldValue, newValue) -> {
+                int bank;
+                try {
+                    bank = Integer.parseInt(bankChangedProperty.get());
+                } catch (NumberFormatException e) {
+                    bank = 0;
+                    bankChangedProperty.set(""+bank);
+                }
+
+                ValuePane msbPane = valuePanes.get(MSB_PANE);
+                msbPane.setInputValue("" + (bank >> 7));
+
+                ValuePane lsbPane = valuePanes.get(LSB_PANE);
+                lsbPane.setInputValue("" + (bank & 0x7F));
+        });
+
+        ValuePane msbPane = valuePanes.get(MSB_PANE);
+        msbPane.addLinkedProperty(msbChangedProperty);
+        msbChangedProperty.addListener((obs, oldValue, newValue) -> {
+                int msb;
+                try {
+                    msb = Integer.parseInt(msbChangedProperty.get());
+                } catch (NumberFormatException e) {
+                    msb = 0;
+                    msbChangedProperty.set(""+msb);
+                }
+                int lsb;
+                try {
+                    lsb = Integer.parseInt(lsbChangedProperty.get());
+                } catch (NumberFormatException e) {
+                    lsb = 0;
+                    lsbChangedProperty.set(""+lsb);
+                }
+
+                int bank = (msb << 7) | lsb;
+                bankPane.setInputValue("" + bank);
+        });
+
+        ValuePane lsbPane = valuePanes.get(LSB_PANE);
+        lsbPane.addLinkedProperty(lsbChangedProperty);
+        lsbChangedProperty.addListener((obs, oldValue, newValue) -> {
+                int msb;
+                try {
+                    msb = Integer.parseInt(msbChangedProperty.get());
+                } catch (NumberFormatException e) {
+                    msb = 0;
+                    msbChangedProperty.set(""+msb);
+                }
+                int lsb;
+                try {
+                    lsb = Integer.parseInt(lsbChangedProperty.get());
+                } catch (NumberFormatException e) {
+                    lsb = 0;
+                    lsbChangedProperty.set(""+lsb);
+                }
+
+                int bank = (msb << 7) | lsb;
+                bankPane.setInputValue("" + bank);
+        });
+
+        ValuePane pcPane = valuePanes.get(PC_PANE);
+        pcPane.addLinkedProperty(pcChangedProperty);
+        pcChangedProperty.addListener((obs, oldValue, newValue) -> {
+                try {
+                    Integer.parseInt(pcChangedProperty.get());
+                } catch (NumberFormatException e) {
+                    pcChangedProperty.set(null);
+                }
+        });
+    }
+
+    public void handleSearch(boolean checkgroups) {
+        if (selectedTIndex == TAB_PATCH) {
+/*            if (checkgroups) {
+                if ( getVoiceSearchPane().getGroupSearchPane().getGroupPane().getSelectedGroup() != null) {
+                    getVoiceSearchPane().getGroupSearchPane().handleSearch();
+                    return;
+                }
+            }
+
+            getVoiceSearchPane().getGroupSearchPane().getGroupPane().setSelectedGroup(null);
+
+            String voiceToSearch = dynamicPanes.get(0).getInputValue();
+            List<Patch> result = new ArrayList<>();
+
+            if (voiceToSearch == null) {
+                voiceToSearch = "";
+            }
+
+            result = VoiceFinder.findVoice(voiceToSearch);
+
+            for (int i = 1; i < dynamicPanes.size(); i++) {
+                if (dynamicPanes.get(i) != null) {
+                    String voiceName = dynamicPanes.get(i).getInputValue();
+                    if (voiceName != null) {
+                        result = refine(result, voiceName.toLowerCase());
+                    }
+                }
+            }
+
+            VoiceSearchResultsPane resultsPane = getVoiceSearchPane().getVoicePane().getVoiceSearchResultsPane();
+            resultsPane.showResults(result); */
+        } else if (selectedTIndex == TAB_BANK) {
+            int bank = Integer.parseInt(bankChangedProperty.get());
+            int msb = Integer.parseInt(msbChangedProperty.get());
+            int lsb = Integer.parseInt(lsbChangedProperty.get());
+            Integer pc = null;
+            if (pcChangedProperty.get() != null) {
+                pc = Integer.parseInt(pcChangedProperty.get());
+            }
+
+            Patch searchPatch = new Patch();
+            searchPatch.setBank(bank);
+            searchPatch.setMsb(msb);
+            searchPatch.setLsb(lsb);
+            searchPatch.setPc(pc);
+
+            List<Patch> result = new ArrayList<>();
+            result = VoiceFinder.findVoice(searchPatch);
+            System.out.println("FOUND: " + result.size());
+            getVoiceSearchPane().getVoicePane().getVoiceResultPane().getVoiceListPane().showResults(result);
+        }  else if (selectedTIndex == TAB_GROUP) {
+            // TODO Handle Group search
+        }
+    }
+
 
     // ACCESSORS
     public VoiceSearchPane getVoiceSearchPane() {
