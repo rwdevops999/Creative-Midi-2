@@ -1,6 +1,7 @@
 package entity.voice;
 
 import entity.NameEntity;
+import entity.sysex.Sysex;
 import javafx.beans.property.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,6 +11,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.Objects;
 
 public class Patch extends NameEntity implements Serializable {
     private static final long serialVersionUID = 1L; //
@@ -58,6 +60,40 @@ public class Patch extends NameEntity implements Serializable {
         this.lsb = Integer.parseInt(lsb);
         this.pc = Integer.parseInt(pc);
         this.bank = (this.msb << 7) | this.lsb;
+    }
+
+    public Patch(String msb, String lsb, String pc) {
+        this();
+
+        this.msb = Integer.parseInt(msb);
+        this.lsb = Integer.parseInt(lsb);
+        this.pc = Integer.parseInt(pc);
+    }
+
+    public Patch(Integer msb, Integer lsb, Integer pc) {
+        this();
+
+        this.msb = msb;
+        this.lsb = lsb;
+        this.pc = pc;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if (!(obj instanceof Patch other)) {
+            return false;
+        }
+
+        return Objects.equals(this.msb, other.msb) && Objects.equals(this.lsb, other.lsb) && Objects.equals(this.pc, other.pc);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.msb, this.lsb, this.pc);
     }
 
     public String getName() {

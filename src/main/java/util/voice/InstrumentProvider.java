@@ -22,4 +22,5 @@ public interface InstrumentProvider {
 
     String getGroupingName();
 
+    boolean isFavorite(Patch patch);
 }

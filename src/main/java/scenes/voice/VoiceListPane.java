@@ -2,33 +2,41 @@ package scenes.voice;
 
 import entity.voice.Patch;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.skin.TableViewSkin;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.Util;
+import util.app.AppInfo;
+import util.user.UserData;
+import util.voice.InstrumentProvider;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.*;
 
+import static util.Constants.*;
 import static util.app.colors.ColorScheme.getColor;
 
 public class VoiceListPane extends AnchorPane {
     private static final Logger logger = LoggerFactory.getLogger(VoiceListPane.class);
+
+    private final UserData userData = UserData.getINSTANCE();
+    private final AppInfo appInfo = AppInfo.INSTANCE;
 
     public VoiceListPane() {
         super();
@@ -38,11 +46,19 @@ public class VoiceListPane extends AnchorPane {
 
     private final TableView<Patch> table = new TableView<>();
 
+    @Getter
+    private final Map<Integer, Patch> channelPatches = new HashMap<>();
+
     private VoiceResultPane parent;
     public VoiceListPane(VoiceResultPane owner, double height) {
         this();
 
         this.parent = owner;
+
+        channelPatches.clear();
+        channelPatches.put(CHANNEL_RIGHT1, new Patch(null, "Live", "Grand Piano", null, "0", "115", "0"));
+        channelPatches.put(CHANNEL_LEFT, new Patch(null, "Live", "Grand Piano", null, "0", "115", "0"));
+        channelPatches.put(CHANNEL_RIGHT2, new Patch(null, "Live" , "Grand Piano", null, "0", "115", "0"));
 
         Util.setPaneHeightAsPercentage(this, owner, height);
 //        Util.showPaneBorder(this, getColor("border", "green"));
@@ -59,17 +75,11 @@ public class VoiceListPane extends AnchorPane {
         logger.debug("building {}", getId());
 
         table.setId("VoicesTable");
-//        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
-        table.setColumnResizePolicy(
-                TableView.UNCONSTRAINED_RESIZE_POLICY
-        );
+        table.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
         createColumns(table);
 
-        table.widthProperty().addListener((observable, oldValue, newValue) -> {
-            double tableWidth = newValue.doubleValue();
-
-            // Correct if necessary with 2 pixels for the outer edge of the table
-        });
+        setupTableForClicks();
+        createContextMenu(table);
 
         getChildren().add(table);
 
@@ -78,11 +88,157 @@ public class VoiceListPane extends AnchorPane {
 
     private TableColumn<Patch, String> nameColumn;
 
+    private BooleanProperty favoriteDisabled = new SimpleBooleanProperty(true);
+
+    private void createContextMenu(TableView<Patch> table) {
+        // add Context Menu here
+        ContextMenu contextMenu = new ContextMenu();
+
+        Menu voiceSubMenu = new Menu("Set as ...");
+
+        MenuItem right1 = new MenuItem("Right1");
+        right1.setOnAction(e -> {
+            Patch patch = table.getSelectionModel().getSelectedItem();
+            channelPatches.put(CHANNEL_RIGHT1,patch);
+        });
+        MenuItem left = new MenuItem("Left");
+        left.setOnAction(e -> {
+            Patch patch = table.getSelectionModel().getSelectedItem();
+            channelPatches.put(CHANNEL_LEFT,patch);
+        });
+        MenuItem right2 = new MenuItem("Right2");
+        right2.setOnAction(e -> {
+            Patch patch = table.getSelectionModel().getSelectedItem();
+            channelPatches.put(CHANNEL_RIGHT2,patch);
+        });
+
+        voiceSubMenu.getItems().addAll(right1, left, right2);
+
+        MenuItem details = new MenuItem("Show details");
+
+        Menu favoritesSubMenu = new Menu("Favorites");
+
+        favoritesSubMenu.setOnShowing(event -> {
+            Patch selectedPatch = table.getSelectionModel().getSelectedItem();
+
+            if (selectedPatch != null) {
+                favoriteDisabled.set(appInfo.getInstrumentProvider().isFavorite(selectedPatch));
+            }
+        });
+
+        MenuItem add = new MenuItem("Add");
+        add.disableProperty().bind(favoriteDisabled);
+        add.setOnAction(e -> {
+            Patch selectedPatch = table.getSelectionModel().getSelectedItem();
+
+            if (selectedPatch.getLinkedPatch() != null) {
+                userData.addAsFavorite(selectedPatch.getLinkedPatch());
+            } else {
+                userData.addAsFavorite(selectedPatch);
+            }
+
+            table.refresh();
+        });
+        MenuItem remove = new MenuItem("Remove");
+        remove.setOnAction(e -> {
+            Patch selectedPatch = table.getSelectionModel().getSelectedItem();
+            if (selectedPatch.getLinkedPatch() != null) {
+                userData.removeFromFavorites(selectedPatch.getLinkedPatch());
+            } else {
+                userData.removeFromFavorites(selectedPatch);
+            }
+            table.refresh();
+        });
+        remove.disableProperty().bind(favoriteDisabled.not());
+
+        favoritesSubMenu.getItems().addAll(add, remove);
+
+        contextMenu.getItems().addAll(voiceSubMenu, new SeparatorMenuItem(), details, new SeparatorMenuItem(), favoritesSubMenu);
+
+/*        // MenuItem (Details)
+        MenuItem details = new MenuItem("Show details");
+        details.setOnAction(event -> {
+            Patch patch = table.getSelectionModel().getSelectedItem();
+
+            InstrumentProvider instrumentProvider = ApplicationInfo.getInstance().getInstrumentProvider();
+            if ("INS".equals(instrumentProvider.getSourceType())) {
+                patch = instrumentProvider.findLinkedPatch(patch);
+            }
+
+            VoiceDetailDialog dialog = new VoiceDetailDialog(patch);
+            dialog.showAndWait();
+        });
+
+        // MenuItem (Favorites)
+        MenuItem favorites = new MenuItem("Add as favorite");
+
+        contextMenu.getItems().addAll(right1, left, new SeparatorMenuItem(), details, new SeparatorMenuItem(), favorites);
+
+        contextMenu.setOnShowing(event -> {
+            Patch selectedPatch = table.getSelectionModel().getSelectedItem();
+
+            if (selectedPatch != null) {
+                // Check if the patch is in the ObservableSet
+                if (SysData.isFavorite(selectedPatch)) {
+                    favorites.setText("Remove from Favorites");
+                    favorites.setOnAction(e -> {
+                        SysData.removeFromFavorites(selectedPatch);
+                        table.refresh(); // Update the star immediately
+                    });
+                } else {
+                    favorites.setText("Add to Favorites");
+                    favorites.setOnAction(e -> {
+                        SysData.getFavorites().add(selectedPatch);
+                        table.refresh(); // Update the star immediately
+                    });
+                }
+            }
+        });
+*/
+        table.setContextMenu(contextMenu);
+    }
+
     private void createColumns(TableView<Patch> table) {
         nameColumn = new TableColumn<>();
         setColumnLabel(nameColumn, "Name");
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         table.getColumns().add(nameColumn);
+
+        /*
+         * The Name column also display a star when it is a favorite
+         */
+        nameColumn.setCellFactory(column -> new TableCell<>() {
+            // We make once the icon for a cel for beter performances
+            private final Label starIcon = new Label("★");
+            {
+                starIcon.setTextFill(Color.GOLD); // GOLD looks better
+                starIcon.setStyle("-fx-font-size: 12px; -fx-text-fill: #FFD700; -fx-font-weight: bold;");
+            }
+
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+
+                if (empty || item == null) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    setText(item);
+
+                    // Retrieve the Patch object from the current row
+                    Patch currentPatch = getTableView().getItems().get(getIndex());
+
+                    // is it a favortie?
+                    if (appInfo.getInstrumentProvider().isFavorite(currentPatch)) {
+                        // Place the icon right of the text
+                        setContentDisplay(ContentDisplay.RIGHT);
+                        setGraphic(starIcon);
+                    } else {
+                        setGraphic(null); // Remove the star if it is no favorite
+                    }
+                }
+            }
+        });
 
         TableColumn<Patch, String> typeColumn = new TableColumn<>();
         setColumnLabel(typeColumn, "Type");
@@ -110,12 +266,6 @@ public class VoiceListPane extends AnchorPane {
         table.getColumns().add(pcColumn);
     }
 
-    private void setAbsoluteColumnWidth(TableColumn<?, ?> column, double width) {
-        column.setMinWidth(width);
-        column.setMaxWidth(width);
-        column.setPrefWidth(width);
-    }
-
     private <T> void setColumnLabel(TableColumn<Patch, T> column, String label) {
         Label columnLabel = new Label(label);
         columnLabel.setMaxWidth(Double.MAX_VALUE); // Forces the label to span the whole column width
@@ -135,6 +285,46 @@ public class VoiceListPane extends AnchorPane {
         table.setItems(tableData);
 
         autoSizeColumn(table, nameColumn, 70);
+        table.refresh();
+    }
+
+    private void setupTableForClicks() {
+        table.setRowFactory(tv -> {
+            TableRow<Patch> row = new TableRow<>();
+
+            // Capture the key modifiers right as the click happens
+            row.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
+                if (!row.isEmpty() && event.getButton() == MouseButton.PRIMARY) {
+
+                    // 1. Snapshot the modifiers
+                    boolean shift = event.isShiftDown();
+                    boolean ctrl = event.isControlDown();
+
+                    // 2. Wait a split second for JavaFX to process the selection list
+                    Platform.runLater(() -> {
+                        ObservableList<Patch> selectedItems = table.getSelectionModel().getSelectedItems();
+
+                        // 3. CRITICAL: Only proceed if exactly ONE item is currently selected
+                        if (selectedItems.size() == 1) {
+
+                            int targetChannel;
+                            if (shift) {
+                                targetChannel = CHANNEL_LEFT; // Channel 2 (Shift click)
+                            } else if (ctrl) {
+                                targetChannel = CHANNEL_RIGHT2; // Channel 3 (Ctrl click)
+                            } else {
+                                targetChannel = CHANNEL_RIGHT1; // Channel 1 (Normal click)
+                            }
+
+                            Patch singleItem = selectedItems.get(0);
+                            channelPatches.put(targetChannel,singleItem);
+                        }
+                    });
+                }
+            });
+
+            return row;
+        });
     }
 
     private List<String> excluded = new ArrayList<>();

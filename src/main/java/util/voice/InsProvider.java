@@ -4,6 +4,7 @@ import entity.voice.Group;
 import entity.voice.Patch;
 import org.apache.commons.io.FilenameUtils;
 import util.properties.AppProperties;
+import util.user.UserData;
 import util.voice.parsers.INSParser;
 import util.voice.parsers.MS2SParser;
 
@@ -16,6 +17,7 @@ import static util.properties.PropertyKeys.VOICES_DIR;
 public class InsProvider implements InstrumentProvider {
     private INSParser parser;
     private MS2SParser linkedParser;
+    private final UserData userData = UserData.getINSTANCE();
 
     private InsProvider(INSParser parser) {
         this.parser = parser;
@@ -63,5 +65,12 @@ public class InsProvider implements InstrumentProvider {
         return "Banks";
     }
 
+    @Override
+    public boolean isFavorite(Patch patch) {
+        if (patch.getLinkedPatch() != null) {
+            return userData.isFavorite(patch.getLinkedPatch());
+        }
 
+        return userData.isFavorite(patch);
+    }
 }
