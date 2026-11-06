@@ -45,7 +45,7 @@ public class InsProvider implements InstrumentProvider {
 
     @Override
     public List<String> getTypes() {
-        return new ArrayList<>(this.parser.getTypes());
+        return new ArrayList<>(this.linkedParser.getTypes());
     }
 
     @Override

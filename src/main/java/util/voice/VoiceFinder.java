@@ -150,19 +150,7 @@ public class VoiceFinder {
         return result;
     }
 
-    public static Set<String> getVoiceTypes() {
-        List<Patch> result = getVoices(appInfo.getInstrumentProvider().getGroups());
-        Map<String, Integer> voiceTypes = new HashMap<>();
-
-        for (Patch patch : result) {
-            String patchName = patch.getName();
-            int index = patchName.indexOf(" ");
-            if (index != -1) {
-                String type = patchName.substring(0, index);
-                voiceTypes.merge(type, 1, Integer::sum);
-            }
-        }
-
-        return voiceTypes.keySet();
+    public static List<String> getVoiceTypes() {
+        return appInfo.getInstrumentProvider().getTypes();
     }
 }
