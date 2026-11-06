@@ -13,6 +13,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import lombok.Getter;
 import scenes.voice.VoiceSearchSelectionPane;
+import util.app.AppInfo;
+import util.voice.VoiceFinder;
 
 import java.util.List;
 
@@ -58,13 +60,12 @@ public class GroupPane extends GridPane {
         int row = 0;
 
         // ROW (+, input, -)
-//        List<String> groupNames = VoiceFinder.getGroupsNames(ApplicationInfo.getInstance().getInstrumentProvider().getGroups(), "");
-//        ObservableList<String> groups = FXCollections.observableArrayList(groupNames);
-//        groupsComboBox = new ComboBox<>(groups);
-        groupsComboBox = new ComboBox<>();
+        List<String> groupNames = VoiceFinder.getGroupsNames(AppInfo.INSTANCE.getInstrumentProvider().getGroups(), "");
+        ObservableList<String> groups = FXCollections.observableArrayList(groupNames);
+        groupsComboBox = new ComboBox<>(groups);
         groupsComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-//            selectedGroup = newValue;
-//            linkedSearchButton.fire();
+            selectedGroup = newValue;
+            linkedSearchButton.fire();
         });
         groupsComboBox.setMaxWidth(Double.MAX_VALUE);
         setShowingProperty(groupsComboBox);

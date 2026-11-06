@@ -65,7 +65,7 @@ public class VoiceSearchSelectionPane extends VBox {
     private static final int TAB_GROUP = 1;
     private static final int TAB_BANK = 2;
 
-    private static int selectedTIndex = TAB_BANK;
+    private static int selectedTIndex = TAB_PATCH;
 
     private void buildPane() {
         logger.debug("building {}", getId());
@@ -73,15 +73,10 @@ public class VoiceSearchSelectionPane extends VBox {
         TabPane tabPane = new TabPane();
         tabPane.getSelectionModel().selectedIndexProperty().addListener((obs, oldIdx, newIdx) -> {
             if (selectedTIndex != (int)newIdx) {
+                selectedTIndex = (int)newIdx;
                 handleSearch(true);
             }
-/*            if (selectedTabIndex.get() != newIdx.intValue()) {
-                selectedTIndex = newIdx.intValue();
-                selectedTabIndex.set(newIdx.intValue());
-                handleSearch(true);
-            } */
         });
-//        selectedTabIndex.bindBidirectional(tabPane.getSelectionModel().selectedIndexProperty());
 
         Tab tab1 = new Tab("Patch");
         VBox tab1Content = new VBox();
@@ -107,12 +102,6 @@ public class VoiceSearchSelectionPane extends VBox {
             tabPane.getSelectionModel().select(selectedTIndex);
         });
 
-/*        selectedTabIndex.addListener((obs, oldIdx, newIdx) -> {
-            if (tabPane.getSelectionModel().getSelectedIndex() != newIdx.intValue()) {
-                tabPane.getSelectionModel().select(newIdx.intValue());
-            }
-        }); */
-
         getChildren().add(tabPane);
 
         logger.debug("built {}", getId());
@@ -133,6 +122,9 @@ public class VoiceSearchSelectionPane extends VBox {
         pane.getChildren().add(titleSearchPane);
 
         Button searchButton = titleSearchPane.getSearchButton();
+        searchButton.setOnAction(event -> {
+            handleSearch(true);
+        });
 
         for (DynamicPane dynaPane : dynamicPanes) {
             if (dynaPane != null) {
@@ -177,6 +169,7 @@ public class VoiceSearchSelectionPane extends VBox {
         }
     }
 
+    private GroupPane groupPane;
     // TODO this must register for keyboard voice change
     private void buildGroupSearchPane(VBox pane, String label) {
         if (! pane.getChildren().isEmpty()) {
@@ -190,8 +183,11 @@ public class VoiceSearchSelectionPane extends VBox {
         pane.getChildren().add(titleSearchPane);
 
         Button searchButton = titleSearchPane.getSearchButton();
+        searchButton.setOnAction(event -> {
+            handleSearch(true);
+        });
 
-        GroupPane groupPane = new GroupPane(this);
+        groupPane = new GroupPane(this);
         groupPane.addLinkedSearchButton(searchButton);
         pane.getChildren().add(groupPane);
     }
@@ -331,7 +327,7 @@ public class VoiceSearchSelectionPane extends VBox {
             }
 
             getVoiceSearchPane().getGroupSearchPane().getGroupPane().setSelectedGroup(null);
-
+*/
             String voiceToSearch = dynamicPanes.get(0).getInputValue();
             List<Patch> result = new ArrayList<>();
 
@@ -350,8 +346,7 @@ public class VoiceSearchSelectionPane extends VBox {
                 }
             }
 
-            VoiceSearchResultsPane resultsPane = getVoiceSearchPane().getVoicePane().getVoiceSearchResultsPane();
-            resultsPane.showResults(result); */
+            getVoiceSearchPane().getVoicePane().getVoiceResultPane().getVoiceListPane().showResults(result);
         } else if (selectedTIndex == TAB_BANK) {
             int bank = Integer.parseInt(bankChangedProperty.get());
             int msb = Integer.parseInt(msbChangedProperty.get());
@@ -369,13 +364,31 @@ public class VoiceSearchSelectionPane extends VBox {
 
             List<Patch> result = new ArrayList<>();
             result = VoiceFinder.findVoice(searchPatch);
-            System.out.println("FOUND: " + result.size());
             getVoiceSearchPane().getVoicePane().getVoiceResultPane().getVoiceListPane().showResults(result);
         }  else if (selectedTIndex == TAB_GROUP) {
-            // TODO Handle Group search
+            List<Patch> result = new ArrayList<>();
+
+            String groupName = groupPane.getSelectedGroup();
+
+            if (groupName != null) {
+                result.addAll(VoiceFinder.getVoicesOfGroup(AppInfo.INSTANCE.getInstrumentProvider().getGroups(), groupName));
+            }
+
+            getVoiceSearchPane().getVoicePane().getVoiceResultPane().getVoiceListPane().showResults(result);
         }
     }
 
+    private List<Patch> refine(List<Patch> previousResult, String voiceName) {
+        List<Patch> result = new ArrayList<>();
+
+        for (Patch patch : previousResult) {
+            if (patch.getName().toLowerCase().contains(voiceName)) {
+                result.add(patch);
+            }
+        }
+
+        return result;
+    }
 
     // ACCESSORS
     public VoiceSearchPane getVoiceSearchPane() {
