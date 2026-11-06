@@ -10,6 +10,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import lombok.Getter;
 
 import static util.app.colors.ColorScheme.getColor;
 
@@ -28,6 +29,7 @@ public class LightIndicatorButton extends ToggleButton {
     private static final Color COLOR_TEXT = Color.LIGHTGRAY;
 
     private final Rectangle lightIndicator;
+    @Getter
     private final Label buttonLabel;
     private final DropShadow glowEffect;
 

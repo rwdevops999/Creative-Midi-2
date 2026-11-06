@@ -1,9 +1,15 @@
 package scenes.voice;
 
 import fx.component.LightIndicatorButton;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.paint.Color;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scenes.voice.subpanes.VoicesSelectorPane;
 import util.Util;
 
 import static util.Util.setPaneBackground;
@@ -18,6 +24,9 @@ public class VoiceFilterPane extends HBox {
         setId("VoiceFilterPane");
 
         setSpacing(10);
+        setAlignment(Pos.CENTER_LEFT);
+
+        setPadding(new Insets(0, 5, 0, 5));
     }
 
     private VoiceResultPane parent;
@@ -27,7 +36,7 @@ public class VoiceFilterPane extends HBox {
         this.parent = owner;
 
         Util.setPaneHeightAsPercentage(this, owner, height);
-        Util.showSmallPaneBorder(this, getColor("border", "red"));
+//        Util.showSmallPaneBorder(this, getColor("border", "red"));
 
         setPaneBackground(this);
 
@@ -37,17 +46,16 @@ public class VoiceFilterPane extends HBox {
     private void buildPane() {
         logger.debug("building {}", getId());
 
-        LightIndicatorButton right1 = new LightIndicatorButton("Right1", 40, "blue");
-        getChildren().add(right1);
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        LightIndicatorButton left = new LightIndicatorButton("Left", 40, "blue");
-        getChildren().add(left);
+        // 2. Zorg ervoor dat de spacer alle resterende horizontale ruimte inneemt
+        LightIndicatorButton favorites = new LightIndicatorButton("★", 43, "orange");
+        favorites.getButtonLabel().setTextFill(Color.GOLD);
 
-        LightIndicatorButton right2 = new LightIndicatorButton("Left", 40, "blue");
-        getChildren().add(right2);
+        VoicesSelectorPane voicesSelectorPane = new VoicesSelectorPane(this);
 
-        LightIndicatorButton favorites = new LightIndicatorButton("★", 40, "orange");
-        getChildren().add(favorites);
+        getChildren().addAll(favorites, spacer, voicesSelectorPane);
 
         logger.debug("built {}", getId());
     }
