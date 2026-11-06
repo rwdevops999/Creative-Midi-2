@@ -165,7 +165,10 @@ public class SelectorsPane extends HBox {
             if (newVoice != null) {
                 AppInfo.INSTANCE.setKeyboardVoice(newVoice);
                 AppInfo.INSTANCE.setInstrumentProvider(InstrumentProviderFactory.getProvider(newVoice));
-                Platform.runLater(() -> AppNotifications.showNotification("Keyboard Voice Selected", "'" + newVoice + "'"));
+                Platform.runLater(() -> {
+                    AppNotifications.showNotification("Keyboard Voice Selected", "'" + newVoice + "'");
+                    Registry.getInstance().post(new AppEvent(AppEvent.AppEventType.VOICE, newVoice));
+                });
             }
         });
 

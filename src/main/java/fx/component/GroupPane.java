@@ -14,6 +14,8 @@ import javafx.scene.layout.RowConstraints;
 import lombok.Getter;
 import scenes.voice.VoiceSearchSelectionPane;
 import util.app.AppInfo;
+import util.registry.AppEvent;
+import util.registry.Registry;
 import util.voice.VoiceFinder;
 
 import java.util.List;
@@ -69,6 +71,19 @@ public class GroupPane extends GridPane {
         });
         groupsComboBox.setMaxWidth(Double.MAX_VALUE);
         setShowingProperty(groupsComboBox);
+
+        Registry.getInstance().register(event -> {
+            if (event != null && AppEvent.AppEventType.VOICE.equals(event.type())) {
+                List<String> newGroupNames = VoiceFinder.getGroupsNames(AppInfo.INSTANCE.getInstrumentProvider().getGroups(), "");
+
+                groupsComboBox.getItems().clear();
+                ObservableList<String> newGroups = FXCollections.observableArrayList(newGroupNames);
+                groupsComboBox.setItems(newGroups);
+                setShowingProperty(groupsComboBox);
+
+                linkedSearchButton.fire();
+            }
+        });
 
 /*        Registry.register("VoiceGroupSelector", groupsComboBox, (node, data) -> {
             List<String> newGroupNames = VoiceFinder.getGroupsNames(ApplicationInfo.getInstance().getInstrumentProvider().getGroups(), "");

@@ -102,6 +102,7 @@ public class INSParser {
                 int banknr = Integer.parseInt(descr.substring(index + 1, descr.indexOf("]")).trim());
                 String groupName = line.substring(separator + 1).trim();
                 Group group = new Group(groupNr, groupName, currentGroup);
+                rootGroups.add(group);
                 CreatePatches(group, banks, groupName, banknr);
             } else if (line.contains("=")) {
                 int separator = line.indexOf("=");

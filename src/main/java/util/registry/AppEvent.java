@@ -4,6 +4,7 @@ public record AppEvent(AppEventType  type, Object data) {
     public enum AppEventType {
         DEVICE,
         STATUS,
-        MONITOR
+        MONITOR,
+        VOICE
     }
 }

@@ -67,6 +67,8 @@ public class VoiceSearchSelectionPane extends VBox {
 
     private static int selectedTIndex = TAB_PATCH;
 
+    private StringProperty groupTabName = new SimpleStringProperty();
+
     private void buildPane() {
         logger.debug("building {}", getId());
 
@@ -85,11 +87,14 @@ public class VoiceSearchSelectionPane extends VBox {
 
         InstrumentProvider provider = AppInfo.INSTANCE.getInstrumentProvider();
 
-        Tab tab2 = new Tab(provider.getGroupingName());
+        Tab tab2 = new Tab();
+        tab2.textProperty().bindBidirectional(groupTabName);
         VBox tab2Content = new VBox();
         tab2Content.setId("Groups or Banks");
         buildGroupSearchPane(tab2Content, provider.getGroupingName());
         tab2.setContent(tab2Content);
+
+        groupTabName.set(provider.getGroupingName());
 
         Tab tab3 = new Tab("Detail");
         VBox tab3Content = new VBox();
@@ -103,6 +108,8 @@ public class VoiceSearchSelectionPane extends VBox {
         });
 
         getChildren().add(tabPane);
+
+        handleSearch(false);
 
         logger.debug("built {}", getId());
     }
@@ -165,7 +172,7 @@ public class VoiceSearchSelectionPane extends VBox {
 
             getChildren().clear();
             buildPane();
-            handleSearch(false);
+//            handleSearch(false);
         }
     }
 
@@ -184,6 +191,11 @@ public class VoiceSearchSelectionPane extends VBox {
 
         Button searchButton = titleSearchPane.getSearchButton();
         searchButton.setOnAction(event -> {
+            InstrumentProvider provider = AppInfo.INSTANCE.getInstrumentProvider();
+            if (groupTabName.get() != null && ! provider.getGroupingName().equals(groupTabName.get())) {
+                groupTabName.set(provider.getGroupingName());
+            }
+
             handleSearch(true);
         });
 

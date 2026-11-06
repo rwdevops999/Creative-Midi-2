@@ -120,6 +120,8 @@ public class VoiceListPane extends AnchorPane {
                 }
             }
             // Explicitly set the column width
+            column.setMinWidth(maxWidth);
+            column.setMaxWidth(maxWidth);
             column.setPrefWidth(maxWidth);
         });
     }
