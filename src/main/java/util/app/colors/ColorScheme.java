@@ -48,6 +48,7 @@ public class ColorScheme {
         colors.put(new ColorKey("border", "blue", null), Color.BLUE);
         colors.put(new ColorKey("border", "orange", null), Color.ORANGE);
         colors.put(new ColorKey("border", "gold", null), Color.GOLD);
+        colors.put(new ColorKey("border", "turquoise", null), Color.TURQUOISE);
 
         // monitor
         colors.put(new ColorKey("communication", "error", null), Color.RED);

@@ -36,8 +36,8 @@ public class VoiceSearchPane extends VBox {
     private void buildPane() {
         logger.debug("building {}", getId());
 
-        getChildren().add(new VoiceSearchSelectionPane(this, 69.8));
-        getChildren().add(new VoiceSearchExclusionPane(this, 29.8));
+        getChildren().add(new VoiceSearchSelectionPane(this, 59.8));
+        getChildren().add(new VoiceSearchExclusionPane(this, 39.8));
 
         logger.debug("built {}", getId());
     }

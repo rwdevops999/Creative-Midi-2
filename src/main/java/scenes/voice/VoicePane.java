@@ -36,9 +36,9 @@ public class VoicePane extends HBox {
     private void buildPane() {
         logger.debug("Building {}", getId());
 
-        VoiceSearchPane voiceSearchPane = new VoiceSearchPane(this, 30);
+        VoiceSearchPane voiceSearchPane = new VoiceSearchPane(this, 25);
         getChildren().add(voiceSearchPane);
-        VoiceResultPane voiceResultPane = new VoiceResultPane(this, 69.8);
+        VoiceResultPane voiceResultPane = new VoiceResultPane(this, 74.8);
         getChildren().add(voiceResultPane);
 
         logger.debug("Built {}", getId());

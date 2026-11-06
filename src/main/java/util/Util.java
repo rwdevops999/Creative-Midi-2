@@ -70,7 +70,7 @@ public class Util {
         control.prefHeightProperty().bind(parent.heightProperty().multiply(height));
     }
 
-    public static void setPaneSizeAsPercentage(Pane child, Pane parent, int width, int height) {
+    public static void setPaneSizeAsPercentage(Pane child, Pane parent, double width, double height) {
         setPaneWidthAsPercentage(child, parent, width);
         setPaneHeightAsPercentage(child, parent, height);
     }
