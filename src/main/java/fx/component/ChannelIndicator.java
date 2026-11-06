@@ -31,12 +31,6 @@ public class ChannelIndicator extends HBox {
         this.activeColor = ledOnColor;
         this.inactiveColor = ledOffColor;
 
-        if (labelText != null) {
-            Label label = new Label(labelText);
-            label.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 11px;");
-            this.getChildren().add(label);
-        }
-
         led = new Circle(5); // Elegant LED size
         led.setFill(inactiveColor);
 
@@ -45,6 +39,12 @@ public class ChannelIndicator extends HBox {
         );
 
         this.getChildren().add(led);
+
+        if (labelText != null) {
+            Label label = new Label(labelText);
+            label.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 11px;");
+            this.getChildren().add(label);
+        }
     }
 
     public void setActive(boolean isActive) {
