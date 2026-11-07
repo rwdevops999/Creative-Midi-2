@@ -34,10 +34,10 @@ public class LightIndicatorButton extends ToggleButton {
     private final DropShadow glowEffect;
 
     public LightIndicatorButton(String text, String color) {
-        this(text, DEFAULT_BUTTON_WIDTH, color);
+        this(text, DEFAULT_BUTTON_WIDTH, color, null);
     }
 
-    public LightIndicatorButton(String text, double size, String color) {
+    public LightIndicatorButton(String text, double size, String color, Color textColor) {
         COLOR_LIGHT_OFF = getColor("button", "light off", color);
         COLOR_LIGHT_ON = getColor("button", "light on", color);
         COLOR_BORDER_ON = getColor("button", "border on", color);
@@ -61,6 +61,9 @@ public class LightIndicatorButton extends ToggleButton {
 
         buttonLabel = new Label(text);
         buttonLabel.setFont(Font.font("Segoe UI", FontWeight.BOLD, 8));
+        if (textColor != null) {
+            buttonLabel.setTextFill(textColor);
+        }
 
         // Break up long text with '...' if the button is too small
         buttonLabel.setTextOverrun(javafx.scene.control.OverrunStyle.ELLIPSIS);
@@ -74,13 +77,17 @@ public class LightIndicatorButton extends ToggleButton {
         graphicContainer.setAlignment(Pos.CENTER);
         setGraphic(graphicContainer);
 
-        updateVisuals(false);
+        updateVisuals(false, textColor);
 
-        this.selectedProperty().addListener((obs, wasSelected, isSelected) -> updateVisuals(isSelected));
+        this.selectedProperty().addListener((obs, wasSelected, isSelected) -> updateVisuals(isSelected, textColor));
     }
 
-    private void updateVisuals(boolean isSelected) {
-        buttonLabel.setTextFill(COLOR_TEXT);
+    private void updateVisuals(boolean isSelected, Color textColor) {
+        if (textColor != null) {
+            buttonLabel.setTextFill(textColor);
+        } else {
+            buttonLabel.setTextFill(COLOR_TEXT);
+        }
 
         if (isSelected) {
             lightIndicator.setFill(COLOR_LIGHT_ON);

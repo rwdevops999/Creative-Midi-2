@@ -896,8 +896,8 @@
 [p3,95,0,112]Regular! Wave2001
 [p3,91,0,112]Regular! XenonPad
 [g2]DrumKit
-[p3,0,127,0]Live Drums! StandardKit1
-[p3,1,127,0]Live Drums! StandardKit2
+[p3,0,127,0]LiveDrums! StandardKit1
+[p3,1,127,0]LiveDrums! StandardKit2
 [p3,16,127,0]Drums! RockKit
 [p3,35,126,0]SFX! ArabicKit2
 [g1]MegaVoice

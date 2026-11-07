@@ -56,8 +56,7 @@ public class VoiceFilterPane extends HBox {
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
         // 2. Zorg ervoor dat de spacer alle resterende horizontale ruimte inneemt
-        favorites = new LightIndicatorButton("★", 43, "orange");
-        favorites.getButtonLabel().setTextFill(Color.GOLD);
+        favorites = new LightIndicatorButton("★", 43, "orange", Color.GOLD);
         favorites.setOnAction(e -> {
             if (favorites.isSelected()) {
                 getVoiceResultPane().getVoiceListPane().showResults(new ArrayList<>(UserData.getInstance().getFavorites()), true);

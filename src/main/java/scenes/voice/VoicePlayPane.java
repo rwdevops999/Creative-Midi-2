@@ -61,7 +61,7 @@ public class VoicePlayPane extends HBox {
                 new FileChooser.ExtensionFilter("MIDI", "*.mid")
         );
 
-        LightIndicatorButton play = new LightIndicatorButton("Play", 40, "red");
+        LightIndicatorButton play = new LightIndicatorButton("Play", 40, "red", null);
         getChildren().add(play);
 
         Button load = new Button("Load...");

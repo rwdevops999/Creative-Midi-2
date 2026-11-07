@@ -51,7 +51,7 @@ public class VoicesSelectorPane extends HBox {
     private void buildPane() {
         Label lblRight1 = new Label("Select a voice file");
 
-        LightIndicatorButton right1 = new LightIndicatorButton("Right1", 43, "blue");
+        LightIndicatorButton right1 = new LightIndicatorButton("Right1", 43, "blue", null);
         right1.selectedProperty().bindBidirectional(listen.get(CHANNEL_RIGHT1));
 /*        right1.setOnAction(event -> {
             listen.put(CHANNEL_RIGHT1, right1.isSelected());
@@ -59,7 +59,7 @@ public class VoicesSelectorPane extends HBox {
         getChildren().add(right1);
         getChildren().add(ledMap.get(CHANNEL_RIGHT1));
 
-        LightIndicatorButton left = new LightIndicatorButton("Left", 43, "blue");
+        LightIndicatorButton left = new LightIndicatorButton("Left", 43, "blue", null);
         left.selectedProperty().bindBidirectional(listen.get(CHANNEL_LEFT));
 /*        left.setOnAction(event -> {
             listen.put(CHANNEL_LEFT, left.isSelected());
@@ -67,7 +67,7 @@ public class VoicesSelectorPane extends HBox {
         getChildren().add(left);
         getChildren().add(ledMap.get(CHANNEL_LEFT));
 
-        LightIndicatorButton right2 = new LightIndicatorButton("Right2", 43, "blue");
+        LightIndicatorButton right2 = new LightIndicatorButton("Right2", 43, "blue", null);
         right2.selectedProperty().bindBidirectional(listen.get(CHANNEL_RIGHT2));
 /*        right2.setOnAction(event -> {
             listen.put(CHANNEL_RIGHT2, right2.isSelected());

@@ -68,19 +68,19 @@ public class MidiTypeFilterPane extends GridPane {
     private BooleanProperty dsSelected3 = new SimpleBooleanProperty(true);
 
     public void buildPane() {
-        LightIndicatorButton lib1 = new LightIndicatorButton("MIDI", 50, "blue");
+        LightIndicatorButton lib1 = new LightIndicatorButton("MIDI", 50, "blue", null);
         lib1.selectedProperty().bindBidirectional(dsSelected1);
         lib1.setOnAction(e -> {
             getFilterTypePane().getEventListFilterPane().getEventListPane().setFilterMidiOut(!dsSelected1.get());
         });
         add(lib1, 0, 0);
-        LightIndicatorButton lib2 = new LightIndicatorButton("META", 50, "blue");
+        LightIndicatorButton lib2 = new LightIndicatorButton("META", 50, "blue", null);
         lib2.selectedProperty().bindBidirectional(dsSelected2);
         lib2.setOnAction(e -> {
             getFilterTypePane().getEventListFilterPane().getEventListPane().setFilterMetaOut(!dsSelected2.get());
         });
         add(lib2, 1, 0);
-        LightIndicatorButton lib3 = new LightIndicatorButton("SYSEX", 50, "blue");
+        LightIndicatorButton lib3 = new LightIndicatorButton("SYSEX", 50, "blue", null);
         lib3.selectedProperty().bindBidirectional(dsSelected3);
         lib3.setOnAction(e -> {
             getFilterTypePane().getEventListFilterPane().getEventListPane().setFilterSysexOut(!dsSelected3.get());

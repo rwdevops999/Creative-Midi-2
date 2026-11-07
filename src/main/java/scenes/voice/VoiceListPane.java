@@ -289,26 +289,53 @@ public class VoiceListPane extends AnchorPane {
         column.setGraphic(columnLabel);
     }
 
-    private List<Patch> tableResults = new ArrayList<>();
+    private List<Patch> currentData = new ArrayList<>();
     private List<String> excludes = new ArrayList<>();
     private List<Patch> oldData;
+    // TODO Solve problem: display favorites and select then INS
     public void showResults (List<Patch> data, boolean areFavorites) {
-        if (data == null) {
-            tableResults = oldData;
-        } else if (areFavorites) {
-            oldData = tableResults;
-            tableResults = data;
+        List<Patch> tableData = null;
+
+        if (data != null && !data.isEmpty()) {
+            if (getVoiceResultPane().getVoiceFilterPane().isFavoritesShown()) {
+                if (areFavorites) {
+                    oldData = currentData;
+                    currentData = data;
+                    tableData = currentData;
+                } else {
+                    oldData = data;
+                    tableData = currentData;
+                }
+            } else {
+                if (! areFavorites) {
+                    currentData = data;
+                }
+            }
         } else {
-            tableResults = data;
+            if (data == null) {
+                if (areFavorites && getVoiceResultPane().getVoiceFilterPane().isFavoritesShown()) {
+                    currentData = data;
+                } else {
+                    currentData = oldData;
+                }
+            } else {
+                if (areFavorites) {
+                    oldData = currentData;
+                    currentData = data;
+                    System.out.println("data is empty");
+                }
+            }
         }
 
-        List<Patch> newData = tableResults.stream().filter(patch -> ! excludes.contains(patch.getType())).toList();
+        if (currentData != null) {
+            List<Patch> newData = currentData.stream().filter(patch -> !excludes.contains(patch.getType())).toList();
 
-        ObservableList<Patch> tableData = FXCollections.observableArrayList(newData);
-        table.setItems(tableData);
+            table.setItems(FXCollections.observableArrayList(newData));
 
-        autoSizeColumn(table, nameColumn, 70);
-        table.refresh();
+            autoSizeColumn(table, nameColumn, 70);
+
+            table.refresh();
+        }
     }
 
     public void showResultsNoStorage (List<Patch> data) {
@@ -362,7 +389,11 @@ public class VoiceListPane extends AnchorPane {
 
     public void setExcludedVoiceTypes(List<String> excludedVoiceTypes) {
         this.excludes =  excludedVoiceTypes;
-        showResults(tableResults, false);
+        if (getVoiceResultPane().getVoiceFilterPane().isFavoritesShown()) {
+            showResults(oldData, false);
+        } else {
+            showResults(currentData, false);
+        }
     }
 
     private static final Map<TableColumn<?, ?>, Double> originalWidths =
