@@ -12,6 +12,7 @@ import util.registry.CommunicationMessage;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiUnavailableException;
+import javax.sound.midi.ShortMessage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -119,7 +120,7 @@ public class MidiWriter {
         midisList = new ArrayList<>();
 
         try {
-            Midi midi = new Midi("Bank Select MSB", 0, 0xB0, 0X00, 0x00);
+/*            Midi midi = new Midi("Bank Select MSB", 0, 0xB0, 0X00, 0x00);
             midisList.add(midi);
 
             midi = new Midi("Bank Select LSB", 0, 0xB0, 0X20, 0x00);
@@ -132,7 +133,25 @@ public class MidiWriter {
             midisList.add(midi);
 
             sendBulk();
-            Thread.sleep(100);
+            Thread.sleep(100); */
+            Thread.sleep(1);
+            Midi midi = new Midi("Pedal Down", 0, ShortMessage.CONTROL_CHANGE, 0x0B, 127);
+            send(midi);
+//            Thread.sleep(400);
+            midi = new Midi("Pedal Down", 0, ShortMessage.CONTROL_CHANGE, 0x0B, 0);
+            send(midi);
+
+            Midi midi2 = new Midi("Pedal Down", 0, ShortMessage.CONTROL_CHANGE, 0x40, 127);
+            send(midi2);
+//            Thread.sleep(400);
+            midi2 = new Midi("Pedal Down", 0, ShortMessage.CONTROL_CHANGE, 0x40, 0);
+            send(midi2);
+
+            Midi midi3 = new Midi("Pedal Down", 0, ShortMessage.CONTROL_CHANGE, 0x43, 127);
+            send(midi3);
+//            Thread.sleep(400);
+            midi3 = new Midi("Pedal Down", 0, ShortMessage.CONTROL_CHANGE, 0x43, 0);
+            send(midi3);
         } catch (InvalidMidiDataException | MidiUnavailableException| InterruptedException e) {
             logger.error("Exception. CAUSE {}", e.getMessage());
         }

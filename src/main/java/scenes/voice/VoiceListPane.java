@@ -22,11 +22,13 @@ import javafx.scene.text.Text;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scenes.voice.subpanes.VoiceDetailDialog;
 import util.Util;
 import util.app.AppInfo;
 import util.midi.MidiHelper;
 import util.user.UserData;
 import util.voice.InstrumentProvider;
+import util.voice.VoiceType;
 
 import java.util.*;
 
@@ -121,6 +123,17 @@ public class VoiceListPane extends AnchorPane {
         voiceSubMenu.getItems().addAll(right1, left, right2);
 
         MenuItem details = new MenuItem("Show details");
+        details.setOnAction(event -> {
+            Patch patch = table.getSelectionModel().getSelectedItem();
+
+            InstrumentProvider instrumentProvider = AppInfo.INSTANCE.getInstrumentProvider();
+            if (VoiceType.INS.equals(instrumentProvider.getSourceType())) {
+                patch = instrumentProvider.findLinkedPatch(patch);
+            }
+
+            VoiceDetailDialog dialog = new VoiceDetailDialog(patch);
+            dialog.showAndWait();
+        });
 
         Menu favoritesSubMenu = new Menu("Favorites");
 

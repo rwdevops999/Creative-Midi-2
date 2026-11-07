@@ -35,7 +35,7 @@ public class SysexWriter {
             SysexMessage message = new SysexMessage();
             String content = sysex.getContent().getSysex();
 
-            byte[] data = sysex.getContent().getSysex().getBytes();
+            byte[] data = sysex.getContent().getBytes();
             message.setMessage(data, data.length);
 
             midiInputDevice.getReceiver().send(message, -1);

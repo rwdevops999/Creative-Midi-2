@@ -105,9 +105,9 @@ public class SysexContainer {
 
         try (InputStream in = Files.newInputStream(Path.of(sysexFile))) {
             sysexList = mapper.readValue(in, new TypeReference<>() {});
-            sysexList = sysexList.stream()
+            sysexList = new ArrayList<>(sysexList.stream()
                     .sorted(Comparator.comparing(Sysex::getName))
-                    .toList();
+                    .toList());
         } catch (IOException ioe) {
             logger.error("Exception: CAUSE: {}", ioe.getMessage());
         }
