@@ -9,7 +9,10 @@ import scenes.sysex.container.SysexContainer;
 import scenes.sysex.parametrized.Parameter;
 import scenes.sysex.parametrized.ParametrizedFunctionFactory;
 import scenes.sysex.parametrized.ParametrizedFunctions;
+import util.sysex.SysexWriter;
 
+import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.MidiUnavailableException;
 import java.util.function.Function;
 
 import static util.Util.setPaneBackground;
@@ -23,21 +26,28 @@ public class Test3Pane extends HBox {
         setPaneBackground(this);
 
         setupTest();
-        runTest();
+        try {
+            runTest();
+        } catch (Exception ex) {
+            System.out.println("EXCEPTION: " + ex.getMessage());
+        }
     }
 
     private  void  setupTest() {
         SysexContainer.getInstance().load();
     }
 
-    private void runTest() {
+    private void runTest() throws InvalidMidiDataException, MidiUnavailableException {
         Sysex tempoSysex = SysexContainer.getInstance().getSysexByName("Tempo");
         if (tempoSysex != null) {
             Function<Integer, Parameter> tempoFunction = ParametrizedFunctionFactory.getInstance().getParametrizedFunction("Tempo");
             Parameter result = tempoFunction.apply(120);
 
             String sysex = tempoSysex.getContent().getSysex().replace(result.getParameterString(), result.getReplacementString());
+            tempoSysex.getContent().setSysex(sysex);
             System.out.println(sysex);
+
+            SysexWriter.getInstance().send(tempoSysex);
         }
     }
 }

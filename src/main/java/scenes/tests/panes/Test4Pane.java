@@ -39,20 +39,20 @@ public class Test4Pane extends HBox {
     }
 
     private void runTest() {
-/*        Sysex sysex = new Sysex("test");
-        sysex.getContent().setSysex("F0 43 73 01 52 25 11 00 02 00 02 F7");
+        Sysex sysex = new Sysex("test");
+        sysex.getContent().setSysex("F0 43 73 01 52 25 11 01 01 00 F7");
         try {
             SysexWriter.getInstance().send(sysex);
         } catch (InvalidMidiDataException | MidiUnavailableException e) {
             System.out.println("E");
         }
-*/
+/*
         Sysex sysex2 = new Sysex("test");
         sysex2.getContent().setSysex("F0 43 73 01 52 25 11 01 01 00 F7");
         try {
             SysexWriter.getInstance().send(sysex2);
         } catch (InvalidMidiDataException | MidiUnavailableException e) {
             System.out.println("E");
-        }
+        } */
     }
 }
