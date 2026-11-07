@@ -69,14 +69,25 @@ public class MidiHelper {
         return result;
     }
 
-    public IThreadEventHandler anyHandler = new IThreadEventHandler() {
+    public IThreadEventHandler successHandler = new IThreadEventHandler() {
         @Override
-        public void handle() {
-            System.out.println("HANDLER ANY HANDLER");
+        public void handle(ToggleButton button) {
+            if (button != null) {
+                button.setSelected(false);
+            }
         }
     };
 
-    public boolean playMidiFile (MultiChannelMidiReceiver multiChannelMidiReceiver) {
+    public IThreadEventHandler interruptedHandler = new IThreadEventHandler() {
+        @Override
+        public void handle(ToggleButton button) {
+            if (button != null) {
+                button.setSelected(false);
+            }
+        }
+    };
+
+    public boolean playMidiFile (MultiChannelMidiReceiver multiChannelMidiReceiver, ToggleButton btn) {
         if (AppInfo.INSTANCE.getSelectedDevice() == null) {
             DialogFactory.getInstance().renderWarningDialog("No device selected");
         } else {
@@ -85,7 +96,7 @@ public class MidiHelper {
                 DialogFactory.getInstance().renderWarningDialog("Input device not ready");
                 return false;
             } else {
-                MidiPlayer.playMidi(anyHandler, anyHandler, multiChannelMidiReceiver);
+                MidiPlayer.playMidi(successHandler, interruptedHandler, multiChannelMidiReceiver, btn);
 
                 return true;
             }
@@ -98,11 +109,8 @@ public class MidiHelper {
         return MidiPlayer.isPlaying();
     }
 
-    public void stopMidiFile (ToggleButton button, Map<Integer, ChannelIndicator> midiChannelIndicators) {
-        MidiPlayer.stopDemo(midiChannelIndicators);
-        if (button != null) {
-            button.setSelected(false);
-        }
+    public void stopMidiFile (Map<Integer, ChannelIndicator> midiChannelIndicators) {
+        MidiPlayer.stopMidi(midiChannelIndicators);
     }
 
 }

@@ -2,6 +2,7 @@ package util.midi.thread;
 
 import javafx.concurrent.Task;
 import javafx.concurrent.Worker;
+import javafx.scene.control.ToggleButton;
 import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,10 +24,13 @@ public class MidiWorker implements Runnable {
     private static Sequencer sequencer = null;
     private static File midiFile = null;
 
+    private ToggleButton toggle = null;
+
     public MidiWorker() {
     }
 
-    public MidiWorker (MidiDevice device, MultiChannelMidiReceiver multiChannelMidiReceiver) {
+    public MidiWorker (MidiDevice device, MultiChannelMidiReceiver multiChannelMidiReceiver, ToggleButton btn) {
+        toggle = btn;
         try {
             if (!device.isOpen()) {
                 device.open();
@@ -61,7 +65,7 @@ public class MidiWorker implements Runnable {
                     sequencer.stop();
                     sequencer.close();
                     if (onSucceededHandler != null) {
-                        onSucceededHandler.handle();
+                        onSucceededHandler.handle(toggle);
                     }
                 }
             });
@@ -87,6 +91,9 @@ public class MidiWorker implements Runnable {
                 }
             } catch (InterruptedException ie) {
                 logger.debug("Exception. CAUSE: {}", ie.getMessage());
+                if (onInterruptedHandler != null) {
+                    onInterruptedHandler.handle(toggle);
+                }
             } finally {
                 sequencer.close();
             }

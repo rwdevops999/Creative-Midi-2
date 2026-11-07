@@ -4,6 +4,7 @@ import entity.midi.Midi;
 import fx.component.ChannelIndicator;
 import fx.dialog.DialogFactory;
 import javafx.concurrent.Worker;
+import javafx.scene.control.ToggleButton;
 import lombok.Getter;
 import util.app.AppInfo;
 import util.eventhandlers.IThreadEventHandler;
@@ -21,8 +22,8 @@ public class MidiPlayer {
     @Getter
     private static boolean isPlaying = false;
 
-    public static void playMidi(IThreadEventHandler successHandler, IThreadEventHandler interruptedHandler, MultiChannelMidiReceiver multiChannelMidiReceiver) {
-        worker = new MidiWorker(AppInfo.INSTANCE.getSelectedDevice().getMidiInputDevice(), multiChannelMidiReceiver);
+    public static void playMidi(IThreadEventHandler successHandler, IThreadEventHandler interruptedHandler, MultiChannelMidiReceiver multiChannelMidiReceiver, ToggleButton btn) {
+        worker = new MidiWorker(AppInfo.INSTANCE.getSelectedDevice().getMidiInputDevice(), multiChannelMidiReceiver, btn);
         worker.setOnSucceededHandler(successHandler);
         worker.setOnInterruptedHandler(interruptedHandler);
 
@@ -32,12 +33,12 @@ public class MidiPlayer {
         } else {
             DialogFactory.getInstance().renderErrorDialog("Device not ready !!!!");
             if (interruptedHandler != null) {
-                interruptedHandler.handle();
+                interruptedHandler.handle(btn);
             }
         }
     }
 
-    public static void stopDemo(Map<Integer, ChannelIndicator> channelIndicators) {
+    public static void stopMidi(Map<Integer, ChannelIndicator> channelIndicators) {
         if (worker != null && worker.isAlive()) {
             worker.interrupt();
             isPlaying = false;

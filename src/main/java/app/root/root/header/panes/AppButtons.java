@@ -55,7 +55,7 @@ public class AppButtons extends GridPane {
             // TODO Add User Data Save
 
             if (MidiHelper.getInstance().isMidiPlaying()) {
-                MidiHelper.getInstance().stopMidiFile(null, null);
+                MidiHelper.getInstance().stopMidiFile( null);
             }
 
             // 3. Exit

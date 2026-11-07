@@ -3,6 +3,7 @@ package scenes.voice;
 import entity.voice.Patch;
 import fx.component.ChannelIndicator;
 import fx.component.LightIndicatorButton;
+import fx.dialog.DialogFactory;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -111,28 +112,32 @@ public class VoicePlayPane extends HBox {
         try (MultiChannelMidiReceiver multiChannelMidiReceiver = new MultiChannelMidiReceiver(ledMap)) {
             play.setOnAction((e) -> {
                 if (play.isSelected()) {
-                    Map<Integer, Patch> patches = getVoiceResultPane().getVoiceListPane().getChannelPatches();
-                    BaseClosePane closePane = ((Base)AppInfo.INSTANCE.getSpa()).getClosePane();
-                    closePane.setActionHandler(event -> {
-                        if (midiHelper.isMidiPlaying()) {
-                            midiHelper.stopMidiFile(null, null);
+                    if (AppInfo.INSTANCE.getMidiToPlay() != null) {
+                        Map<Integer, Patch> patches = getVoiceResultPane().getVoiceListPane().getChannelPatches();
+                        BaseClosePane closePane = ((Base)AppInfo.INSTANCE.getSpa()).getClosePane();
+                        closePane.setActionHandler(event -> {
+                            if (midiHelper.isMidiPlaying()) {
+                                midiHelper.stopMidiFile(null);
+                            }
+                        });
+
+                        for (Integer channel : patches.keySet()) {
+                            Patch selectedPatch = patches.get(channel);
+                            midiHelper.sendAsMidi(channel, selectedPatch);
                         }
-                    });
-                    for (Integer channel : patches.keySet()) {
-                        Patch selectedPatch = patches.get(channel);
-                        midiHelper.sendAsMidi(channel, selectedPatch);
-                    }
 
-                    if (midiHelper.playMidiFile(multiChannelMidiReceiver)) {
-
+                        if (!midiHelper.playMidiFile(multiChannelMidiReceiver, play)) {
+                            play.setSelected(false);
+                        }
                     } else {
+                        DialogFactory.getInstance().renderErrorDialog("No midi file selected to play");
                         play.setSelected(false);
                     }
                 } else {
                     System.out.println("Stop DEMO");
                     BaseClosePane closePane = ((Base)AppInfo.INSTANCE.getSpa()).getClosePane();
                     closePane.setActionHandler(null);
-                    midiHelper.stopMidiFile(play, ledMap);
+                    midiHelper.stopMidiFile(ledMap);
                 }
             });
         }
