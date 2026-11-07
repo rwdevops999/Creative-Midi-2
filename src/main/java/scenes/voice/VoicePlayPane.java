@@ -1,28 +1,41 @@
 package scenes.voice;
 
+import entity.voice.Patch;
+import fx.component.ChannelIndicator;
 import fx.component.LightIndicatorButton;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scenes.base.Base;
+import scenes.base.BaseClosePane;
 import util.Util;
 import util.app.AppInfo;
+import util.midi.MidiHelper;
+import util.midi.MidiWriter;
+import util.voice.receiver.MultiChannelMidiReceiver;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 import static util.Util.setPaneBackground;
 import static util.app.colors.ColorScheme.getColor;
 
 public class VoicePlayPane extends HBox {
     private static final Logger logger = LoggerFactory.getLogger(VoicePlayPane.class);
+
+    private MidiHelper midiHelper = MidiHelper.getInstance();
 
     public VoicePlayPane() {
         super();
@@ -62,6 +75,7 @@ public class VoicePlayPane extends HBox {
         );
 
         LightIndicatorButton play = new LightIndicatorButton("Play", 40, "red", null);
+        setupPlayHandler(play);
         getChildren().add(play);
 
         Button load = new Button("Load...");
@@ -74,6 +88,7 @@ public class VoicePlayPane extends HBox {
             if (selectedFile != null) {
                 String lastPath = FilenameUtils.getFullPath(selectedFile.getPath());
                 AppInfo.INSTANCE.setLastVisitedFolder(lastPath);
+                AppInfo.INSTANCE.setMidiToPlay(selectedFile);
 
                 dsFilename.set(FilenameUtils.removeExtension(selectedFile.getName()));
             }
@@ -88,6 +103,39 @@ public class VoicePlayPane extends HBox {
         getChildren().add(fileName);
 
         logger.debug("built {}", getId());
+    }
+
+    private void setupPlayHandler(LightIndicatorButton play) {
+        Map<Integer, ChannelIndicator> ledMap = midiHelper.getLedMap();
+
+        try (MultiChannelMidiReceiver multiChannelMidiReceiver = new MultiChannelMidiReceiver(ledMap)) {
+            play.setOnAction((e) -> {
+                if (play.isSelected()) {
+                    Map<Integer, Patch> patches = getVoiceResultPane().getVoiceListPane().getChannelPatches();
+                    BaseClosePane closePane = ((Base)AppInfo.INSTANCE.getSpa()).getClosePane();
+                    closePane.setActionHandler(event -> {
+                        if (midiHelper.isMidiPlaying()) {
+                            midiHelper.stopMidiFile(null, null);
+                        }
+                    });
+                    for (Integer channel : patches.keySet()) {
+                        Patch selectedPatch = patches.get(channel);
+                        midiHelper.sendAsMidi(channel, selectedPatch);
+                    }
+
+                    if (midiHelper.playMidiFile(multiChannelMidiReceiver)) {
+
+                    } else {
+                        play.setSelected(false);
+                    }
+                } else {
+                    System.out.println("Stop DEMO");
+                    BaseClosePane closePane = ((Base)AppInfo.INSTANCE.getSpa()).getClosePane();
+                    closePane.setActionHandler(null);
+                    midiHelper.stopMidiFile(play, ledMap);
+                }
+            });
+        }
     }
 
     // ACCESSORS

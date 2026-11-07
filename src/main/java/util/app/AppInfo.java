@@ -10,6 +10,8 @@ import lombok.Getter;
 import lombok.Setter;
 import util.voice.InstrumentProvider;
 
+import java.io.File;
+
 public enum AppInfo {
         INSTANCE; // The single instance
 
@@ -63,4 +65,8 @@ public enum AppInfo {
         @Getter
         @Setter
         private String lastVisitedFolder; // last visited by any FileChooser
+
+        @Getter
+        @Setter
+        private File midiToPlay;
 }

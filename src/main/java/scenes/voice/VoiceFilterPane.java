@@ -49,6 +49,7 @@ public class VoiceFilterPane extends HBox {
         buildPane();
     }
 
+    private VoicesSelectorPane voicesSelectorPane;
     private void buildPane() {
         logger.debug("building {}", getId());
 
@@ -65,7 +66,7 @@ public class VoiceFilterPane extends HBox {
             }
         });
 
-        VoicesSelectorPane voicesSelectorPane = new VoicesSelectorPane(this);
+        voicesSelectorPane = new VoicesSelectorPane(this);
 
         getChildren().addAll(favorites, spacer, voicesSelectorPane);
 
@@ -79,5 +80,9 @@ public class VoiceFilterPane extends HBox {
     // ACCESSORS
     public VoiceResultPane getVoiceResultPane() {
         return parent;
+    }
+
+    public VoicesSelectorPane getVoicesSelectorPane() {
+        return voicesSelectorPane;
     }
 }

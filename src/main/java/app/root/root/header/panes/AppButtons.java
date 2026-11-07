@@ -16,6 +16,7 @@ import org.fusesource.jansi.AnsiConsole;
 import util.Theme;
 import util.Util;
 import util.app.AppInfo;
+import util.midi.MidiHelper;
 import util.midi.MidiWriter;
 import util.registry.Registry;
 
@@ -52,8 +53,11 @@ public class AppButtons extends GridPane {
         IconButton exitButton = new IconButton("exit", "Exit creative midi", "icons/exit.png", e -> {
             // 1. Save User data
             // TODO Add User Data Save
-            // 2. Shut-up midi playing
-            // TODO Add Midi Player stop
+
+            if (MidiHelper.getInstance().isMidiPlaying()) {
+                MidiHelper.getInstance().stopMidiFile(null, null);
+            }
+
             // 3. Exit
             AnsiConsole.systemUninstall();
             System.exit(0);

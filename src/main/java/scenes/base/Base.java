@@ -26,12 +26,12 @@ public class Base extends BorderPane {
 
         logger.debug("[CM_BASE] Building {}", getId());
 
-        if (content != null) {
-            setCenter(content);
-        }
-
         if (addClosePane) {
             setBottom(new BaseClosePane(callingScene, null));
+        }
+
+        if (content != null) {
+            setCenter(content);
         }
 
         logger.debug("[CM_BASE] Built {}", getId());

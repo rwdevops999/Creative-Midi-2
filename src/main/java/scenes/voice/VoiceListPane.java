@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.Util;
 import util.app.AppInfo;
+import util.midi.MidiHelper;
 import util.user.UserData;
 import util.voice.InstrumentProvider;
 
@@ -34,6 +35,8 @@ import static util.app.colors.ColorScheme.getColor;
 
 public class VoiceListPane extends AnchorPane {
     private static final Logger logger = LoggerFactory.getLogger(VoiceListPane.class);
+
+    private MidiHelper midiHelper = MidiHelper.getInstance();
 
     private final UserData userData = UserData.getInstance();
     private final AppInfo appInfo = AppInfo.INSTANCE;
@@ -100,16 +103,19 @@ public class VoiceListPane extends AnchorPane {
         right1.setOnAction(e -> {
             Patch patch = table.getSelectionModel().getSelectedItem();
             channelPatches.put(CHANNEL_RIGHT1,patch);
+            midiHelper.sendAsMidi(CHANNEL_RIGHT1, patch);
         });
         MenuItem left = new MenuItem("Left");
         left.setOnAction(e -> {
             Patch patch = table.getSelectionModel().getSelectedItem();
             channelPatches.put(CHANNEL_LEFT,patch);
+            midiHelper.sendAsMidi(CHANNEL_LEFT, patch);
         });
         MenuItem right2 = new MenuItem("Right2");
         right2.setOnAction(e -> {
             Patch patch = table.getSelectionModel().getSelectedItem();
             channelPatches.put(CHANNEL_RIGHT2,patch);
+            midiHelper.sendAsMidi(CHANNEL_RIGHT2, patch);
         });
 
         voiceSubMenu.getItems().addAll(right1, left, right2);
@@ -378,6 +384,7 @@ public class VoiceListPane extends AnchorPane {
 
                             Patch singleItem = selectedItems.get(0);
                             channelPatches.put(targetChannel,singleItem);
+                            midiHelper.sendAsMidi(targetChannel, singleItem);
                         }
                     });
                 }
