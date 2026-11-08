@@ -40,9 +40,26 @@ public class MidiWorker implements Runnable {
             sequencer.open();
 
             Transmitter transmitter = sequencer.getTransmitter();
-            Receiver receiver = device.getReceiver();
-            multiChannelMidiReceiver.setKeyboardReceiver(receiver);
 
+            // --- DE FIX: WRAP DE HARDWARE RECEIVER OM DE INTERNE BUFFER TE OMZEILEN ---
+            final Receiver hardwareReceiver = device.getReceiver();
+            Receiver safeReceiver = new Receiver() {
+                @Override
+                public void send(MidiMessage message, long timeStamp) {
+                    // Stuur het bericht puur en direct door naar de hardware
+                    hardwareReceiver.send(message, timeStamp);
+                }
+
+                @Override
+                public void close() {
+                    hardwareReceiver.close();
+                }
+            };
+
+            // Koppel nu de VEILIGE wrapper aan jouw multiChannelMidiReceiver
+            multiChannelMidiReceiver.setKeyboardReceiver(safeReceiver);
+
+            // Koppel de sequencer transmitter aan jouw filter
             transmitter.setReceiver(multiChannelMidiReceiver);
 
             midiFile = AppInfo.INSTANCE.getMidiToPlay();

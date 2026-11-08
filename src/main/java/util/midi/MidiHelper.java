@@ -172,4 +172,36 @@ public class MidiHelper {
 
         return markers;
     }
+
+    private void sendBulk(List<Midi> midisList) throws MidiUnavailableException {
+        for (Midi midi : midisList) {
+            midiWriter.send(midi);
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+
+    public void soundOff(int channel) {
+        List<Midi> bulkMidis = new ArrayList<>();
+
+        try {
+            bulkMidis.add(new Midi("pitch wheel", channel, 0xE0, 0x0, 0x40));
+            bulkMidis.add(new Midi("modulation wheel", channel, 0xB0, 0x01, 0x00));
+            bulkMidis.add(new Midi("volume", channel, 0xB0, 0x07, 0x7F));
+            bulkMidis.add(new Midi("panning", channel, 0xB0, 0x0A, 0x40));
+            bulkMidis.add(new Midi("sustain pedal", channel, 0xB0, 0x40, 0x00));
+            bulkMidis.add(new Midi("sustenuto", channel, 0xB0, 0x42, 0x00));
+            bulkMidis.add(new Midi("soft pedal", channel, 0xB0, 0x43, 0x00));
+            bulkMidis.add(new Midi("all controllers off", channel, 0xB0, 0x79, 0x00));
+            bulkMidis.add(new Midi("all notes off", channel, 0xB0, 0x7B, 0x00));
+            bulkMidis.add(new Midi("all sound off", channel, 0xB0, 0x78, 0x00));
+
+            sendBulk(bulkMidis);
+        } catch (Exception e) {
+            logger.error("Exception. CAUSE {}", e.getMessage());
+        }
+    }
 }
