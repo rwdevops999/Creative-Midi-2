@@ -54,6 +54,7 @@ public class MonitorPane extends VBox {
             if (event != null && AppEvent.AppEventType.MONITOR.equals(event.type())) {
                 ColoredItem coloredItem = (ColoredItem) event.data();
                 messages.add(coloredItem);
+                messagesView.scrollTo(messages.size() - 1);
             }
         });
 

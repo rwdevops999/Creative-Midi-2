@@ -96,7 +96,7 @@ public class VoicePlayPane extends HBox {
         playButton = new LightIndicatorButton("Play", 40, "red", null);
         setupPlayHandler(playButton);
 
-        ComboValuePaneX markerSelectValuePane = new ComboValuePaneX(this, "M", dsValue, dsEnabled, new ArrayList<>(MidiHelper.getInstance().extractMarkers()), 20, 80, 10);
+        ComboValuePaneX markerSelectValuePane = new ComboValuePaneX(this, "🚩", dsValue, dsEnabled, new ArrayList<>(MidiHelper.getInstance().extractMarkers()), null, 20, 80, 10);
 
         dsValue.addListener((observable, oldValue, newValue) -> {
             if (midiHelper.isMidiPlaying()) {
@@ -178,7 +178,6 @@ public class VoicePlayPane extends HBox {
                         play.setSelected(false);
                     }
                 } else {
-                    System.out.println("Stop DEMO");
                     BaseClosePane closePane = ((Base)AppInfo.INSTANCE.getSpa()).getClosePane();
                     closePane.setActionHandler(null);
                     midiHelper.stopMidiFile(ledMap);

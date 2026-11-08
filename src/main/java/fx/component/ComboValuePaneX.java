@@ -49,22 +49,23 @@ public class ComboValuePaneX extends GridPane {
         setAlignment(Pos.CENTER);
     }
 
-//    public ComboValuePaneX(Pane owner, String label, StringProperty dsProp, BooleanProperty dsEnabled, double width, double height, int cols, List<NameEntity> comboValues) {
-    public ComboValuePaneX(Pane owner, String label, ObjectProperty<NameEntity> dsValue, BooleanProperty dsEnabled, List<NameEntity> comboValues, double width, double height, int colspan) {
+    public ComboValuePaneX(Pane owner, String label, ObjectProperty<NameEntity> dsValue, BooleanProperty dsEnabled, List<NameEntity> comboValues, NameEntity selected, double width, double height, int colspan) {
         this();
 
         setPaneSizeAsPercentage(this, owner, width, height);
 
-        showSmallPaneBorder(this, getColor("border", "red"));
-
-        buildPane(label,dsValue,dsEnabled,comboValues,colspan);
+        buildPane(label,dsValue,dsEnabled,comboValues,selected,colspan);
     }
 
     private ComboBox<NameEntity> comboBox;
 
-//    private void buildPane(String label, StringProperty dsProp, BooleanProperty dsEnabled, int cols, List<NameEntity> comboValues) {
-        private void buildPane(String label, ObjectProperty<NameEntity> dsValue, BooleanProperty dsEnabled, List<NameEntity> comboValues, int colspan) {
+    private void buildPane(String label, ObjectProperty<NameEntity> dsValue, BooleanProperty dsEnabled, List<NameEntity> comboValues, NameEntity selected, int colspan) {
         logger.debug("Building {}", getId());
+
+        if (label != null) {
+            Label labelValue = new Label(label);
+            add(labelValue, 0, 0, colspan-1, 1);
+        }
 
         comboBox = new ComboBox<>();
         comboBox.setMaxWidth(Double.MAX_VALUE);
@@ -82,8 +83,11 @@ public class ComboValuePaneX extends GridPane {
                     dsValue.setValue(newValue);
                 }
             });
+        if (selected != null) {
+            comboBox.getSelectionModel().select(selected);
+        }
 
-        add(comboBox, 0, 0, colspan, 1);
+        add(comboBox, 1, 0, colspan-1, 1);
 
         logger.debug("Built {}", getId());
     }

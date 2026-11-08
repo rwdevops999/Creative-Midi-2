@@ -1,13 +1,10 @@
 package util.voice.receiver;
 
-import entity.midi.Midi;
-import entity.midi.MidiEventInfo;
 import fx.component.ChannelIndicator;
 import javafx.application.Platform;
 import lombok.Setter;
 import util.midi.MidiHelper;
 
-import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
@@ -21,6 +18,7 @@ public class MultiChannelMidiReceiver implements Receiver {
     private Map<Integer, ChannelIndicator> indicators;
 
     private boolean[] indicatorStatus = new boolean[16];
+    private boolean[] buttonStatus = new boolean[16];
 
     @Setter
     private Receiver keyboardReceiver;
@@ -64,10 +62,15 @@ public class MultiChannelMidiReceiver implements Receiver {
         }
 
         if (!listen) {
-            midiHelper.soundOff(channel);
-            updateUIIndicator(targetIndicatorChannel, false);
+            if (buttonStatus[channel]) {
+                midiHelper.soundOff(channel);
+                updateUIIndicator(targetIndicatorChannel, false);
+                buttonStatus[channel] = false;
+            }
             return;
         }
+
+        buttonStatus[channel] = true;
 
         if (keyboardReceiver != null) {
             keyboardReceiver.send(message, timeStamp);
@@ -87,7 +90,6 @@ public class MultiChannelMidiReceiver implements Receiver {
 
     private void updateUIIndicator(int targetChannel, boolean turnOn) {
         if (indicators != null && indicators.containsKey(targetChannel)) {
-            // Alleen actie ondernemen als de gewenste status verschilt van de huidige status
             if (indicatorStatus[targetChannel] != turnOn) {
                 indicatorStatus[targetChannel] = turnOn;
                 Platform.runLater(() -> {

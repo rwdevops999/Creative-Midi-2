@@ -1,13 +1,16 @@
 package scenes.sysex;
 
 import app.CreativeApp;
+import entity.NameEntity;
 import entity.sysex.Sysex;
 import fx.component.CheckedValuePane;
 import fx.component.ComboValuePane;
+import fx.component.ComboValuePaneX;
 import fx.component.LabelValuePane;
 import javafx.beans.property.*;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +18,8 @@ import scenes.sysex.parametrized.ParametrizedFunctions;
 import scenes.sysex.statemachine.States;
 import util.Util;
 import util.app.AppInfo;
+
+import java.util.List;
 
 import static util.Util.*;
 import static util.app.colors.ColorScheme.getColor;
@@ -48,7 +53,7 @@ public class SysexDetailsPane extends VBox {
     private StringProperty dsName = new SimpleStringProperty();
     private StringProperty dsSysex = new SimpleStringProperty();
     private BooleanProperty dsParametrized = new SimpleBooleanProperty();
-    private StringProperty dsFunction = new SimpleStringProperty();
+    private ObjectProperty<NameEntity> dsFunction = new SimpleObjectProperty<>();
 
     private void buildPane() {
         logger.debug("Building {}", getId());
@@ -85,17 +90,17 @@ public class SysexDetailsPane extends VBox {
                     if (! newValue) {
                         currentSysex.getContent().setParametrizedFunction(null);
                     } else {
-                        currentSysex.getContent().setParametrizedFunction(dsFunction.get());
+                        currentSysex.getContent().setParametrizedFunction(dsFunction.get().getName());
                     }
                     checkChanges();
                 }
             });
 
-            ComboValuePane parametrizedSelectValuePane = new ComboValuePane(this, "Parametrized", dsFunction, dsParametrized, 90, 6, 4, ParametrizedFunctions.getParaFunctions());
+            ComboValuePaneX parametrizedSelectValuePane = new ComboValuePaneX(this, "Parametrized", dsFunction, dsParametrized, ParametrizedFunctions.getParaFunctions(), ParametrizedFunctions.getParaFunctions().get(0), 90, 6, 4);
             getChildren().add(parametrizedSelectValuePane);
             dsFunction.addListener((observable, oldValue, newValue) -> {
                 if (newValue != null && currentSysex != null) {
-                    currentSysex.getContent().setParametrizedFunction(newValue);
+                    currentSysex.getContent().setParametrizedFunction(newValue.getName());
                     checkChanges();
                 }
             });
@@ -113,14 +118,14 @@ public class SysexDetailsPane extends VBox {
             dsName.setValue(sysex.getName());
             dsSysex.setValue(sysex.getContent().getSysex());
             dsParametrized.setValue(sysex.getContent().getParametrized());
-            dsFunction.setValue(sysex.getContent().getParametrizedFunction());
+            dsFunction.setValue(ParametrizedFunctions.getParaFunctions().stream().filter(pf -> pf.getName().equals(sysex.getContent().getParametrizedFunction())).findFirst().orElse(null));
             this.currentSysex = new Sysex(sysex);
         } else {
             AppInfo.INSTANCE.setSysex(null);
             dsName.setValue("");
             dsSysex.setValue("");
             dsParametrized.setValue(false);
-            dsFunction.setValue("");
+            dsFunction.setValue(null);
             this.currentSysex = null;
         }
 
