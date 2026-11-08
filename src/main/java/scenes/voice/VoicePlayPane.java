@@ -68,6 +68,9 @@ public class VoicePlayPane extends HBox {
 
         setPaneBackground(this);
 
+        if (AppInfo.INSTANCE.getMidiToPlay() != null) {
+            dsFilename.set(FilenameUtils.removeExtension(AppInfo.INSTANCE.getMidiToPlay().getName()));
+        }
         buildPane();
     }
 
