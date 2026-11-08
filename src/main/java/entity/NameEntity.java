@@ -4,7 +4,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
-public class NameEntity {
+import java.io.Serial;
+import java.io.Serializable;
+
+public class NameEntity implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     @Getter
     @Setter
     protected String name = "";

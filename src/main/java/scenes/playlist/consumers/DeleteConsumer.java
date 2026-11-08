@@ -1,9 +1,16 @@
 package scenes.playlist.consumers;
 
 import entity.NameEntity;
+import entity.playlist.Song;
+import entity.sysex.Sysex;
 import javafx.scene.layout.Pane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scenes.SceneActionsPane;
+import scenes.playlist.PlaylistPane;
+import scenes.playlist.container.PlaylistContainer;
+import scenes.sysex.SysexPane;
+import scenes.sysex.container.SysexContainer;
 
 import java.util.function.BiConsumer;
 
@@ -16,15 +23,11 @@ public class DeleteConsumer<T extends NameEntity, P extends Pane>  extends NameE
 
     @Override
     public void accept(T entity, P pane) {
-/*        Sysex sysex = new Sysex((Sysex) entity);
-        if (sysex.getName().isEmpty()) {
-            DialogFactory.getInstance().renderErrorDialog("Unable to add a sysex with empty name");
-        } else {
-            SysexContainer.getInstance().addSysex(sysex);
+        Song song = (Song) entity;
+        PlaylistContainer.getInstance().delete(song);
 
-            SceneActionsPane sceneActionsPane = (SceneActionsPane) pane;
-            SysexPane sysexPane = sceneActionsPane.getSysexPane();
-            sysexPane.getSysexListPane().reload(sysex);
-        } */
+        SceneActionsPane sceneActionsPane = (SceneActionsPane) pane;
+        PlaylistPane playlistPane = sceneActionsPane.getPane();
+        playlistPane.getPlaylistListPane().reload(null);
     }
 }

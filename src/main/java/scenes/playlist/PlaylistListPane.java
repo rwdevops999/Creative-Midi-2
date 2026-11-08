@@ -54,8 +54,7 @@ public class PlaylistListPane extends VBox {
 
         songListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             getPlaylistPane().changeState(States.SELECT);
-            // TODO Set selected song
-//            getSysexPane().getSysexDetailsPane().setSysex(newValue);
+            getPlaylistPane().getPlaylistDetailsPane().getSongDetailsPane().setSong(newValue);
         });
 
         logger.debug("Built {}", getId());

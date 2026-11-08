@@ -107,4 +107,21 @@ public class PlaylistContainer {
 
         export();
     }
+
+    public void replace(Song originalSong, Song newSong) {
+        Song oldSong = playList.stream().filter(s -> s.getName().equals(originalSong.getName())).findFirst().orElse(null);
+        if (oldSong != null) {
+            int index = playList.indexOf(oldSong);
+            playList.set(index, newSong);
+            export();
+        }
+    }
+
+    public void delete(Song song) {
+        Song oldSong = playList.stream().filter(s -> s.getName().equals(song.getName())).findFirst().orElse(null);
+        if (oldSong != null) {
+            playList.remove(oldSong);
+            export();
+        }
+    }
 }
