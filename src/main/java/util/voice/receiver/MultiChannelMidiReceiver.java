@@ -1,6 +1,7 @@
 package util.voice.receiver;
 
 import entity.midi.Midi;
+import entity.midi.MidiEventInfo;
 import fx.component.ChannelIndicator;
 import javafx.application.Platform;
 import lombok.Setter;
@@ -19,6 +20,9 @@ public class MultiChannelMidiReceiver implements Receiver {
 
     private Map<Integer, ChannelIndicator> indicators;
 
+    private boolean[] channelMuted = new boolean[16];
+    private boolean[] indicatorStatus = new boolean[16];
+
     @Setter
     private Receiver keyboardReceiver;
 
@@ -32,77 +36,133 @@ public class MultiChannelMidiReceiver implements Receiver {
         indicators = channelIndicators;
     }
 
+    private Integer[] notesOn = new Integer[16];
+
     @Override
     public void send(MidiMessage message, long timeStamp) {
-        if (message instanceof ShortMessage sm) {
-            int channel = sm.getChannel();
+        if (!(message instanceof ShortMessage sm)) {
+            return;
+        }
 
-            // 1. Thread-safe null/bounds check to avoid NullPointerException
-            if ((channel >= 0 && channel < 4)) {
-                if (midiHelper.getListen().get(channel) != null && (!midiHelper.getListen().get(channel).get())) {
-                    if (indicators != null && indicators.containsKey(channel)) {
-                        Platform.runLater(() -> {
-                            ChannelIndicator indicator = indicators.get(channel);
-                            if (indicator != null) {
-                                indicator.setActive(false);
+        int channel = sm.getChannel();
+        int command = sm.getCommand();
 
-                                Midi midi = null;
-                                try {
-                                    System.out.println("ALL SOUND OFF on " + channel);
-                                    midi = new Midi("All Sound Off", channel, 0xB0, 0x78, 0x00);
-                                    midiHelper.sendMidi(midi);
-                                } catch (InvalidMidiDataException e) {
-                                }
+        if (channel >= 3 && channel <= 8) {
+            return;
+        }
+
+        // 1. HARD ANTI-LOOP FILTER
+        if (command == ShortMessage.CONTROL_CHANGE) {
+            int ccNumber = sm.getData1();
+            if (ccNumber == 120 || ccNumber == 123 || ccNumber == 121) {
+                return;
+            }
+        }
+
+        int targetIndicatorChannel = (channel >= 9 && channel <= 16) ? CHANNEL_STYLE : channel;
+
+        // Check of we moeten luisteren naar dit kanaal
+        boolean listen = true;
+        if (channel >= 0 && channel < 3) {
+            var listenProp = midiHelper.getListen().get(channel);
+            if (listenProp != null && !listenProp.get()) {
+                listen = false;
+            }
+        } else if (channel >= 9 && channel <= 16) {
+            var listenProp = midiHelper.getListen().get(CHANNEL_STYLE);
+            if (listenProp != null && !listenProp.get()) {
+                listen = false;
+            }
+        }
+
+        // --- DE DEUR-DICHT BLOKKADE (VEILIG & EENMALIG) ---
+        // --- DE DEUR-DICHT BLOKKADE (HARDWARE PANIC RESET) ---
+        if (!listen) {
+            // Zodra listen op false springt, voeren we EENMALIG een harde reset uit
+            if (!channelMuted[channel]) {
+                channelMuted[channel] = true; // Zet direct de vlag om hangen te voorkomen
+
+                if (keyboardReceiver != null) {
+                    try {
+                        // We vegen NIET alleen dit kanaal schoon, maar sturen een gerichte reset
+                        // naar de live-kanalen (0,1,2) en stijl-kanalen (9..16) om de Yamaha te dwingen alles te lossen.
+                        int[] kanalenTeResetten = {0, 1, 2, 9, 10, 11, 12, 13, 14, 15, 16};
+
+                        for (int ch : kanalenTeResetten) {
+                            // 1. Schakel sustainpedaal (CC 64) direct uit voor dit kanaal
+                            keyboardReceiver.send(new ShortMessage(ShortMessage.CONTROL_CHANGE, ch, 64, 0), -1);
+
+                            // 2. Stuur 128 Note-Offs om alle hangende toetsen/arranger-triggers los te laten
+                            for (int note = 0; note < 128; note++) {
+                                keyboardReceiver.send(new ShortMessage(ShortMessage.NOTE_OFF, ch, note, 0), -1);
                             }
+                        }
+                    } catch (Exception e) {
+                        // Stille catch
+                    }
+                }
+
+                // UI eenmalig updaten naar 'uit'
+                if (indicators != null && indicators.containsKey(targetIndicatorChannel)) {
+                    if (indicatorStatus[targetIndicatorChannel]) {
+                        indicatorStatus[targetIndicatorChannel] = false;
+                        Platform.runLater(() -> {
+                            ChannelIndicator indicator = indicators.get(targetIndicatorChannel);
+                            if (indicator != null) indicator.setActive(false);
                         });
                     }
-
-                    return;
-                }
-            } else if (channel >= 9) {
-                midiHelper.getListen().get(CHANNEL_STYLE);
-                if (midiHelper.getListen().get(CHANNEL_STYLE) != null && (!midiHelper.getListen().get(CHANNEL_STYLE).get())) {
-                    Platform.runLater(() -> {
-                        ChannelIndicator indicator = indicators.get(CHANNEL_STYLE);
-                        if (indicator != null) {
-                            indicator.setActive(false);
-                        }
-                    });
-
-                    return;
                 }
             }
 
+            // Blokkeer alle nieuwe binnenkomende buffer-berichten van de sequencer voor dit kanaal
+            return;
+        }
+        
+// --- DE CODE ALS LISTEN TRUE IS (KANAAL MOET AFSPELEN) ---
+
+// Als dit kanaal zojuist gedempt was, herstel EXPRESSION (CC 11) eenmalig naar vol volume (127)
+        if (channelMuted[channel]) {
+            channelMuted[channel] = false; // Reset de mute vlag
             if (keyboardReceiver != null) {
-                keyboardReceiver.send(message, timeStamp);
+                try {
+                    ShortMessage expressionRestore = new ShortMessage();
+                    expressionRestore.setMessage(ShortMessage.CONTROL_CHANGE, channel, 11, 127); // CC 11 terug naar 127
+                    keyboardReceiver.send(expressionRestore, -1);
+                } catch (Exception e) {}
             }
+        }
 
-            int command = sm.getCommand();
+        // Stuur het bericht normaal door
+        if (keyboardReceiver != null) {
+            keyboardReceiver.send(message, timeStamp);
+        }
 
-            // 2. Bound checking matching your indicator layout
-            if (indicators != null && (indicators.containsKey(channel) || (channel >= 9 && indicators.containsKey(CHANNEL_STYLE)))) {
-                boolean turnOn;
+        // Noot-tracker en UI-updates
+        if (command == ShortMessage.NOTE_ON) {
+            int velocity = sm.getData2();
+            if (velocity > 0) {
+                notesOn[channel] = sm.getData1();
+                updateUIIndicator(targetIndicatorChannel, true);
+            } else {
+                notesOn[channel] = -1;
+                updateUIIndicator(targetIndicatorChannel, false);
+            }
+        } else if (command == ShortMessage.NOTE_OFF) {
+            notesOn[channel] = -1;
+            updateUIIndicator(targetIndicatorChannel, false);
+        }
+    }
 
-                if (command == ShortMessage.NOTE_ON) {
-                    turnOn = (sm.getData2() > 0);
-                } else if (command == ShortMessage.NOTE_OFF) {
-                    turnOn = false;
-                } else {
-                    return;
-                }
-
+    private void updateUIIndicator(int targetChannel, boolean turnOn) {
+        if (indicators != null && indicators.containsKey(targetChannel)) {
+            // Alleen actie ondernemen als de gewenste status verschilt van de huidige status
+            if (indicatorStatus[targetChannel] != turnOn) {
+                indicatorStatus[targetChannel] = turnOn;
                 Platform.runLater(() -> {
-                    if (channel >= 0 && channel < 4) {
-                        ChannelIndicator indicator = indicators.get(channel);
-                        if (indicator != null) {
-                            indicator.setActive(turnOn);
-                        }
-                    } else if (channel >= 9) {
-                            ChannelIndicator indicator = indicators.get(CHANNEL_STYLE);
-                            if (indicator != null) {
-                                indicator.setActive(turnOn);
-                            }
-                        }
+                    ChannelIndicator indicator = indicators.get(targetChannel);
+                    if (indicator != null) {
+                        indicator.setActive(turnOn);
+                    }
                 });
             }
         }
