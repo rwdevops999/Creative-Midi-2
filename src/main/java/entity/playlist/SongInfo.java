@@ -1,5 +1,6 @@
 package entity.playlist;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -66,6 +67,7 @@ public class SongInfo implements Serializable {
         return Objects.hash(performer, tempo, scale, signature);
     }
 
+    @JsonIgnore
     public boolean isEmpty() {
         return performer.isEmpty();
     }

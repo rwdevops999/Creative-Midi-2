@@ -150,6 +150,7 @@ public class SongDetailsPane extends GridPane {
         add(songIdLabel, 0, row, 1, 1);
         add(songIdSpinner, 2, row, 1, 1);
         songIdSpinner.getValueFactory().valueProperty().bindBidirectional(songIdProperty);
+        songIdSpinner.setEditable(true);
 
         row++;
         add(songNameLabel, 0, row, 1, 1);
@@ -159,12 +160,13 @@ public class SongDetailsPane extends GridPane {
         row++;
         add(performerLabel, 0, row, 1, 1);
         add(performerTextField, 2, row, 4, 1);
-        performerLabel.textProperty().bindBidirectional(performerProperty);
+        performerTextField.textProperty().bindBidirectional(performerProperty);
 
         row++;
         add(tempoLabel, 0, row, 1, 1);
         add(tempoSpinner, 2, row, 1, 1);
         tempoSpinner.getValueFactory().valueProperty().bindBidirectional(tempoProperty);
+        tempoSpinner.setEditable(true);
 
         row++;
         add(scaleLabel, 0, row, 1, 1);
@@ -233,7 +235,7 @@ public class SongDetailsPane extends GridPane {
     public Song getSong() {
         return workingSong;
     }
-    
+
     // ACCESSORS
     public PlaylistDetailsPane getPlaylistDetailsPane() {
         return parent;

@@ -10,9 +10,11 @@ import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scenes.sysex.container.SysexContainer;
+import util.AppNotifications;
 import util.properties.AppProperties;
 
 import java.awt.Container;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -21,8 +23,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import static util.properties.PropertyKeys.PLAYLIST_DIR;
-import static util.properties.PropertyKeys.PLAYLIST_FILENAME;
+import static util.properties.PropertyKeys.*;
+import static util.properties.PropertyKeys.SYSEX_FILENAME;
 
 public class PlaylistContainer {
     private static final Logger logger = LoggerFactory.getLogger(PlaylistContainer.class);
@@ -75,8 +77,24 @@ public class PlaylistContainer {
     }
 
     private void export() {
+        String playlistPath = AppProperties.getInstance().getPropertyAsString(PLAYLIST_DIR, "./data/playlist");
+        String playlistFilename = AppProperties.getInstance().getPropertyAsString(PLAYLIST_FILENAME, "playlist.json");
 
+        String fullPlaylistFilnamee = playlistPath + "/" + playlistFilename;
+
+        ObjectMapper mapperExport = JsonMapper.builder()
+                .enable(SerializationFeature.INDENT_OUTPUT)
+                .build();
+
+        try {
+            File file = new File(fullPlaylistFilnamee);
+            mapperExport.writeValue(file, playList);
+            AppNotifications.showNotification("Playlist export", "Playlist written to: " + fullPlaylistFilnamee);
+        } catch (Exception e) {
+            logger.error("Exception: CAUSE: {}", e.getMessage());
+        }
     }
+
 
     public void addSong(Song song) {
         Song songInList = playList.stream().filter(s -> s.getName().equals(song.getName())).findFirst().orElse(null);

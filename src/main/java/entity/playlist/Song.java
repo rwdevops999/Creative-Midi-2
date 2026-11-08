@@ -1,5 +1,6 @@
 package entity.playlist;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import entity.NameEntity;
 import lombok.Getter;
 import lombok.Setter;
@@ -40,6 +41,7 @@ public class Song extends NameEntity implements Serializable {
         this.songInfo = new SongInfo(other.getSongInfo());
     }
 
+    @JsonIgnore
     public boolean isEmpty() {
         return (name.isEmpty() && songInfo.isEmpty() && mappings.isEmpty());
     }

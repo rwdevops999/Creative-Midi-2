@@ -34,12 +34,13 @@ public class SignatureSelector extends HBox {
 
         Spinner<Integer> bpmSpinner = new Spinner<>(1, 16, 4);
         bpmSpinner.getValueFactory().valueProperty().bindBidirectional(bpmProperty);
+        bpmSpinner.setEditable(true);
 
         Label separatorLabel = new Label("/");
 
-
         Spinner<Integer> beatSpinner = new Spinner<>(1, 16, 4);
         beatSpinner.getValueFactory().valueProperty().bindBidirectional(beatProperty);
+        beatSpinner.setEditable(true);
 
         this.getChildren().addAll(bpmSpinner, separatorLabel, beatSpinner);
 
