@@ -56,7 +56,7 @@ public class SongTitlePane extends VBox {
     }
 
     public void updateSongTitle(String songTitle) {
-        // TODO handle this
+        songTitleProperty.setValue(songTitle);
     }
 
     // ACCESSORS

@@ -58,9 +58,7 @@ public class PlaylistPane extends BorderPane {
     }
 
     public NameEntity getEntity() {
-//        return getPlaylistDetailsPane().getSongDetailsPane().getSong();
-        // TODO Return the entity(song) working on
-        return null;
+        return getPlaylistDetailsPane().getSongDetailsPane().getSong();
     }
 
     // ACCESSORS

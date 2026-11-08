@@ -20,12 +20,14 @@ public class SongInfo implements Serializable {
 
     public SongInfo() {
         this.performer = "";
-        this.tempo = 1;
+        this.tempo = 120;
         this.scale = new ScaleInfo();
         this.signature = new SignatureInfo();
     }
 
     public SongInfo(SongInfo other) {
+        this();
+
         this.performer = other.getPerformer();
         this.tempo = other.getTempo();
         this.scale = new ScaleInfo(other.getScale());
@@ -62,5 +64,9 @@ public class SongInfo implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(performer, tempo, scale, signature);
+    }
+
+    public boolean isEmpty() {
+        return performer.isEmpty();
     }
 }

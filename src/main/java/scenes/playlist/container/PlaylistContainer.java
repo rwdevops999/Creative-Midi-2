@@ -74,4 +74,19 @@ public class PlaylistContainer {
         return 1;
     }
 
+    private void export() {
+
+    }
+
+    public void addSong(Song song) {
+        Song songInList = playList.stream().filter(s -> s.getName().equals(song.getName())).findFirst().orElse(null);
+        if (songInList != null) {
+            int index = playList.indexOf(songInList);
+            playList.set(index, song);
+        } else {
+            playList.add(song);
+        }
+
+        export();
+    }
 }

@@ -5,37 +5,30 @@ import entity.midi.MidiEventInfo;
 import entity.voice.Patch;
 import fx.component.ChannelIndicator;
 import fx.component.ComboValuePane;
-import fx.component.ComboValuePaneX;
 import fx.component.LightIndicatorButton;
 import fx.dialog.DialogFactory;
 import javafx.beans.property.*;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scenes.base.Base;
 import scenes.base.BaseClosePane;
-import scenes.sysex.parametrized.ParametrizedFunctions;
 import util.Util;
 import util.app.AppInfo;
 import util.midi.EventKeyType;
 import util.midi.MidiHelper;
-import util.midi.MidiWriter;
 import util.voice.receiver.MultiChannelMidiReceiver;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -96,7 +89,7 @@ public class VoicePlayPane extends HBox {
         playButton = new LightIndicatorButton("Play", 40, "red", null);
         setupPlayHandler(playButton);
 
-        ComboValuePaneX markerSelectValuePane = new ComboValuePaneX(this, "🚩", dsValue, dsEnabled, new ArrayList<>(MidiHelper.getInstance().extractMarkers()), null, 20, 80, 10);
+        ComboValuePane markerSelectValuePane = new ComboValuePane(this, "🚩", dsValue, dsEnabled, new ArrayList<>(MidiHelper.getInstance().extractMarkers()), null, 20, 80, 10);
 
         dsValue.addListener((observable, oldValue, newValue) -> {
             if (midiHelper.isMidiPlaying()) {

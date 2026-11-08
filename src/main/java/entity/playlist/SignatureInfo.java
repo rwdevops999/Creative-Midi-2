@@ -23,6 +23,8 @@ public class SignatureInfo implements Serializable {
     }
 
     public SignatureInfo(SignatureInfo other) {
+        this();
+
         this.beats = other.getBeats();
         this.beat = other.getBeat();
     }
@@ -50,5 +52,4 @@ public class SignatureInfo implements Serializable {
     public int hashCode() {
         return Objects.hash(beats, beat);
     }
-
 }

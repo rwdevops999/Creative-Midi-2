@@ -27,12 +27,20 @@ public class Song extends NameEntity implements Serializable {
         this(1);
 
         this.name = "";
+
+        this.songInfo = new SongInfo();
+        this.mappings = new ArrayList<>();
     }
 
     public Song(Song other) {
+        this();
+
         this.id = other.getId();
         this.name = other.getName();
         this.songInfo = new SongInfo(other.getSongInfo());
-        this.mappings = new ArrayList<>();
+    }
+
+    public boolean isEmpty() {
+        return (name.isEmpty() && songInfo.isEmpty() && mappings.isEmpty());
     }
 }

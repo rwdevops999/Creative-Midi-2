@@ -22,6 +22,7 @@ public class NewConsumer<T extends NameEntity, P extends Pane> extends NameEntit
     public void accept(T entity, P pane) {
         Song song = new Song();
 
+        System.out.println("EMPTY = " + song.isEmpty());
         SceneActionsPane sceneActionsPane = (SceneActionsPane) pane;
         PlaylistPane playlistPane = sceneActionsPane.getPane();
 

@@ -22,6 +22,8 @@ public class ScaleInfo implements Serializable {
     }
 
     public ScaleInfo(ScaleInfo other) {
+        this();
+
         this.scale = other.getScale();
         this.pitch = other.getPitch();
     }

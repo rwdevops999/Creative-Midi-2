@@ -7,15 +7,19 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.geometry.HPos;
+import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import org.apache.commons.lang3.SerializationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scenes.playlist.container.PlaylistContainer;
+import scenes.sysex.statemachine.States;
 import util.app.AppInfo;
 
 import static util.Util.setPaneHeightAsPercentage;
@@ -29,6 +33,17 @@ public class SongDetailsPane extends GridPane {
         super();
 
         setId("SongDetailsPane");
+
+        setPadding(new Insets(5, 5, 10, 5));
+        setVgap(5);
+
+        int[] columnSizes = {20,5,16,5,16,38};
+        for (int size: columnSizes) {
+            ColumnConstraints col = new ColumnConstraints();
+            col.setPercentWidth(size);
+            col.setHalignment(HPos.LEFT);
+            getColumnConstraints().add(col);
+        }
     }
 
     private PlaylistDetailsPane parent;
@@ -50,6 +65,7 @@ public class SongDetailsPane extends GridPane {
     }
 
     private final ObjectProperty<Integer> songIdProperty = new SimpleObjectProperty<>(PlaylistContainer.getInstance().getNextSongId());
+
     private final Label songIdLabel  = new Label("Id");
     private final Spinner<Integer> songIdSpinner = new Spinner<>(1, 999, 1);
 
@@ -84,6 +100,47 @@ public class SongDetailsPane extends GridPane {
         pitchProperty.set(song.getSongInfo().getScale().getPitch());
         beatsProperty.set(song.getSongInfo().getSignature().getBeats());
         beatProperty.set(song.getSongInfo().getSignature().getBeat());
+
+        songIdProperty.addListener((obs, oldVal, newVal) -> {
+            workingSong.setId(newVal);
+            checkChanges();
+        });
+
+        songNameProperty.addListener((obs, oldVal, newVal) -> {
+            workingSong.setName(newVal);
+            getPlaylistDetailsPane().getSongTitlePane().updateSongTitle(newVal);
+            checkChanges();
+        });
+
+        performerProperty.addListener((obs, oldVal, newVal) -> {
+            workingSong.getSongInfo().setPerformer(newVal);
+            checkChanges();
+        });
+
+        tempoProperty.addListener((obs, oldVal, newVal) -> {
+            workingSong.getSongInfo().setTempo(newVal);
+            checkChanges();
+        });
+
+        scaleProperty.addListener((obs, oldVal, newVal) -> {
+            workingSong.getSongInfo().getScale().setScale(newVal);
+            checkChanges();
+        });
+
+        pitchProperty.addListener((obs, oldVal, newVal) -> {
+            workingSong.getSongInfo().getScale().setPitch(newVal);
+            checkChanges();
+        });
+
+        beatProperty.addListener((obs, oldVal, newVal) -> {
+            workingSong.getSongInfo().getSignature().setBeat(newVal);
+            checkChanges();
+        });
+
+        beatsProperty.addListener((obs, oldVal, newVal) -> {
+            workingSong.getSongInfo().getSignature().setBeats(newVal);
+            checkChanges();
+        });
     }
 
     private void addComponents() {
@@ -92,27 +149,34 @@ public class SongDetailsPane extends GridPane {
         int row = 0;
         add(songIdLabel, 0, row, 1, 1);
         add(songIdSpinner, 2, row, 1, 1);
+        songIdSpinner.getValueFactory().valueProperty().bindBidirectional(songIdProperty);
 
         row++;
         add(songNameLabel, 0, row, 1, 1);
         add(songNameTextField, 2, row, 4, 1);
+        songNameTextField.textProperty().bindBidirectional(songNameProperty);
 
         row++;
         add(performerLabel, 0, row, 1, 1);
         add(performerTextField, 2, row, 4, 1);
+        performerLabel.textProperty().bindBidirectional(performerProperty);
 
         row++;
         add(tempoLabel, 0, row, 1, 1);
         add(tempoSpinner, 2, row, 1, 1);
+        tempoSpinner.getValueFactory().valueProperty().bindBidirectional(tempoProperty);
 
         row++;
         add(scaleLabel, 0, row, 1, 1);
         add(scaleSelector, 2, row, 6, 1);
+        scaleSelector.scaleProperty.bindBidirectional(scaleProperty);
+        scaleSelector.pitchProperty.bindBidirectional(pitchProperty);
 
         row++;
         add(meterLabel, 0, row, 1, 1);
         add(signatureSelector, 2, row, 3, 1);
-
+        signatureSelector.beatProperty.bindBidirectional(beatProperty);
+        signatureSelector.bpmProperty.bindBidirectional(beatsProperty);
     }
 
     private Song workingSong;
@@ -140,6 +204,36 @@ public class SongDetailsPane extends GridPane {
         }
     }
 
+    private void checkChanges() {
+        if (AppInfo.INSTANCE.getCurrentSong() != null) {
+            boolean originalEmpty = AppInfo.INSTANCE.getCurrentSong().isEmpty();
+            boolean currentEmpty = workingSong.isEmpty();
+
+            if (originalEmpty) {
+                if (! currentEmpty) {
+                    if (! workingSong.getName().isEmpty()) {
+                        getPlaylistDetailsPane().getPlaylistPane().changeState(States.ADD);
+                    }
+                } else {
+                    getPlaylistDetailsPane().getPlaylistPane().changeState(States.NEW);
+                }
+            } else {
+                boolean equal = AppInfo.INSTANCE.getCurrentSong().equals(workingSong);
+                if (!equal) {
+                    if (!workingSong.getName().isEmpty()) {
+                        getPlaylistDetailsPane().getPlaylistPane().changeState(States.UPDATE);
+                    }
+                } else {
+                    getPlaylistDetailsPane().getPlaylistPane().changeState(States.SELECT);
+                }
+            }
+        }
+    }
+
+    public Song getSong() {
+        return workingSong;
+    }
+    
     // ACCESSORS
     public PlaylistDetailsPane getPlaylistDetailsPane() {
         return parent;
