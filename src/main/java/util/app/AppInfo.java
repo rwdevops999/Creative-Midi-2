@@ -1,6 +1,7 @@
 package util.app;
 
 import entity.device.DeviceInfo;
+import entity.playlist.Song;
 import entity.sysex.Sysex;
 import entity.voice.KeyboardVoice;
 import javafx.scene.Scene;
@@ -69,4 +70,8 @@ public enum AppInfo {
         @Getter
         @Setter
         private File midiToPlay;
+
+        @Getter
+        @Setter
+        private Song currentSong;
 }

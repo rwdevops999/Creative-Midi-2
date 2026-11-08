@@ -22,8 +22,8 @@ public class MidiPlayer {
     @Getter
     private static boolean isPlaying = false;
 
-    public static void playMidi(IThreadEventHandler successHandler, IThreadEventHandler interruptedHandler, MultiChannelMidiReceiver multiChannelMidiReceiver, ToggleButton btn) {
-        worker = new MidiWorker(AppInfo.INSTANCE.getSelectedDevice().getMidiInputDevice(), multiChannelMidiReceiver, btn);
+    public static void playMidi(IThreadEventHandler successHandler, IThreadEventHandler interruptedHandler, MultiChannelMidiReceiver multiChannelMidiReceiver, ToggleButton btn, Long fromTick) {
+        worker = new MidiWorker(AppInfo.INSTANCE.getSelectedDevice().getMidiInputDevice(), multiChannelMidiReceiver, btn, fromTick);
         worker.setOnSucceededHandler(successHandler);
         worker.setOnInterruptedHandler(interruptedHandler);
 

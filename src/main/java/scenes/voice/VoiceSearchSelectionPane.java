@@ -54,7 +54,6 @@ public class VoiceSearchSelectionPane extends VBox {
         dynamicPanes.add(null);
 
         Util.setPaneSizeAsPercentage(this, owner, 100, height);
-        Util.showSmallPaneBorder(this, getColor("border", "orange"));
 
         this.parent = owner;
 

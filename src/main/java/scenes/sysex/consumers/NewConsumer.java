@@ -25,7 +25,7 @@ public class NewConsumer<T extends NameEntity, P extends Pane> extends NameEntit
         Sysex sysex = new Sysex();
 
         SceneActionsPane sceneActionsPane = (SceneActionsPane) pane;
-        SysexPane sysexPane = sceneActionsPane.getSysexPane();
+        SysexPane sysexPane = sceneActionsPane.getPane();
 
         sysexPane.getSysexDetailsPane().setSysex(sysex);
         sysexPane.changeState(States.NEW);

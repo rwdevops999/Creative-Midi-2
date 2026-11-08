@@ -32,7 +32,7 @@ public class UpdateConsumer<T extends NameEntity, P extends Pane> extends NameEn
             SysexContainer.getInstance().replace(originalSysex, sysex);
 
             SceneActionsPane sceneActionsPane = (SceneActionsPane) pane;
-            SysexPane sysexPane = sceneActionsPane.getSysexPane();
+            SysexPane sysexPane = sceneActionsPane.getPane();
             sysexPane.getSysexListPane().reload(sysex);
         }
     }

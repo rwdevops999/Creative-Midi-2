@@ -21,7 +21,6 @@ public class VoiceResultPane extends VBox {
         this();
 
         Util.setPaneWidthAsPercentage(this, owner, width);
-        Util.showSmallPaneBorder(this, getColor("border", "blue"));
 
         parent = owner;
 

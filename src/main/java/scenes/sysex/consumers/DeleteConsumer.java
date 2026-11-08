@@ -25,7 +25,7 @@ public class DeleteConsumer<T extends NameEntity, P extends Pane> extends NameEn
         SysexContainer.getInstance().deleteSysex(sysex);
 
         SceneActionsPane sceneActionsPane = (SceneActionsPane) pane;
-        SysexPane sysexPane = sceneActionsPane.getSysexPane();
+        SysexPane sysexPane = sceneActionsPane.getPane();
         sysexPane.getSysexListPane().reload(null);
     }
 }

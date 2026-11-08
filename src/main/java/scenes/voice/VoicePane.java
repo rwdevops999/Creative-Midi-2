@@ -18,6 +18,7 @@ import util.Util;
 
 import java.util.function.BiConsumer;
 
+import static util.Util.setPaneBackground;
 import static util.app.colors.ColorScheme.getColor;
 
 public class VoicePane extends HBox {
@@ -28,8 +29,6 @@ public class VoicePane extends HBox {
 
         setId("VoicePane");
 
-        Util.showSmallPaneBorder(this, getColor("border", "red"));
-
         buildPane();
     }
 
@@ -37,6 +36,8 @@ public class VoicePane extends HBox {
     private VoiceResultPane voiceResultPane;
     private void buildPane() {
         logger.debug("Building {}", getId());
+
+        setPaneBackground(this);
 
         /*
          * This needs to be created first because it is used in voiceSearchPane

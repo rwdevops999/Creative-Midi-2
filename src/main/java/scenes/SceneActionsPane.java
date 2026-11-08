@@ -10,6 +10,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scenes.playlist.PlaylistPane;
 import scenes.sysex.SysexPane;
 
 import java.util.function.BiConsumer;
@@ -78,7 +79,15 @@ public class SceneActionsPane extends VBox {
     }
 
     // ACCESSOR
-    public SysexPane getSysexPane() {
+/*    public SysexPane getSysexPane() {
         return (SysexPane) parent;
+    }
+
+    public PlaylistPane getPlaylistPane() {
+        return (PlaylistPane) parent;
+    } */
+
+    public <T> T getPane() {
+        return (T)parent;
     }
 }

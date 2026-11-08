@@ -42,7 +42,6 @@ public class VoiceFilterPane extends HBox {
         this.parent = owner;
 
         Util.setPaneHeightAsPercentage(this, owner, height);
-//        Util.showSmallPaneBorder(this, getColor("border", "red"));
 
         setPaneBackground(this);
 

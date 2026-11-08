@@ -65,8 +65,10 @@ public class ColorScheme {
         colors.put(new ColorKey("voice", "ledRed", "off"), Color.DARKRED);
         colors.put(new ColorKey("voice", "ledGreen", "on"), Color.GREEN);
         colors.put(new ColorKey("voice", "ledGreen", "off"), Color.DARKGREEN);
-        colors.put(new ColorKey("voice", "ledBlue", "on"), Color.BLUE);
+        colors.put(new ColorKey("voice", "ledBlue", "on"), Color.CYAN);
         colors.put(new ColorKey("voice", "ledBlue", "off"), Color.DARKBLUE);
+        colors.put(new ColorKey("voice", "ledOrange", "on"), Color.ORANGE);
+        colors.put(new ColorKey("voice", "ledOrange", "off"), Color.DARKORANGE);
     }
 
     public static Color getColor(ColorKey key) {

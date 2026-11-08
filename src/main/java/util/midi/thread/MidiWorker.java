@@ -29,7 +29,7 @@ public class MidiWorker implements Runnable {
     public MidiWorker() {
     }
 
-    public MidiWorker (MidiDevice device, MultiChannelMidiReceiver multiChannelMidiReceiver, ToggleButton btn) {
+    public MidiWorker (MidiDevice device, MultiChannelMidiReceiver multiChannelMidiReceiver, ToggleButton btn, Long fromTick) {
         toggle = btn;
         try {
             if (!device.isOpen()) {
@@ -49,6 +49,10 @@ public class MidiWorker implements Runnable {
             if (midiFile != null) {
                 Sequence sequence = MidiSystem.getSequence(midiFile);
                 sequencer.setSequence(sequence);
+
+                if (fromTick != null) {
+                    sequencer.setTickPosition(fromTick);
+                }
             }
         } catch (MidiUnavailableException | InvalidMidiDataException | IOException e) {
             logger.error("Exception. CAUSE: {}", e.getMessage());

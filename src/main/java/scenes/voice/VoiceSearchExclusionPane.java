@@ -22,8 +22,6 @@ public class VoiceSearchExclusionPane extends VBox {
         this();
 
         Util.setPaneHeightAsPercentage(this, owner, height);
-//        Util.showSmallPaneBorder(this, getColor("border", "green"));
-        Util.showPaneBorder(this, getColor("border", "green"));
 
         this.parent = owner;
 

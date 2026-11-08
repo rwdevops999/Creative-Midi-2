@@ -24,7 +24,6 @@ public class VoiceSearchPane extends VBox {
         this();
 
         Util.setPaneWidthAsPercentage(this, owner, width);
-        Util.showSmallPaneBorder(this, getColor("border", "green"));
 
         setPaneBackground(this);
 

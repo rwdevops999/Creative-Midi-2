@@ -29,7 +29,6 @@ public class TitledSearchPane extends GridPane {
     public TitledSearchPane(Pane owner, String title) {
         this();
 
-        Util.showSmallPaneBorder(this, getColor("border", "turquoise"));
         setPaneWidthAsPercentage(this, owner, 100);
 
         int[] columnSizes = {12,3,50,3,12,20};

@@ -1,6 +1,7 @@
 package scenes.sysex;
 
 import entity.NameEntity;
+import entity.playlist.Song;
 import entity.sysex.Sysex;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
@@ -31,11 +32,11 @@ public class SysexPane extends BorderPane {
         logger.debug("Building {}", getId());
 
         BiConsumer<NameEntity, Pane>[] consumers = new BiConsumer[]{
-                new NewConsumer<Sysex, Pane>("New"),
-                new AddConsumer<Sysex, Pane>("Add"),
-                new DeleteConsumer<Sysex, Pane>("Delete"),
-                new UpdateConsumer<Sysex, Pane>("Update"),
-                new ExecuteConsumer<Sysex, Pane>("Execute"),
+                new NewConsumer<Song, Pane>("New"),
+                new AddConsumer<Song, Pane>("Add"),
+                new DeleteConsumer<Song, Pane>("Delete"),
+                new UpdateConsumer<Song, Pane>("Update"),
+                new ExecuteConsumer<Song, Pane>("Execute"),
         };
 
         SceneActionsPane actionsPane = new SceneActionsPane(this, 20, 100, consumers, this::getEntity);

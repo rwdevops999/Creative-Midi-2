@@ -4,8 +4,10 @@ import fx.component.ChannelIndicator;
 import fx.component.LightIndicatorButton;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
 import javafx.scene.layout.HBox;
 import lombok.Getter;
 import scenes.voice.VoiceFilterPane;
@@ -42,8 +44,6 @@ public class VoicesSelectorPane extends HBox {
     }
 
     private void buildPane() {
-        Label lblRight1 = new Label("Select a voice file");
-
         LightIndicatorButton right1 = new LightIndicatorButton("Right1", 43, "blue", null);
         right1.selectedProperty().bindBidirectional(midiHelper.getListen().get(CHANNEL_RIGHT1));
         getChildren().add(right1);
@@ -58,6 +58,14 @@ public class VoicesSelectorPane extends HBox {
         right2.selectedProperty().bindBidirectional(midiHelper.getListen().get(CHANNEL_RIGHT2));
         getChildren().add(right2);
         getChildren().add(midiHelper.getLedMap().get(CHANNEL_RIGHT2));
+
+        Separator separator = new Separator(Orientation.VERTICAL);
+        getChildren().add(separator);
+
+        LightIndicatorButton style = new LightIndicatorButton("Style", 43, "blue", null);
+        style.selectedProperty().bindBidirectional(midiHelper.getListen().get(CHANNEL_STYLE));
+        getChildren().add(style);
+        getChildren().add(midiHelper.getLedMap().get(CHANNEL_STYLE));
     }
 
     // ACCESSORS

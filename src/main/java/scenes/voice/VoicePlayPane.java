@@ -1,18 +1,23 @@
 package scenes.voice;
 
+import entity.NameEntity;
+import entity.midi.MidiEventInfo;
 import entity.voice.Patch;
 import fx.component.ChannelIndicator;
+import fx.component.ComboValuePane;
+import fx.component.ComboValuePaneX;
 import fx.component.LightIndicatorButton;
 import fx.dialog.DialogFactory;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
 import org.apache.commons.io.FilenameUtils;
@@ -20,14 +25,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scenes.base.Base;
 import scenes.base.BaseClosePane;
+import scenes.sysex.parametrized.ParametrizedFunctions;
 import util.Util;
 import util.app.AppInfo;
+import util.midi.EventKeyType;
 import util.midi.MidiHelper;
 import util.midi.MidiWriter;
 import util.voice.receiver.MultiChannelMidiReceiver;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static util.Util.setPaneBackground;
@@ -56,7 +65,6 @@ public class VoicePlayPane extends HBox {
         this.parent = owner;
 
         Util.setPaneHeightAsPercentage(this, owner, height);
-        Util.showSmallPaneBorder(this, getColor("border", "blue"));
 
         setPaneBackground(this);
 
@@ -66,8 +74,15 @@ public class VoicePlayPane extends HBox {
     private StringProperty dsFilename = new SimpleStringProperty("<No file loaded>");
     private File selectedFile = null;
 
+    private BooleanProperty dsEnabled = new SimpleBooleanProperty(true);
+    private ObjectProperty<NameEntity> dsValue = new SimpleObjectProperty<>();
+
+    private LightIndicatorButton playButton;
     private void buildPane() {
         logger.debug("building {}", getId());
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
 
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select a MIDI file");
@@ -75,9 +90,23 @@ public class VoicePlayPane extends HBox {
                 new FileChooser.ExtensionFilter("MIDI", "*.mid")
         );
 
-        LightIndicatorButton play = new LightIndicatorButton("Play", 40, "red", null);
-        setupPlayHandler(play);
-        getChildren().add(play);
+        playButton = new LightIndicatorButton("Play", 40, "red", null);
+        setupPlayHandler(playButton);
+
+        ComboValuePaneX markerSelectValuePane = new ComboValuePaneX(this, "M", dsValue, dsEnabled, new ArrayList<>(MidiHelper.getInstance().extractMarkers()), 20, 80, 10);
+
+        dsValue.addListener((observable, oldValue, newValue) -> {
+            if (midiHelper.isMidiPlaying()) {
+                if (playButton != null) {
+                    playButton.fire();
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                    }
+                    playButton.fire();
+                }
+            }
+        });
 
         Button load = new Button("Load...");
         load.setOnAction(e -> {
@@ -91,17 +120,21 @@ public class VoicePlayPane extends HBox {
                 AppInfo.INSTANCE.setLastVisitedFolder(lastPath);
                 AppInfo.INSTANCE.setMidiToPlay(selectedFile);
 
+                List<MidiEventInfo> midiEventInfos = MidiHelper.getInstance().extractMarkers();
+                List<MidiEventInfo> markers = midiEventInfos.stream().filter(mei -> mei.getEventEventKey().equals(EventKeyType.META_MARKER)).toList();
+
+                markerSelectValuePane.updateComboValues(new ArrayList<>(markers));
+
                 dsFilename.set(FilenameUtils.removeExtension(selectedFile.getName()));
             }
         });
-        getChildren().add(load);
 
         Label fileName = new Label();
         fileName.textProperty().bindBidirectional(dsFilename);
 
         fileName.setMaxWidth(Double.MAX_VALUE);
 
-        getChildren().add(fileName);
+        getChildren().addAll(playButton, load, fileName, spacer, markerSelectValuePane);
 
         logger.debug("built {}", getId());
     }
@@ -111,6 +144,14 @@ public class VoicePlayPane extends HBox {
 
         try (MultiChannelMidiReceiver multiChannelMidiReceiver = new MultiChannelMidiReceiver(ledMap)) {
             play.setOnAction((e) -> {
+                MidiEventInfo marker = (MidiEventInfo) dsValue.get();
+                final Long startTick;
+                if (marker != null) {
+                    startTick = marker.getTick();
+                } else {
+                    startTick = null;
+                }
+
                 if (play.isSelected()) {
                     if (AppInfo.INSTANCE.getMidiToPlay() != null) {
                         Map<Integer, Patch> patches = getVoiceResultPane().getVoiceListPane().getChannelPatches();
@@ -126,7 +167,7 @@ public class VoicePlayPane extends HBox {
                             midiHelper.sendAsMidi(channel, selectedPatch);
                         }
 
-                        if (!midiHelper.playMidiFile(multiChannelMidiReceiver, play)) {
+                        if (!midiHelper.playMidiFile(multiChannelMidiReceiver, play, startTick)) {
                             play.setSelected(false);
                         }
                     } else {

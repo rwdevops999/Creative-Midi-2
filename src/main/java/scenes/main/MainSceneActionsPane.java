@@ -12,6 +12,7 @@ import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scenes.eventlist.EventListScene;
+import scenes.playlist.PlaylistScene;
 import scenes.sysex.SysexScene;
 import scenes.voice.VoiceScene;
 import util.app.AppInfo;
@@ -64,6 +65,7 @@ public class MainSceneActionsPane extends GridPane {
         add(new SceneSelectButton(parentScene, ICON_SIZE, "sysexButton", "create sysex banks", "sysex", new SysexScene()), 1, 0);
         add(new SceneSelectButton(parentScene, ICON_SIZE, "eventListButton", "handle events", "event-list", new EventListScene()), 2, 0);
         add(new SceneSelectButton(parentScene, ICON_SIZE, "voiceButton", "search voices", "voice_search", new VoiceScene()), 3, 0);
+        add(new SceneSelectButton(parentScene, ICON_SIZE, "playlistButton", "using the playlist", "playlist", new PlaylistScene()), 4, 0);
 
         if (AppInfo.INSTANCE.isTestMode()) {
             add(new SceneSelectButton(parentScene, ICON_SIZE, "test1Button", "test 1", "test1", "Test1"), 3, 1);

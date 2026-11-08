@@ -44,7 +44,7 @@ public class ComboValuePane extends GridPane {
         setPadding(new Insets(1, 0, 0, 0));
     }
 
-    public ComboValuePane(Pane owner, String label, StringProperty dsProp, BooleanProperty dsEnabled, int width, int height, int cols, List<NameEntity> comboValues) {
+    public ComboValuePane(Pane owner, String label, StringProperty dsProp, BooleanProperty dsEnabled, double width, double height, int cols, List<NameEntity> comboValues) {
         this();
 
         setPaneSizeAsPercentage(this, owner, width, height);

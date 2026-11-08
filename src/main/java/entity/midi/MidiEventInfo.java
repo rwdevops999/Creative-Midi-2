@@ -52,7 +52,19 @@ public class MidiEventInfo extends NameEntity {
     @Setter
     private MidiEvent originalEvent;
 
+    public MidiEventInfo() {
+        super();
+    }
+
+    public MidiEventInfo(String name) {
+        this();
+
+        this.name = name;
+    }
+
     public MidiEventInfo(long tick, MbtPosition mbtPosition, int trackId, MidiEvent originalEvent) {
+        this();
+
         this.tick = tick;
         this.mbtPosition = mbtPosition.toString();
         this.trackId = trackId;

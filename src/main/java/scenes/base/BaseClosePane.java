@@ -39,7 +39,7 @@ public class BaseClosePane extends HBox {
 
         buildPane();
 
-        Background background = new Background(new BackgroundFill(getColor(), null, null));
+        Background background = new Background(new BackgroundFill(getColor().darker(), null, null));
         setBackground(background);
         setPrefHeight(PANE_HEIGHT);
         setAlignment(Pos.CENTER);

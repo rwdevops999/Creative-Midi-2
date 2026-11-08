@@ -22,4 +22,5 @@ public class Constants {
     public static int CHANNEL_RIGHT2 = 2;
     public static int CHANNEL_LEFT = 1;
 
+    public static int CHANNEL_STYLE = 3;
 }
