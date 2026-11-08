@@ -4,6 +4,7 @@ import entity.device.DeviceInfo;
 import entity.playlist.Song;
 import entity.sysex.Sysex;
 import entity.voice.KeyboardVoice;
+import javafx.concurrent.Service;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -74,4 +75,8 @@ public enum AppInfo {
         @Getter
         @Setter
         private Song currentSong;
+
+        @Getter
+        @Setter
+        private Service<Void> keyboardService;
 }

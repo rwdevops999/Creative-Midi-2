@@ -14,17 +14,27 @@ public class StateMachine {
     private States state;
     private StateMachine() {
         state = States.IDLE;
-        handleStateChange(state);
+        handleStateChange(state, false);
     }
 
-    public void setState(States state) {
+    private StateMachine(boolean executeOn) {
+        this();
+
+        state = States.IDLE;
+        handleStateChange(state, executeOn);
+    }
+
+    public void setState(States state, boolean executeOn) {
         this.state = state;
-        handleStateChange(state);
+        handleStateChange(state, executeOn);
     }
 
-    private void handleStateChange(States state) {
+    private void handleStateChange(States state, boolean executeOn) {
         if (actionsPane != null) {
             actionsPane.hideAllButtons();
+            if (executeOn) {
+                actionsPane.showButton("Execute", true);
+            }
 
             switch (state) {
                 case IDLE:
@@ -33,7 +43,6 @@ public class StateMachine {
                 case ADD:
                     actionsPane.showButton("New", true);
                     actionsPane.showButton("Add", true);
-                    actionsPane.showButton("Execute", true);
                     break;
                 case UPDATE:
                     actionsPane.showButton("New", true);

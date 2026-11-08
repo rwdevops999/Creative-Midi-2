@@ -124,4 +124,8 @@ public class PlaylistContainer {
             export();
         }
     }
+
+    public boolean isEmpty() {
+        return playList.isEmpty();
+    }
 }

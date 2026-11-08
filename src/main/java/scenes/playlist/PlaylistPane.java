@@ -50,11 +50,11 @@ public class PlaylistPane extends BorderPane {
         setCenter(playlistDetailsPane);
         setRight(actionsPane);
 
-        stateMachine.setState(States.IDLE);
+        stateMachine.setState(States.IDLE, !PlaylistContainer.getInstance().isEmpty());
     }
 
     public void changeState(States state) {
-        stateMachine.setState(state);
+        stateMachine.setState(state, !PlaylistContainer.getInstance().isEmpty());
     }
 
     public NameEntity getEntity() {

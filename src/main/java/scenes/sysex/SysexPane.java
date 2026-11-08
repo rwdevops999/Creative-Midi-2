@@ -46,7 +46,7 @@ public class SysexPane extends BorderPane {
         setCenter(new SysexDetailsPane(this, 50, 100));
         setRight(actionsPane);
 
-        stateMachine.setState(States.IDLE);
+        stateMachine.setState(States.IDLE, false);
 
         logger.debug("Built {}", getId());
     }
@@ -56,7 +56,7 @@ public class SysexPane extends BorderPane {
     }
 
     public void changeState(States state) {
-        stateMachine.setState(state);
+        stateMachine.setState(state, false);
     }
 
     // ACCESSORS

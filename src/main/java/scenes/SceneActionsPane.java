@@ -78,6 +78,12 @@ public class SceneActionsPane extends VBox {
         }
     }
 
+    public void renameActionButtonName(String name) {
+        Button button = (Button)lookup("#" + name);
+        if (button != null) {
+        }
+    }
+
     // ACCESSOR
 /*    public SysexPane getSysexPane() {
         return (SysexPane) parent;
