@@ -24,12 +24,16 @@ public class Song extends NameEntity implements Serializable {
 
     private Integer id;
     private SongInfo songInfo;
+
     @JsonSerialize(converter = SysexListToStringListConverter.class)
     @JsonDeserialize(converter = StringListToSysexListConverter.class)
     private List<Sysex> preMappings;
-//    private List<SongMapping> mappings;
-  //@JsonSerialize(converter = SysexListToStringListConverter.class)
-//    private List<Sysex> postMappings;
+
+    private List<SongMapping> mappings;
+
+    @JsonSerialize(converter = SysexListToStringListConverter.class)
+    @JsonDeserialize(converter = StringListToSysexListConverter.class)
+    private List<Sysex> postMappings;
 
     public Song(Integer id) {
         this.id = id;
@@ -41,9 +45,9 @@ public class Song extends NameEntity implements Serializable {
         this.name = "";
 
         this.songInfo = new SongInfo();
-//        this.mappings = new ArrayList<>();
+        this.mappings = new ArrayList<>();
         this.preMappings = new ArrayList<>();
-//        this.postMappings = new ArrayList<>();
+        this.postMappings = new ArrayList<>();
     }
 
     public Song(String name) {
@@ -60,6 +64,12 @@ public class Song extends NameEntity implements Serializable {
         this.songInfo = new SongInfo(other.getSongInfo());
         if (other.getPreMappings() != null) {
             this.preMappings = new ArrayList<>(other.getPreMappings());
+        }
+        if (other.getPostMappings() != null) {
+            this.postMappings = new ArrayList<>(other.getPostMappings());
+        }
+        if (other.getMappings() != null) {
+            this.mappings = new ArrayList<>(other.getMappings());
         }
     }
 
@@ -81,9 +91,9 @@ public class Song extends NameEntity implements Serializable {
         return Objects.equals(this.name, other.name) &&
                 Objects.equals(this.id, other.id) &&
                 Objects.equals(this.songInfo, other.songInfo) &&
-//                Objects.equals(this.mappings, other.mappings) &&
-                Objects.equals(this.preMappings, other.preMappings);
-//                Objects.equals(this.postMappings, other.postMappings);
+                Objects.equals(this.mappings, other.mappings) &&
+                Objects.equals(this.preMappings, other.preMappings) &&
+                Objects.equals(this.postMappings, other.postMappings);
     }
 
     @Override

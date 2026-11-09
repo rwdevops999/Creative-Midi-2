@@ -3,6 +3,8 @@ package fx.dialog;
 import entity.playlist.SongMapping;
 import entity.sysex.Sysex;
 import fx.component.Selector;
+import javafx.beans.property.ListProperty;
+import javafx.collections.FXCollections;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import scenes.sysex.container.SysexContainer;
@@ -12,11 +14,11 @@ import java.util.List;
 import java.util.Optional;
 
 public class MappingDialog extends Dialog<SongMapping> {
-    public MappingDialog(TableView<SongMapping> table, List<SongMapping> existingMappings, boolean isUpdate) {
+    public MappingDialog(TableView<SongMapping> table, ListProperty<SongMapping> mappingProperty, boolean isUpdate) {
         setTitle(isUpdate ? "Update" : "Add" + " Mapping");
         setHeaderText("Define the song mappings");
 
-        buildDialogContent(table, existingMappings, isUpdate);
+        buildDialogContent(table, mappingProperty, isUpdate);
 
         Optional<SongMapping> result = showAndWait();
 
@@ -25,18 +27,17 @@ public class MappingDialog extends Dialog<SongMapping> {
                 int index = table.getItems().indexOf(table.getSelectionModel().getSelectedItem());
                 if (index != -1) {
                     table.getItems().set(index, rvalue);
-                    index = existingMappings.indexOf(rvalue);
-                    existingMappings.set(index, rvalue);
+                    mappingProperty.set(FXCollections.observableArrayList(table.getItems()));
                 }
             } else if (table.getItems() != null) {
                 SongMapping mapping = new SongMapping(rvalue.getReceive(), rvalue.getReply());
                 table.getItems().add(mapping);
-                existingMappings.add(mapping);
+                mappingProperty.set(FXCollections.observableArrayList(table.getItems()));
             }
         });
     }
 
-    private void buildDialogContent(TableView<SongMapping> table, List<SongMapping> existingMappings, boolean isUpdate) {
+    private void buildDialogContent(TableView<SongMapping> table, ListProperty<SongMapping> mappingProperty, boolean isUpdate) {
         ButtonType changeButtonType = new ButtonType(isUpdate ? "Update" : "Add", ButtonBar.ButtonData.OK_DONE);
         getDialogPane().getButtonTypes().addAll(changeButtonType, ButtonType.CANCEL);
 
@@ -49,14 +50,14 @@ public class MappingDialog extends Dialog<SongMapping> {
 
         List<String> availableMappings = SysexContainer.getInstance().getSysexNames();
 
-        List<String> receiveMappings = existingMappings.stream().map(sm -> sm.getReceive().getName()).toList();
+        List<String> receiveMappings = mappingProperty.get().stream().map(sm -> sm.getReceive().getName()).toList();
         List<String> availableReceiveMappings = new ArrayList<>(availableMappings);
         availableReceiveMappings.removeAll(receiveMappings);
 
         Selector<String> receiveSelect = new Selector<>(null, availableReceiveMappings, isUpdate ? table.getSelectionModel().getSelectedItem().getReceive().getName() : null);
         content.add(receiveSelect, 1, 1);
 
-        List<String> replyMappings = existingMappings.stream().map(sm -> sm.getReply().getName()).toList();
+        List<String> replyMappings = mappingProperty.get().stream().map(sm -> sm.getReply().getName()).toList();
         List<String> availableReplyMappings = new ArrayList<>(availableMappings);
         availableReplyMappings.removeAll(replyMappings);
 

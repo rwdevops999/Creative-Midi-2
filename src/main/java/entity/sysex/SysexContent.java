@@ -52,7 +52,9 @@ public class SysexContent implements Serializable {
 
     public void setSysex(String sysex) {
         this.sysex = sysex;
-        this.bytes = setBytes(sysex);
+        if (this.getParametrized() != null && !this.getParametrized()) {
+            this.bytes = setBytes(sysex);
+        }
     }
 
     public SysexContent(SysexContent content) {

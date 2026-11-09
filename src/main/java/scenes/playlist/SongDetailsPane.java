@@ -207,21 +207,21 @@ public class SongDetailsPane extends GridPane {
         workingSong = song;
 
         if (song != null) {
-            Song deepCopiedSong = SerializationUtils.clone(song);
-            AppInfo.INSTANCE.setCurrentSong(deepCopiedSong);
+            if  (! song.equals(AppInfo.INSTANCE.getCurrentSong())) {
+                Song deepCopiedSong = SerializationUtils.clone(song);
+                AppInfo.INSTANCE.setCurrentSong(deepCopiedSong);
 
-            System.out.println("BREAKIE");
+                getPlaylistDetailsPane().getSongMappingsPane().setSong(workingSong);
 
-            getPlaylistDetailsPane().getSongMappingsPane().setSong(workingSong);
+                getPlaylistDetailsPane().getSongTitlePane().updateSongTitle(song.getName());
 
-            getPlaylistDetailsPane().getSongTitlePane().updateSongTitle(song.getName());
+                setDatasource(song);
 
-            setDatasource(song);
+                buildPane();
+                addComponents();
 
-            buildPane();
-            addComponents();
-
-           getPlaylistDetailsPane().getSongMappingsPane().buildPane(this, workingSong);
+                getPlaylistDetailsPane().getSongMappingsPane().buildPane(this, workingSong);
+            }
         } else {
             getPlaylistDetailsPane().getSongTitlePane().updateSongTitle("");
             getChildren().clear();

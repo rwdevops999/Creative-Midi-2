@@ -24,6 +24,8 @@ public class PlaylistPane extends BorderPane {
 
         setId("PlaylistPane");
 
+        SysexContainer.getInstance().load();
+
         // TODO Register for receiving the song
         if (! playlistContainer.isFileLoaded()) {
             playlistContainer.loadPlaylist();
@@ -40,8 +42,6 @@ public class PlaylistPane extends BorderPane {
                 new UpdateConsumer<Song, Pane>("Update"),
                 new ExecuteConsumer<Song, Pane>("Execute"),
         };
-
-        SysexContainer.getInstance().load();
 
         SceneActionsPane actionsPane = new SceneActionsPane(this, 20, 100, consumers, this::getEntity);
         stateMachine.setActionsPane(actionsPane);

@@ -2,6 +2,7 @@ package util.convertors;
 
 import com.fasterxml.jackson.databind.util.StdConverter;
 import entity.sysex.Sysex;
+import scenes.sysex.container.SysexContainer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,13 +15,9 @@ public class StringListToSysexListConverter extends StdConverter<List<String>, L
             return new ArrayList<>();
         }
 
-        // Zet elke String (naam) om naar een nieuw Sysex object
+        // Convert each name to a Sysex object (they are loaded in the SysexContainer)
         return stringList.stream()
-                .map(name -> {
-                    Sysex sysex = new Sysex();
-                    sysex.setName(name); // Of gebruik een constructor: new Sysex(name)
-                    return sysex;
-                })
+                .map(s -> SysexContainer.getInstance().getSysexByName(s))
                 .toList();
     }
 }

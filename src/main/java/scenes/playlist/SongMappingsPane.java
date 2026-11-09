@@ -50,6 +50,7 @@ public class SongMappingsPane extends HBox {
 
     private final ListProperty<Sysex> preMappingProperty = new SimpleListProperty<>(FXCollections.observableArrayList());;
     private final ListProperty<Sysex> postMappingProperty = new SimpleListProperty<>(FXCollections.observableArrayList());;
+    private final ListProperty<SongMapping> mappingProperty = new SimpleListProperty<>(FXCollections.observableArrayList());
 
     private Song currentSong;
     public void buildPane(Pane owner, Song song) {
@@ -79,25 +80,24 @@ public class SongMappingsPane extends HBox {
             mappingsTable.setPlaceholder(new Label("No mappings in this song"));
             VBox.setVgrow(mappingsTable, Priority.ALWAYS);
             mappingsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
-//            table.itemsProperty().bindBidirectional(mappingProperty);
+            buildContextMenu(mappingsTable, mappingProperty);
+            mappingsTable.itemsProperty().bindBidirectional(mappingProperty);
             Util.setControlWidthAsPercentage(mappingsTable, this, 54.0);
             getChildren().add(mappingsTable);
 
             buildColumns(mappingsTable);
-//            setMappingData(song);
-//TODO Uncomment            buildContextMenu(mappingsTable, song.getMappings());
+            setMappingData(song);
 
             TableView<Sysex> postMappingTable = new TableView<>();
             postMappingTable.setId("Post-Mapping");
+            buildContextMenuForSimpleTable(postMappingTable, postMappingProperty);
             Util.setControlWidthAsPercentage(postMappingTable, this, 22.7);
-//            buildContextMenuForView(postMappingView, song);
             getChildren().add(postMappingTable);
 
             TableColumn<Sysex, String> postColumn = new TableColumn<>("POST");
             postMappingTable.setPlaceholder(new Label("None"));
             postMappingTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
             postColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-//TODO Uncomment            buildContextMenuForSimpleTable(postMappingTable, song.getPostMappings());
             postMappingTable.getColumns().add(postColumn);
             postMappingTable.itemsProperty().bindBidirectional(postMappingProperty);
         }
@@ -136,20 +136,22 @@ public class SongMappingsPane extends HBox {
     }
 
     private void setMappingData(Song song) {
+        ObservableList<SongMapping> tableData = FXCollections.observableArrayList(song.getMappings());
+        mappingProperty.set(tableData);
     }
 
-    private void buildContextMenu(TableView<SongMapping> table, List<SongMapping> mappings) {
+    private void buildContextMenu(TableView<SongMapping> table, ListProperty<SongMapping> mappingProperty) {
         ContextMenu contextMenu = new ContextMenu();
         MenuItem addMenuItem = new MenuItem("Add mapping");
         addMenuItem.setOnAction(e -> {
-            showAddMappingDialog(table, false, mappings);
+            showAddMappingDialog(table, false, mappingProperty);
         });
 
         MenuItem deleteMenuItem = new MenuItem("Delete mapping");
         deleteMenuItem.setOnAction(e -> {
             SongMapping mapping = table.getSelectionModel().getSelectedItem();
             table.getItems().remove(mapping);
-            mappings.remove(mapping);
+            mappingProperty.get().remove(mapping);
         });
         deleteMenuItem.disableProperty().bind(
                 table.getSelectionModel().selectedItemProperty().isNull()
@@ -157,7 +159,7 @@ public class SongMappingsPane extends HBox {
 
         MenuItem editMenuItem = new MenuItem("Edit mapping");
         editMenuItem.setOnAction(e -> {
-            showAddMappingDialog(table, true, mappings);
+            showAddMappingDialog(table, true, mappingProperty);
         });
         editMenuItem.disableProperty().bind(
                 table.getSelectionModel().selectedItemProperty().isNull()
@@ -202,20 +204,41 @@ public class SongMappingsPane extends HBox {
 
         if (song != null) {
             isUpdating = true;
-            preMappingProperty.set(FXCollections.observableArrayList(song.getPreMappings()));
-            preMappingProperty.addListener((ListChangeListener<Sysex>) change -> {
-                if (! isUpdating) {
-                    // Synchroniseer de wijzigingen naar je domeinmodel indien nodig
-                    currentSong.setPreMappings(new ArrayList<>(preMappingProperty.get()));
-                    getPlaylistDetailsPane().getSongDetailsPane().setSong(currentSong);
-                }
-            });
+            if (song.getPreMappings() != null) {
+                preMappingProperty.set(FXCollections.observableArrayList(song.getPreMappings()));
+                preMappingProperty.addListener((ListChangeListener<Sysex>) change -> {
+                    if (! isUpdating) {
+                        currentSong.setPreMappings(new ArrayList<>(preMappingProperty.get()));
+                        getPlaylistDetailsPane().getSongDetailsPane().setSong(currentSong);
+                    }
+                });
+            }
+
+            if (song.getPostMappings() != null) {
+                postMappingProperty.set(FXCollections.observableArrayList(song.getPostMappings()));
+                postMappingProperty.addListener((ListChangeListener<Sysex>) change -> {
+                    if (! isUpdating) {
+                        currentSong.setPostMappings(new ArrayList<>(postMappingProperty.get()));
+                        getPlaylistDetailsPane().getSongDetailsPane().setSong(currentSong);
+                    }
+                });
+            }
+
+            if (song.getMappings() != null) {
+                mappingProperty.set(FXCollections.observableArrayList(song.getMappings()));
+                mappingProperty.addListener((ListChangeListener<SongMapping>) change -> {
+                    if (! isUpdating) {
+                        currentSong.setMappings(new ArrayList<>(mappingProperty.get()));
+                        getPlaylistDetailsPane().getSongDetailsPane().setSong(currentSong);
+                    }
+                });
+            }
             isUpdating = false;
         }
     }
 
-    private void showAddMappingDialog(TableView<SongMapping> table, boolean isUpdate, List<SongMapping> existingMappings) {
-        new MappingDialog(table, existingMappings, isUpdate);
+    private void showAddMappingDialog(TableView<SongMapping> table, boolean isUpdate, ListProperty<SongMapping> mappingProperty) {
+        new MappingDialog(table, mappingProperty, isUpdate);
     }
 
     private void showAddSysexMappingDialog(TableView<Sysex> table, boolean isUpdate, ListProperty<Sysex> mappingProperty) {

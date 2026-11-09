@@ -1,11 +1,11 @@
 [ {
-  "name" : "rw",
+  "name" : "Weisse Rosen Aus Athen",
   "id" : 1,
   "songInfo" : {
-    "performer" : "",
-    "tempo" : 120,
+    "performer" : "Nana Mouskouri",
+    "tempo" : 136,
     "scale" : {
-      "scale" : "C",
+      "scale" : "E",
       "pitch" : "major"
     },
     "signature" : {
@@ -13,21 +13,10 @@
       "beat" : 4
     }
   },
-  "preMappings" : [ ]
-}, {
-  "name" : "xxx",
-  "id" : 1,
-  "songInfo" : {
-    "performer" : "",
-    "tempo" : 120,
-    "scale" : {
-      "scale" : "C",
-      "pitch" : "major"
-    },
-    "signature" : {
-      "beats" : 4,
-      "beat" : 4
-    }
-  },
-  "preMappings" : [ "Ending I On" ]
+  "preMappings" : [ "GM2 System On", "Tempo" ],
+  "mappings" : [ {
+    "receive" : "Intro I Off",
+    "reply" : "Select Registration Button 2"
+  } ],
+  "postMappings" : [ "All Parameter Reset" ]
 } ]
