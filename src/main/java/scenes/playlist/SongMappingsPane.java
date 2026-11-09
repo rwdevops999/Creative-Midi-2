@@ -5,10 +5,7 @@ import entity.playlist.SongMapping;
 import entity.sysex.Sysex;
 import fx.dialog.MappingDialog;
 import fx.dialog.SysexMappingDialog;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -85,7 +82,7 @@ public class SongMappingsPane extends HBox {
 
             buildColumns(mappingsTable);
 //            setMappingData(song);
-            buildContextMenu(mappingsTable, song);
+            buildContextMenu(mappingsTable, song.getMappings());
 
             TableView<Sysex> postMappingTable = new TableView<>();
             postMappingTable.setId("Post-Mapping");
@@ -108,9 +105,29 @@ public class SongMappingsPane extends HBox {
     private void buildColumns(TableView<SongMapping> table) {
         TableColumn<SongMapping, String> receiveColumn = new TableColumn<>("Received");
         receiveColumn.setCellValueFactory(new PropertyValueFactory<>("receive"));
+        receiveColumn.setCellValueFactory(cellData -> {
+            // 1. retrieve the selected object from the combo
+            var selectedObject = cellData.getValue();
+
+            if (selectedObject != null && selectedObject.getReceive() != null) {
+                return new SimpleStringProperty(selectedObject.getReceive().getName());
+            } else {
+                return new SimpleStringProperty("");
+            }
+        });
 
         TableColumn<SongMapping, String> replyColumn = new TableColumn<>("Reply");
         replyColumn.setCellValueFactory(new PropertyValueFactory<>("reply"));
+        replyColumn.setCellValueFactory(cellData -> {
+            // 1. retrieve the selected object from the combo
+            var selectedObject = cellData.getValue();
+
+            if (selectedObject != null && selectedObject.getReply() != null) {
+                return new SimpleStringProperty(selectedObject.getReply().getName());
+            } else {
+                return new SimpleStringProperty("");
+            }
+        });
 
         table.getColumns().addAll(receiveColumn, replyColumn);
     }
@@ -118,19 +135,18 @@ public class SongMappingsPane extends HBox {
     private void setMappingData(Song song) {
     }
 
-    private void buildContextMenu(TableView<SongMapping> table, Song song) {
+    private void buildContextMenu(TableView<SongMapping> table, List<SongMapping> mappings) {
         ContextMenu contextMenu = new ContextMenu();
         MenuItem addMenuItem = new MenuItem("Add mapping");
         addMenuItem.setOnAction(e -> {
-/*            showAddMappingDialog(table, false, song);
-            getPlaylistDetailsPane().getSongDetailsPane().updateSongMapping(new ArrayList<>(table.getItems())); */
+            showAddMappingDialog(table, false, mappings);
         });
 
         MenuItem deleteMenuItem = new MenuItem("Delete mapping");
         deleteMenuItem.setOnAction(e -> {
-/*            Mapping mapping = table.getSelectionModel().getSelectedItem();
+            SongMapping mapping = table.getSelectionModel().getSelectedItem();
             table.getItems().remove(mapping);
-            getPlaylistDetailsPane().getSongDetailsPane().updateSongMapping(new ArrayList<>(table.getItems())); */
+            mappings.remove(mapping);
         });
         deleteMenuItem.disableProperty().bind(
                 table.getSelectionModel().selectedItemProperty().isNull()
@@ -138,9 +154,7 @@ public class SongMappingsPane extends HBox {
 
         MenuItem editMenuItem = new MenuItem("Edit mapping");
         editMenuItem.setOnAction(e -> {
-/*            Mapping mapping = table.getSelectionModel().getSelectedItem();
-            showAddMappingDialog(table, true, mapping);
-            getPlaylistDetailsPane().getSongDetailsPane().updateSongMapping(new ArrayList<>(table.getItems())); */
+            showAddMappingDialog(table, true, mappings);
         });
         editMenuItem.disableProperty().bind(
                 table.getSelectionModel().selectedItemProperty().isNull()
@@ -181,28 +195,13 @@ public class SongMappingsPane extends HBox {
 
     public void setSong(Song song) {
         if (song != null) {
-            if ("test".equalsIgnoreCase(song.getName())) {
-                // Add some dummy premappings
-                Sysex sysex1 = SysexContainer.getInstance().getSysexByName("GM1 System On");
-                song.getPreMappings().add(sysex1);
-                Sysex sysex2 = SysexContainer.getInstance().getSysexByName("Tempo");
-                song.getPreMappings().add(sysex2);
-
-                Sysex sysex3 = SysexContainer.getInstance().getSysexByName("All Parameter Reset");
-                song.getPostMappings().add(sysex3);
-            }
-
             preMappingProperty.set(FXCollections.observableArrayList(song.getPreMappings()));
             postMappingProperty.set(FXCollections.observableArrayList(song.getPostMappings()));
         }
     }
 
-/*    private void showAddMappingDialog(TableView<SongMapping> table, boolean isUpdate, Song currentSong) {
-        new MappingDialog(this, table, isUpdate, currentSong);
-    } */
-
-    private void showAddMappingDialog(boolean isUpdate, Song currentSong) {
-//        new MappingDialog(this, isUpdate, currentSong);
+    private void showAddMappingDialog(TableView<SongMapping> table, boolean isUpdate, List<SongMapping> existingMappings) {
+        new MappingDialog(table, existingMappings, isUpdate);
     }
 
     private void showAddSysexMappingDialog(TableView<Sysex> table, boolean isUpdate, List<Sysex> existingMappings) {
