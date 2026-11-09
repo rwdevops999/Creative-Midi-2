@@ -9,6 +9,7 @@ import javafx.scene.layout.Pane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scenes.SceneActionsPane;
+import scenes.playlist.service.KeyboardPlayService;
 import util.app.AppInfo;
 import util.communication.CommunicationType;
 import util.registry.CommunicationMessage;
@@ -42,19 +43,21 @@ public class ExecuteConsumer<T extends NameEntity, P extends Pane>  extends Name
             if (service != null) {
                 Registry.getInstance().showStatus("Stopped playing the playlist");
 
-                service.cancel();
+                if (service.isRunning()) {
+                    service.cancel();
+                }
 
-                actionsPane.renameActionButtonName("Execute");
+                actionsPane.renameActionButtonName("Stop", "Execute");
 
                 AppInfo.INSTANCE.setKeyboardService(null);
             } else {
                 Registry.getInstance().showStatus("Playing the playlist");
                 CommunicationMessage.getInstance().showMessage(ACTION, MONITOR_ACTION_CLEAR);
-                actionsPane.renameActionButtonName("Stop");
-/*
-                service = new KeyboardService();
-                ApplicationInfo.getInstance().setKeyboardService(service);
-                service.start();
+                actionsPane.renameActionButtonName("Execute", "Stop");
+
+                service = new KeyboardPlayService();
+                AppInfo.INSTANCE.setKeyboardService(service);
+/*                service.start();
 
                 // handle stuff from keyboard service
                 service.valueProperty().addListener((observable, oldValue, newValue) -> {

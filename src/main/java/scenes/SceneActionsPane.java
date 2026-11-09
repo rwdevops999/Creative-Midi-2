@@ -78,9 +78,11 @@ public class SceneActionsPane extends VBox {
         }
     }
 
-    public void renameActionButtonName(String name) {
-        Button button = (Button)lookup("#" + name);
+    public void renameActionButtonName(String currentName, String newName) {
+        Button button = (Button)lookup("#" + currentName);
         if (button != null) {
+            button.setText(newName);
+            button.setId(newName);
         }
     }
 
