@@ -113,15 +113,18 @@ public class SelectorsPane extends HBox {
                             }
                             // SCENARIO B: Normale werking -> Behoud het apparaat dat actief was
                             else if (currentlySelected != null) {
+                                final String finalName = currentlySelected.getName();
+
                                 deviceToSelect = deviceList.stream()
-                                        .filter(d -> d.getName().equals(currentlySelected.getName()))
+                                        .filter(d -> d.getName().equals(finalName))
                                         .findFirst()
                                         .orElse(null);
 
                                 // EENMALIGE MELDING: Het actieve apparaat is zojuist UITGESCHAKELD (niet meer in de lijst)
                                 if (deviceToSelect == null) {
-                                    AppNotifications.showNotification("Device Disconnected",
+                                    AppNotifications.showNotification("Device Disconnected (1)",
                                             "The device '" + currentlySelected.getName() + "' is disconnected.");
+                                    AppInfo.INSTANCE.setSelectedDevice(null);
                                 }
                             }
 
@@ -138,7 +141,10 @@ public class SelectorsPane extends HBox {
                             } else {
                                 comboBox.getSelectionModel().clearSelection();
                                 if (! deviceList.isEmpty()) {
-                                    DeviceInfo inputDevice = deviceList.stream().filter(deviceInfo -> DeviceDirection.INPUT.equals(deviceInfo.getDeviceDirection())).findFirst().orElse(null);
+                                    DeviceInfo inputDevice = deviceList.stream()
+                                            .filter(d -> d.getName().equals(defaultDeviceName))
+                                            .findFirst()
+                                            .orElse(null);
                                     if (inputDevice != null) {
                                         comboBox.getSelectionModel().select(inputDevice);
                                         AppInfo.INSTANCE.setSelectedDevice(inputDevice);

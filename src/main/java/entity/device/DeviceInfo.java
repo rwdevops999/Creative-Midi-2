@@ -1,11 +1,13 @@
 package entity.device;
 
 import entity.NameEntity;
+import entity.sysex.Sysex;
 import lombok.Getter;
 import util.device.DeviceDirection;
 
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiUnavailableException;
+import java.util.Objects;
 
 public class DeviceInfo extends NameEntity {
     @Getter
@@ -72,5 +74,23 @@ public class DeviceInfo extends NameEntity {
             this.textIcon = "⇄ ";
         }
     }
+
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if (!(obj instanceof DeviceInfo other)) {
+            return false;
+        }
+
+        return Objects.equals(this.name, other.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
+    }
+
 
 }

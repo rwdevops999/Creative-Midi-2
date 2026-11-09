@@ -1,11 +1,13 @@
 package fx.component;
 
 import entity.NameEntity;
+import entity.device.DeviceInfo;
 import fx.display.EntityListCell;
 import javafx.geometry.Insets;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
+import javafx.util.StringConverter;
 import lombok.Getter;
 
 @Getter
@@ -43,6 +45,19 @@ public class LabeledSelector<T extends NameEntity> extends VBox {
             if (newVal != null) {
                 // create the cell and JavaFX links the 'newVal' to it.
                 comboBox.setButtonCell(new EntityListCell<>());
+            }
+        });
+
+        comboBox.setConverter(new StringConverter<T>() {
+            @Override
+            public String toString(T device) {
+                // Return the property you want the user to see
+                return (device == null) ? "" : device.getName();
+            }
+
+            @Override
+            public T fromString(String string) {
+                return null; // Safe to leave as null if the ComboBox is not editable
             }
         });
 

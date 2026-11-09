@@ -4,6 +4,7 @@ import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import util.SysexToHexStringConvertor;
 import util.app.AppInfo;
 import util.communication.CommunicationType;
 import util.registry.AppEvent;
@@ -27,16 +28,35 @@ public class KeyboardPlayService extends Service<Void> {
     private MidiDevice midiOutputDevice;
 
     private void handleSysexMessage(SysexMessage message) {
-        System.out.println("SysexMessage: " + message.getMessage());
+        String hexMessage = SysexToHexStringConvertor.convertToHexString(message.getMessage());
+/*        if (! songIsPlaying) {
+
+        } */
         /*
          * This message is send to monitor
          */
-        comm.showMessage(CommunicationType.INBOUND, "SysexMessage: " + message.getMessage());
+        comm.showMessage(CommunicationType.INBOUND, hexMessage);
     };
 
+    private static final byte ACTIVE_SENSING = -2;
+    private boolean songIsPlaying = false;
+
     private void handleMidiMessage(ShortMessage message) {
-        System.out.println("MidiMessage: " + message.getMessage());
-        comm.showMessage(CommunicationType.INBOUND, "MidiMessage: " + message.getMessage());
+        byte[] rawBytes = message.getMessage();
+
+        /*
+         * I'm not interested in ACTIVE SENSING messages
+         */
+        if (rawBytes[0] != ACTIVE_SENSING) {
+            int status = message.getStatus();
+            if (status == ShortMessage.START) {
+                comm.showMessage(CommunicationType.INBOUND, "Start");
+                songIsPlaying = true;
+            } else if (status == ShortMessage.STOP) {
+                songIsPlaying = false;
+                comm.showMessage(CommunicationType.INBOUND, "Stop");
+            }
+        }
     };
 
     /**
@@ -49,7 +69,7 @@ public class KeyboardPlayService extends Service<Void> {
         System.out.println("CREATE KEYBOARD SERVICE");
 
         try {
-            midiOutputDevice =  AppInfo.INSTANCE.getSelectedDevice().getMidiInputDevice();
+            midiOutputDevice =  AppInfo.INSTANCE.getSelectedDevice().getMidiOutputDevice();
             if (midiOutputDevice == null) {
                 return null;
             }
