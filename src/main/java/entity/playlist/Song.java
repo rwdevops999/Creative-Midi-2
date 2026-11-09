@@ -1,10 +1,12 @@
 package entity.playlist;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import entity.NameEntity;
 import entity.sysex.Sysex;
 import lombok.Getter;
 import lombok.Setter;
+import util.convertors.SysexListToStringListConverter;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -20,8 +22,10 @@ public class Song extends NameEntity implements Serializable {
 
     private Integer id;
     private SongInfo songInfo;
+    @JsonSerialize(converter = SysexListToStringListConverter.class)
     private List<Sysex> preMappings;
     private List<SongMapping> mappings;
+    @JsonSerialize(converter = SysexListToStringListConverter.class)
     private List<Sysex> postMappings;
 
     public Song(Integer id) {

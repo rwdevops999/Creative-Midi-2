@@ -4,6 +4,7 @@ import entity.playlist.Song;
 import entity.playlist.SongMapping;
 import entity.sysex.Sysex;
 import fx.dialog.MappingDialog;
+import fx.dialog.SysexMappingDialog;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -16,6 +17,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scenes.sysex.container.SysexContainer;
 import util.Util;
 
 import java.util.ArrayList;
@@ -48,6 +50,7 @@ public class SongMappingsPane extends HBox {
     }
 
     private final ObjectProperty<ObservableList<Sysex>> preMappingProperty = new SimpleObjectProperty<>(FXCollections.observableArrayList(new ArrayList<>()));
+    private final ObjectProperty<ObservableList<Sysex>> postMappingProperty = new SimpleObjectProperty<>(FXCollections.observableArrayList(new ArrayList<>()));
 
     public void buildPane(Pane owner, Song song) {
         logger.debug("Building {}", getId());
@@ -56,13 +59,14 @@ public class SongMappingsPane extends HBox {
 
         if (getPlaylistDetailsPane().getSongDetailsPane().getSong() != null) {
             TableView<Sysex> preMappingTable = new TableView<>();
+            preMappingTable.setId("Pre-Mapping");
             // replace text when no data is available
             preMappingTable.setPlaceholder(new Label("None"));
             // don't show filler column.
             preMappingTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
             // resize the table
             Util.setControlWidthAsPercentage(preMappingTable, this, 22.7);
-            buildContextMenuForSimpleTable(preMappingTable, song);
+            buildContextMenuForSimpleTable(preMappingTable, song.getPreMappings());
             preMappingTable.itemsProperty().bindBidirectional(preMappingProperty);
 
             getChildren().add(preMappingTable);
@@ -84,6 +88,7 @@ public class SongMappingsPane extends HBox {
             buildContextMenu(mappingsTable, song);
 
             TableView<Sysex> postMappingTable = new TableView<>();
+            postMappingTable.setId("Post-Mapping");
             Util.setControlWidthAsPercentage(postMappingTable, this, 22.7);
 //            buildContextMenuForView(postMappingView, song);
             getChildren().add(postMappingTable);
@@ -92,8 +97,9 @@ public class SongMappingsPane extends HBox {
             postMappingTable.setPlaceholder(new Label("None"));
             postMappingTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
             postColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-            buildContextMenuForSimpleTable(postMappingTable, song);
+            buildContextMenuForSimpleTable(postMappingTable, song.getPostMappings());
             postMappingTable.getColumns().add(postColumn);
+            postMappingTable.itemsProperty().bindBidirectional(postMappingProperty);
         }
 
         logger.debug("Built {}", getId());
@@ -144,19 +150,18 @@ public class SongMappingsPane extends HBox {
         table.setContextMenu(contextMenu);
     }
 
-    private void buildContextMenuForSimpleTable(TableView<Sysex> table, Song song) {
+    private void buildContextMenuForSimpleTable(TableView<Sysex> table, List<Sysex> mappings) {
         ContextMenu contextMenu = new ContextMenu();
         MenuItem addMenuItem = new MenuItem("Add mapping");
         addMenuItem.setOnAction(e -> {
-/*            showAddMappingDialog(table, false, song);
-            getPlaylistDetailsPane().getSongDetailsPane().updateSongMapping(new ArrayList<>(table.getItems())); */
+            showAddSysexMappingDialog(table, false, mappings);
         });
 
         MenuItem deleteMenuItem = new MenuItem("Delete mapping");
         deleteMenuItem.setOnAction(e -> {
-/*            Mapping mapping = table.getSelectionModel().getSelectedItem();
-            table.getItems().remove(mapping);
-            getPlaylistDetailsPane().getSongDetailsPane().updateSongMapping(new ArrayList<>(table.getItems())); */
+            Sysex sysex = table.getSelectionModel().getSelectedItem();
+            table.getItems().remove(sysex);
+            mappings.remove(sysex);
         });
         deleteMenuItem.disableProperty().bind(
                 table.getSelectionModel().selectedItemProperty().isNull()
@@ -164,9 +169,7 @@ public class SongMappingsPane extends HBox {
 
         MenuItem editMenuItem = new MenuItem("Edit mapping");
         editMenuItem.setOnAction(e -> {
-/*            Mapping mapping = table.getSelectionModel().getSelectedItem();
-            showAddMappingDialog(table, true, mapping);
-            getPlaylistDetailsPane().getSongDetailsPane().updateSongMapping(new ArrayList<>(table.getItems())); */
+            showAddSysexMappingDialog(table, true, mappings);
         });
         editMenuItem.disableProperty().bind(
                 table.getSelectionModel().selectedItemProperty().isNull()
@@ -179,9 +182,18 @@ public class SongMappingsPane extends HBox {
     public void setSong(Song song) {
         if (song != null) {
             if ("test".equalsIgnoreCase(song.getName())) {
+                // Add some dummy premappings
+                Sysex sysex1 = SysexContainer.getInstance().getSysexByName("GM1 System On");
+                song.getPreMappings().add(sysex1);
+                Sysex sysex2 = SysexContainer.getInstance().getSysexByName("Tempo");
+                song.getPreMappings().add(sysex2);
 
+                Sysex sysex3 = SysexContainer.getInstance().getSysexByName("All Parameter Reset");
+                song.getPostMappings().add(sysex3);
             }
+
             preMappingProperty.set(FXCollections.observableArrayList(song.getPreMappings()));
+            postMappingProperty.set(FXCollections.observableArrayList(song.getPostMappings()));
         }
     }
 
@@ -192,6 +204,11 @@ public class SongMappingsPane extends HBox {
     private void showAddMappingDialog(boolean isUpdate, Song currentSong) {
 //        new MappingDialog(this, isUpdate, currentSong);
     }
+
+    private void showAddSysexMappingDialog(TableView<Sysex> table, boolean isUpdate, List<Sysex> existingMappings) {
+        new SysexMappingDialog(table, existingMappings, isUpdate);
+    }
+
     // ACCESSORS
     public PlaylistDetailsPane getPlaylistDetailsPane() {
         return parent;

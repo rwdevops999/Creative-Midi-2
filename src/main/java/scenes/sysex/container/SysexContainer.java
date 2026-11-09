@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import entity.NameEntity;
 import entity.sysex.Sysex;
 import lombok.Getter;
 import org.slf4j.Logger;
@@ -115,5 +116,9 @@ public class SysexContainer {
 
     public Sysex getSysexByName(String name) {
         return sysexList.stream().filter(s -> s.getName().equals(name)).findFirst().orElse(null);
+    }
+
+    public List<String> getSysexNames() {
+        return sysexList.stream().map(NameEntity::getName).toList();
     }
 }

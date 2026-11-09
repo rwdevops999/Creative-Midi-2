@@ -1,7 +1,10 @@
 package entity.playlist;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import entity.sysex.Sysex;
 import lombok.Getter;
 import lombok.Setter;
+import util.convertors.SysexListToStringListConverter;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -13,21 +16,19 @@ public class SongMapping implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    private String receive;
-    private String reply;
+    @JsonSerialize(converter = SysexListToStringListConverter.class)
+    private Sysex receive;
+    @JsonSerialize(converter = SysexListToStringListConverter.class)
+    private Sysex reply;
 
-    public SongMapping(String receive, String reply) {
+    public SongMapping(Sysex receive, Sysex reply) {
         this.receive = receive;
         this.reply = reply;
     }
 
-    public SongMapping() {
-        this("", "");
-    }
-
     @Override
     public String toString() {
-        return this.receive + " -> " + this.reply;
+        return this.receive.getName() + " -> " + this.reply.getName();
     }
 
     public boolean equals(Object obj) {

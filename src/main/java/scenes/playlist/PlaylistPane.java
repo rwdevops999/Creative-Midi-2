@@ -8,6 +8,7 @@ import javafx.scene.layout.Pane;
 import scenes.SceneActionsPane;
 import scenes.playlist.consumers.*;
 import scenes.playlist.container.PlaylistContainer;
+import scenes.sysex.container.SysexContainer;
 import scenes.sysex.statemachine.StateMachine;
 import scenes.sysex.statemachine.States;
 
@@ -39,6 +40,8 @@ public class PlaylistPane extends BorderPane {
                 new UpdateConsumer<Song, Pane>("Update"),
                 new ExecuteConsumer<Song, Pane>("Execute"),
         };
+
+        SysexContainer.getInstance().load();
 
         SceneActionsPane actionsPane = new SceneActionsPane(this, 20, 100, consumers, this::getEntity);
         stateMachine.setActionsPane(actionsPane);
