@@ -32,13 +32,13 @@ public class ExecuteConsumer<T extends NameEntity, P extends Pane>  extends Name
 
     @Override
     public void accept(T entity, P pane) {
-        logger.debug("[CM_EXECUTE_CONSUMER<Playlist>] Handling Startup Playlist Thread");
+        logger.debug("Handling Startup Playlist Thread");
 
         SceneActionsPane actionsPane = (SceneActionsPane) pane;
 
-// TODO Uncomment        if (AppInfo.INSTANCE.getSelectedDevice() == null) {
-//            DialogFactory.getInstance().renderErrorDialog("Device is not selected");
-//        } else {
+        if (AppInfo.INSTANCE.getSelectedDevice() == null) {
+            DialogFactory.getInstance().renderErrorDialog("Device is not selected");
+       } else {
             Service<Void> service = AppInfo.INSTANCE.getKeyboardService();
             if (service != null) {
                 Registry.getInstance().showStatus("Stopped playing the playlist");
@@ -57,20 +57,11 @@ public class ExecuteConsumer<T extends NameEntity, P extends Pane>  extends Name
 
                 service = new KeyboardPlayService();
                 AppInfo.INSTANCE.setKeyboardService(service);
-/*                service.start();
 
-                // handle stuff from keyboard service
-                service.valueProperty().addListener((observable, oldValue, newValue) -> {
-                    // newValue = Shared Entity
-                    if (newValue != null) {
-                        switch (newValue.getType()) {
-                            case OUTGOING -> CommunicationModel.monitorOutbound(newValue.getValue());
-                            case SONG_SELECT -> CommunicationModel.monitorSongSelect(newValue.getValue());
-                            default -> CommunicationModel.monitorInbound(newValue.getValue());
-                        }
-                    }
-                }); */
-//            }
+                if (!service.isRunning()) {
+                    service.start();
+                }
+            }
         }
     }
 }

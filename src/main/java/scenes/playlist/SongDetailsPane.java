@@ -186,6 +186,9 @@ public class SongDetailsPane extends GridPane {
         add(tempoSpinner, 2, row, 1, 1);
         tempoSpinner.getValueFactory().valueProperty().bindBidirectional(tempoProperty);
         tempoSpinner.setEditable(true);
+/*        tempoSpinner.valueProperty().addListener((obs, oldVal, newVal) -> {
+            System.out.println("Tempo changed to " + newVal);
+        }); */
 
         row++;
         add(scaleLabel, 0, row, 1, 1);
