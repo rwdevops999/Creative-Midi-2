@@ -8,6 +8,7 @@ import util.communication.CommunicationType;
 import static util.app.colors.ColorScheme.getColor;
 
 public class ColoredItem extends NameEntity {
+    @Getter
     private CommunicationType type;
     @Getter
     private Color messageColor;
@@ -30,6 +31,7 @@ public class ColoredItem extends NameEntity {
             case ERROR -> getColor("communication", "error");
             case WARNING -> getColor("communication", "warning");
             case INFO -> getColor("communication", "info");
+            default -> getColor("communication");
         };
    }
 
@@ -37,13 +39,14 @@ public class ColoredItem extends NameEntity {
         String identify;
 
         identify = switch (type) {
-            case INFO -> "[I]";
-            case WARNING -> "[!]";
-            case ERROR -> "[X]";
-            case INBOUND -> "[⬅]";
-            case OUTBOUND -> "[➡]";
+            case INFO -> "[I]" + " ";
+            case WARNING -> "[!]" + " ";
+            case ERROR -> "[X]" + " ";
+            case INBOUND -> "[⬅]" + " ";
+            case OUTBOUND -> "[➡]" + " ";
+            default -> "";
         };
 
-        return identify + " " + name;
+        return identify + name;
    }
 }

@@ -23,4 +23,8 @@ public class Constants {
     public static int CHANNEL_LEFT = 1;
 
     public static int CHANNEL_STYLE = 3;
+
+    public static String MONITOR_ACTION_CLEAR = "Clear";
+    public static String MONITOR_ACTION_EXPORT = "Export";
+
 }

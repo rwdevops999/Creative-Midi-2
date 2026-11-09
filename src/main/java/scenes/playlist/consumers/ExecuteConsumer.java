@@ -10,12 +10,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scenes.SceneActionsPane;
 import util.app.AppInfo;
+import util.communication.CommunicationType;
+import util.registry.CommunicationMessage;
 import util.registry.Registry;
 import util.sysex.SysexWriter;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiUnavailableException;
 import java.util.function.BiConsumer;
+
+import static util.Constants.MONITOR_ACTION_CLEAR;
+import static util.communication.CommunicationType.ACTION;
 
 public class ExecuteConsumer<T extends NameEntity, P extends Pane>  extends NameEntity implements BiConsumer<T, P> {
     private static final Logger logger = LoggerFactory.getLogger(ExecuteConsumer.class);
@@ -30,10 +35,9 @@ public class ExecuteConsumer<T extends NameEntity, P extends Pane>  extends Name
 
         SceneActionsPane actionsPane = (SceneActionsPane) pane;
 
-        if (AppInfo.INSTANCE.getSelectedDevice() == null) {
-            DialogFactory.getInstance().renderErrorDialog("Device is not selected");
-        } else {
-
+// TODO Uncomment        if (AppInfo.INSTANCE.getSelectedDevice() == null) {
+//            DialogFactory.getInstance().renderErrorDialog("Device is not selected");
+//        } else {
             Service<Void> service = AppInfo.INSTANCE.getKeyboardService();
             if (service != null) {
                 Registry.getInstance().showStatus("Stopped playing the playlist");
@@ -44,10 +48,10 @@ public class ExecuteConsumer<T extends NameEntity, P extends Pane>  extends Name
 
                 AppInfo.INSTANCE.setKeyboardService(null);
             } else {
-/*                CommunicationModel.setStatus("Playing the playlist");
-                CommunicationModel.monitorAction(MONITOR_ACTION_CLEAR);
+                Registry.getInstance().showStatus("Playing the playlist");
+                CommunicationMessage.getInstance().showMessage(ACTION, MONITOR_ACTION_CLEAR);
                 actionsPane.renameActionButtonName("Stop");
-
+/*
                 service = new KeyboardService();
                 ApplicationInfo.getInstance().setKeyboardService(service);
                 service.start();
@@ -63,7 +67,7 @@ public class ExecuteConsumer<T extends NameEntity, P extends Pane>  extends Name
                         }
                     }
                 }); */
-            }
+//            }
         }
     }
 }

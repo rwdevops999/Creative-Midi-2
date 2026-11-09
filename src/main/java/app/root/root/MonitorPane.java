@@ -2,9 +2,14 @@ package app.root.root;
 
 import entity.monitor.ColoredItem;
 import fx.display.ColoredListCell;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.VBox;
@@ -16,7 +21,9 @@ import util.registry.Registry;
 
 import java.util.List;
 
+import static util.Constants.MONITOR_ACTION_CLEAR;
 import static util.Util.*;
+import static util.communication.CommunicationType.ACTION;
 
 public class MonitorPane extends VBox {
     private static final Logger logger = LoggerFactory.getLogger(MonitorPane.class);
@@ -42,6 +49,8 @@ public class MonitorPane extends VBox {
     private ListView<ColoredItem> messagesView;
     private final ObservableList<ColoredItem> messages = FXCollections.observableArrayList();
 
+    private static final ObjectProperty<AppEvent> messageProperty = new SimpleObjectProperty<>();
+
     private void buildPane() {
         logger.info("building Pane {}", getId());
 
@@ -53,12 +62,23 @@ public class MonitorPane extends VBox {
         Registry.getInstance().register(event -> {
             if (event != null && AppEvent.AppEventType.MONITOR.equals(event.type())) {
                 ColoredItem coloredItem = (ColoredItem) event.data();
-                messages.add(coloredItem);
-                messagesView.scrollTo(messages.size() - 1);
+                if (coloredItem.getType().equals(ACTION)) {
+                    handleMonitorEvent(event);
+                } else {
+                    messages.add(coloredItem);
+                    messagesView.scrollTo(messages.size() - 1);
+                    messageProperty.set(event);
+                }
             }
         });
 
         addContextMenu();
+
+        // Hidden
+        messageProperty.addListener((observable, oldValue, newValue) -> {
+            System.out.println("You need to do something");
+            handleMonitorEvent(newValue);
+        });
 
         logger.info("built Pane {}", getId());
     }
@@ -74,6 +94,25 @@ public class MonitorPane extends VBox {
         });
         contextMenu.getItems().addAll(clearMonitor, exportMonitor);
         messagesView.setContextMenu(contextMenu);
+    }
+
+    private void handleMonitorEvent(AppEvent event) {
+        ColoredItem coloredItem = (ColoredItem) event.data();
+
+        switch(coloredItem.getType()) {
+            case ACTION:
+                executeAction(coloredItem.getReadableText());
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void executeAction(String action) {
+        if (action.equals(MONITOR_ACTION_CLEAR)) {
+            messages.clear();
+            messagesView.getItems().clear();
+        }
     }
 
     // ACCESSORS
