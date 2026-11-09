@@ -20,7 +20,9 @@ public class Song extends NameEntity implements Serializable {
 
     private Integer id;
     private SongInfo songInfo;
+    private List<Sysex> preMappings;
     private List<SongMapping> mappings;
+    private List<Sysex> postMappings;
 
     public Song(Integer id) {
         this.id = id;
@@ -33,6 +35,8 @@ public class Song extends NameEntity implements Serializable {
 
         this.songInfo = new SongInfo();
         this.mappings = new ArrayList<>();
+        this.preMappings = new ArrayList<>();
+        this.postMappings = new ArrayList<>();
     }
 
     public Song(String name) {
@@ -66,11 +70,13 @@ public class Song extends NameEntity implements Serializable {
         return Objects.equals(this.name, other.name) &&
                 Objects.equals(this.id, other.id) &&
                 Objects.equals(this.songInfo, other.songInfo) &&
-                Objects.equals(this.mappings, other.mappings);
+                Objects.equals(this.mappings, other.mappings) &&
+                Objects.equals(this.preMappings, other.preMappings) &&
+                Objects.equals(this.postMappings, other.postMappings);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, songInfo, mappings);
+        return Objects.hash(name, songInfo, mappings, preMappings, postMappings);
     }
 }

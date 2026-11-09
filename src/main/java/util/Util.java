@@ -46,7 +46,7 @@ public class Util {
         child.prefWidthProperty().bind(parent.widthProperty().multiply(width));
     }
 
-    public static void setControlWidthAsPercentage(Control control, Pane parent, int size) {
+    public static void setControlWidthAsPercentage(Control control, Pane parent, double size) {
         double width = size / 100.0;
 
         control.minWidthProperty().bind(parent.widthProperty().multiply(width));

@@ -217,7 +217,7 @@ public class SongDetailsPane extends GridPane {
             buildPane();
             addComponents();
 
-/*           getPlaylistDetailsPane().getSongMappingsPane().buildPane(song.getMappings()); */
+           getPlaylistDetailsPane().getSongMappingsPane().buildPane(this, song);
         } else {
             workingSong = null;
             getPlaylistDetailsPane().getSongTitlePane().updateSongTitle("");
