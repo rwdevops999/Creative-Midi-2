@@ -1,5 +1,5 @@
 [ {
-  "name" : "test",
+  "name" : "rw",
   "id" : 1,
   "songInfo" : {
     "performer" : "",
@@ -13,5 +13,21 @@
       "beat" : 4
     }
   },
-  "mappings" : [ ]
+  "preMappings" : [ ]
+}, {
+  "name" : "xxx",
+  "id" : 1,
+  "songInfo" : {
+    "performer" : "",
+    "tempo" : 120,
+    "scale" : {
+      "scale" : "C",
+      "pitch" : "major"
+    },
+    "signature" : {
+      "beats" : 4,
+      "beat" : 4
+    }
+  },
+  "preMappings" : [ "Ending I On" ]
 } ]

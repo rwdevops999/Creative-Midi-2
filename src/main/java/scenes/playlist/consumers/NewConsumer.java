@@ -3,11 +3,13 @@ package scenes.playlist.consumers;
 import entity.NameEntity;
 import entity.playlist.Song;
 import javafx.scene.layout.Pane;
+import org.apache.commons.lang3.SerializationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scenes.SceneActionsPane;
 import scenes.playlist.PlaylistPane;
 import scenes.sysex.statemachine.States;
+import util.app.AppInfo;
 
 import java.util.function.BiConsumer;
 
@@ -22,7 +24,6 @@ public class NewConsumer<T extends NameEntity, P extends Pane> extends NameEntit
     public void accept(T entity, P pane) {
         Song song = new Song();
 
-        System.out.println("EMPTY = " + song.isEmpty());
         SceneActionsPane sceneActionsPane = (SceneActionsPane) pane;
         PlaylistPane playlistPane = sceneActionsPane.getPane();
 

@@ -4,9 +4,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import entity.NameEntity;
 import lombok.Getter;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Sysex extends NameEntity {
+public class Sysex extends NameEntity implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     @Getter
     private SysexContent content;
 

@@ -1,11 +1,13 @@
 package entity.playlist;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import entity.NameEntity;
 import entity.sysex.Sysex;
 import lombok.Getter;
 import lombok.Setter;
+import util.convertors.StringListToSysexListConverter;
 import util.convertors.SysexListToStringListConverter;
 
 import java.io.Serial;
@@ -23,10 +25,11 @@ public class Song extends NameEntity implements Serializable {
     private Integer id;
     private SongInfo songInfo;
     @JsonSerialize(converter = SysexListToStringListConverter.class)
+    @JsonDeserialize(converter = StringListToSysexListConverter.class)
     private List<Sysex> preMappings;
-    private List<SongMapping> mappings;
-    @JsonSerialize(converter = SysexListToStringListConverter.class)
-    private List<Sysex> postMappings;
+//    private List<SongMapping> mappings;
+  //@JsonSerialize(converter = SysexListToStringListConverter.class)
+//    private List<Sysex> postMappings;
 
     public Song(Integer id) {
         this.id = id;
@@ -38,9 +41,9 @@ public class Song extends NameEntity implements Serializable {
         this.name = "";
 
         this.songInfo = new SongInfo();
-        this.mappings = new ArrayList<>();
+//        this.mappings = new ArrayList<>();
         this.preMappings = new ArrayList<>();
-        this.postMappings = new ArrayList<>();
+//        this.postMappings = new ArrayList<>();
     }
 
     public Song(String name) {
@@ -55,11 +58,15 @@ public class Song extends NameEntity implements Serializable {
         this.id = other.getId();
         this.name = other.getName();
         this.songInfo = new SongInfo(other.getSongInfo());
+        if (other.getPreMappings() != null) {
+            this.preMappings = new ArrayList<>(other.getPreMappings());
+        }
     }
 
     @JsonIgnore
     public boolean isEmpty() {
-        return (name.isEmpty() && songInfo.isEmpty() && mappings.isEmpty());
+//        return (name.isEmpty() && songInfo.isEmpty() && mappings.isEmpty());
+        return (name.isEmpty() && songInfo.isEmpty());
     }
 
     public boolean equals(Object obj) {
@@ -74,13 +81,14 @@ public class Song extends NameEntity implements Serializable {
         return Objects.equals(this.name, other.name) &&
                 Objects.equals(this.id, other.id) &&
                 Objects.equals(this.songInfo, other.songInfo) &&
-                Objects.equals(this.mappings, other.mappings) &&
-                Objects.equals(this.preMappings, other.preMappings) &&
-                Objects.equals(this.postMappings, other.postMappings);
+//                Objects.equals(this.mappings, other.mappings) &&
+                Objects.equals(this.preMappings, other.preMappings);
+//                Objects.equals(this.postMappings, other.postMappings);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, songInfo, mappings, preMappings, postMappings);
+        return Objects.hash(name, songInfo, preMappings);
+//        return Objects.hash(name, songInfo, mappings, preMappings, postMappings);
     }
 }

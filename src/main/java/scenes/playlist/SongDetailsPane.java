@@ -1,6 +1,7 @@
 package scenes.playlist;
 
 import entity.playlist.Song;
+import entity.sysex.Sysex;
 import fx.component.ScaleSelector;
 import fx.component.SignatureSelector;
 import javafx.beans.property.ObjectProperty;
@@ -202,11 +203,14 @@ public class SongDetailsPane extends GridPane {
     private Song workingSong;
     public void setSong(Song song) {
         isUpdating = true;
+
+        workingSong = song;
+
         if (song != null) {
             Song deepCopiedSong = SerializationUtils.clone(song);
             AppInfo.INSTANCE.setCurrentSong(deepCopiedSong);
 
-            workingSong = song;
+            System.out.println("BREAKIE");
 
             getPlaylistDetailsPane().getSongMappingsPane().setSong(workingSong);
 
@@ -217,9 +221,8 @@ public class SongDetailsPane extends GridPane {
             buildPane();
             addComponents();
 
-           getPlaylistDetailsPane().getSongMappingsPane().buildPane(this, song);
+           getPlaylistDetailsPane().getSongMappingsPane().buildPane(this, workingSong);
         } else {
-            workingSong = null;
             getPlaylistDetailsPane().getSongTitlePane().updateSongTitle("");
             getChildren().clear();
         }
