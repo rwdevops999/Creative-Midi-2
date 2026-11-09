@@ -24,6 +24,7 @@ import java.util.List;
 import static util.Constants.MONITOR_ACTION_CLEAR;
 import static util.Util.*;
 import static util.communication.CommunicationType.ACTION;
+import static util.registry.AppEvent.AppEventType.SONG;
 
 public class MonitorPane extends VBox {
     private static final Logger logger = LoggerFactory.getLogger(MonitorPane.class);
@@ -63,7 +64,8 @@ public class MonitorPane extends VBox {
             if (event != null && AppEvent.AppEventType.MONITOR.equals(event.type())) {
                 ColoredItem coloredItem = (ColoredItem) event.data();
                 if (coloredItem.getType().equals(ACTION)) {
-                    handleMonitorEvent(event);
+//                    handleMonitorEvent(event);
+                    messageProperty.set(event);
                 } else {
                     messages.add(coloredItem);
                     messagesView.scrollTo(messages.size() - 1);
@@ -76,7 +78,6 @@ public class MonitorPane extends VBox {
 
         // Hidden
         messageProperty.addListener((observable, oldValue, newValue) -> {
-            System.out.println("You need to do something");
             handleMonitorEvent(newValue);
         });
 
@@ -103,6 +104,9 @@ public class MonitorPane extends VBox {
             case ACTION:
                 executeAction(coloredItem.getReadableText());
                 break;
+            case SELECT_SONG:
+                handleSelectSong(coloredItem.getReadableText());
+                break;
             default:
                 break;
         }
@@ -113,6 +117,13 @@ public class MonitorPane extends VBox {
             messages.clear();
             messagesView.getItems().clear();
         }
+    }
+
+    private Registry registry = Registry.getInstance();
+
+    private void handleSelectSong(String songName) {
+        AppEvent appEvent = new AppEvent(SONG, songName);
+        registry.post(appEvent);
     }
 
     // ACCESSORS

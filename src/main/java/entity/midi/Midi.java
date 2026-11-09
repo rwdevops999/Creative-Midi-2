@@ -52,6 +52,15 @@ public class Midi extends NameEntity {
         createMessage(rawData[0], rawData[1], rawData[2]);
     }
 
+    public Midi(String name, int status) throws InvalidMidiDataException {
+        this.name = name;
+
+        this.rawData = new Integer[1];
+        rawData[0] = status;
+
+        createMessage(status, null, null);
+    }
+
     public void setChannel (Integer channel) {
         if (rawData[0] != null) {
             rawData[0] = rawData[0] | (channel.byteValue() & 0xF);

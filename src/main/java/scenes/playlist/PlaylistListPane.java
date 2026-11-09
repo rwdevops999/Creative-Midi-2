@@ -2,6 +2,7 @@ package scenes.playlist;
 
 import entity.playlist.Song;
 import entity.sysex.Sysex;
+import fx.dialog.DialogFactory;
 import fx.display.EntityListCell;
 import javafx.collections.FXCollections;
 import javafx.scene.control.ListView;
@@ -13,6 +14,8 @@ import scenes.playlist.container.PlaylistContainer;
 import scenes.sysex.SysexListPane;
 import scenes.sysex.container.SysexContainer;
 import scenes.sysex.statemachine.States;
+import util.registry.AppEvent;
+import util.registry.Registry;
 
 import java.awt.Container;
 
@@ -41,6 +44,19 @@ public class PlaylistListPane extends VBox {
 
         buildPane();
         setListviewItems();
+
+        Registry.getInstance().register(event -> {
+            if (event != null && AppEvent.AppEventType.SONG.equals(event.type())) {
+                String songName = (String)event.data();
+
+                if (! PlaylistContainer.getInstance().contains(songName)) {
+                    DialogFactory.getInstance().renderErrorDialog("Song is not in playlist");
+                } else {
+                    // This should trigger the change listener in (1)
+                    songListView.getSelectionModel().select(PlaylistContainer.getInstance().getSongByName(songName));
+                }
+            }
+        });
     }
 
     private ListView<Song> songListView;
@@ -52,6 +68,7 @@ public class PlaylistListPane extends VBox {
         VBox.setVgrow(songListView, Priority.ALWAYS);
         getChildren().add(songListView);
 
+        // (1) Song select change listener
         songListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             getPlaylistPane().changeState(States.SELECT);
             getPlaylistPane().getPlaylistDetailsPane().getSongDetailsPane().setSong(newValue);

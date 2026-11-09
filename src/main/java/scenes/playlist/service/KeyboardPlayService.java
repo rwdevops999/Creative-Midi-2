@@ -1,18 +1,22 @@
 package scenes.playlist.service;
 
+import entity.midi.Midi;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scenes.playlist.service.helper.LoadedSongResolver;
 import util.SysexToHexStringConvertor;
 import util.app.AppInfo;
 import util.communication.CommunicationType;
+import util.midi.MidiWriter;
 import util.registry.AppEvent;
 import util.registry.CommunicationMessage;
 import util.registry.Registry;
 
 import javax.sound.midi.*;
 
+import static util.communication.CommunicationType.SELECT_SONG;
 import static util.registry.AppEvent.AppEventType.MONITOR;
 
 public class KeyboardPlayService extends Service<Void> {
@@ -24,11 +28,33 @@ public class KeyboardPlayService extends Service<Void> {
      * To use showMessage which transmits the message to the monitor
      */
     private final CommunicationMessage comm = CommunicationMessage.getInstance();
+    private final LoadedSongResolver songResolver = LoadedSongResolver.getInstance();
+    private final MidiWriter midiWriter = MidiWriter.getInstance();
 
     private MidiDevice midiOutputDevice;
+    private MidiDevice midiInputDevice; // for writing to keyboard
+
+    private boolean songIsPlaying = false;
 
     private void handleSysexMessage(SysexMessage message) {
         String hexMessage = SysexToHexStringConvertor.convertToHexString(message.getMessage());
+
+        if (hexMessage.startsWith("F0 43 73 01 52 26")) {
+            // It is a song name => use songResolver
+            String songName = songResolver.resolveSongName(hexMessage);
+
+            try {
+                Midi midi = new Midi("Stop", 0, 0xFC);
+                midiWriter.send(midi);
+            } catch (InvalidMidiDataException | MidiUnavailableException e) {
+                logger.error("Exception. CAUSE {}", e.getMessage());
+            }
+
+            songIsPlaying = false;
+
+            comm.showMessage(SELECT_SONG, songName);
+        }
+
 /*        if (! songIsPlaying) {
 
         } */
@@ -39,7 +65,6 @@ public class KeyboardPlayService extends Service<Void> {
     };
 
     private static final byte ACTIVE_SENSING = -2;
-    private boolean songIsPlaying = false;
 
     private void handleMidiMessage(ShortMessage message) {
         byte[] rawBytes = message.getMessage();
@@ -78,6 +103,12 @@ public class KeyboardPlayService extends Service<Void> {
                 midiOutputDevice.open();
             }
 
+            midiInputDevice =  AppInfo.INSTANCE.getSelectedDevice().getMidiInputDevice();
+            if (! midiInputDevice.isOpen()) {
+                midiOutputDevice.open();
+            }
+
+
             return new Task() {
 
                 /**
@@ -112,9 +143,12 @@ public class KeyboardPlayService extends Service<Void> {
                          */
                         @Override
                         public void close() {
-                            System.out.println("CLOSE RECEIVER -> CLOSE MIDI OUTPUT DEVICE");
+                            System.out.println("CLOSE RECEIVER -> CLOSE MIDI INPUT & OUTPUT DEVICE");
                             if (midiOutputDevice.isOpen()) {
                                 midiOutputDevice.close();
+                            }
+                            if (midiInputDevice.isOpen()) {
+                                midiInputDevice.close();
                             }
                         }
                     };

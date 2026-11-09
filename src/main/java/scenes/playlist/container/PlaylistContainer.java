@@ -128,4 +128,12 @@ public class PlaylistContainer {
     public boolean isEmpty() {
         return playList.isEmpty();
     }
+
+    public boolean contains(String songName) {
+        return playList.stream().anyMatch(s -> s.getName().equals(songName));
+    }
+
+    public Song getSongByName(String songName) {
+        return playList.stream().filter(s -> s.getName().equals(songName)).findFirst().orElse(null);
+    }
 }

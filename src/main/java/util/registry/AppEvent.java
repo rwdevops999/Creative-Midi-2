@@ -5,6 +5,7 @@ public record AppEvent(AppEventType  type, Object data) {
         DEVICE,
         STATUS,
         MONITOR,
-        VOICE
+        VOICE,
+        SONG
     }
 }

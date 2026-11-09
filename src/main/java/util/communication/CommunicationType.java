@@ -6,5 +6,6 @@ public enum CommunicationType {
     ERROR,
     WARNING,
     INFO,
-    ACTION
+    ACTION,
+    SELECT_SONG
 }
