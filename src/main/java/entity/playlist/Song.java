@@ -59,17 +59,19 @@ public class Song extends NameEntity implements Serializable {
     public Song(Song other) {
         this();
 
-        this.id = other.getId();
-        this.name = other.getName();
-        this.songInfo = new SongInfo(other.getSongInfo());
-        if (other.getPreMappings() != null) {
-            this.preMappings = new ArrayList<>(other.getPreMappings());
-        }
-        if (other.getPostMappings() != null) {
-            this.postMappings = new ArrayList<>(other.getPostMappings());
-        }
-        if (other.getMappings() != null) {
-            this.mappings = new ArrayList<>(other.getMappings());
+        if (other != null) {
+            this.id = other.getId();
+            this.name = other.getName();
+            this.songInfo = new SongInfo(other.getSongInfo());
+            if (other.getPreMappings() != null) {
+                this.preMappings = new ArrayList<>(other.getPreMappings());
+            }
+            if (other.getPostMappings() != null) {
+                this.postMappings = new ArrayList<>(other.getPostMappings());
+            }
+            if (other.getMappings() != null) {
+                this.mappings = new ArrayList<>(other.getMappings());
+            }
         }
     }
 

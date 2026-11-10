@@ -220,9 +220,9 @@ public class SongDetailsPane extends GridPane {
     public void setSong(Song song) {
         isUpdating = true;
 
-        workingSong = song;
+        workingSong = new Song(song);
 
-        if (song != null) {
+        if (workingSong != null) {
             if  (! song.equals(AppInfo.INSTANCE.getCurrentSong())) {
                 Song deepCopiedSong = SerializationUtils.clone(song);
                 AppInfo.INSTANCE.setCurrentSong(deepCopiedSong);
