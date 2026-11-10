@@ -89,7 +89,7 @@ public class VoicePlayPane extends HBox {
         playButton = new LightIndicatorButton("Play", 40, "red", null);
         setupPlayHandler(playButton);
 
-        ComboValuePane markerSelectValuePane = new ComboValuePane(this, "🚩", dsValue, dsEnabled, new ArrayList<>(MidiHelper.getInstance().extractMarkers()), null, 20, 80, 10);
+        ComboValuePane markerSelectValuePane = new ComboValuePane(this, "🚩", dsValue, dsEnabled, new ArrayList<>(MidiHelper.getInstance().extractMarkers()), null, 20, 80, 2);
 
         dsValue.addListener((observable, oldValue, newValue) -> {
             if (midiHelper.isMidiPlaying()) {

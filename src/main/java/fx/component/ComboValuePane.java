@@ -85,7 +85,7 @@ public class ComboValuePane extends GridPane {
             comboBox.getSelectionModel().select(selected);
         }
 
-        add(comboBox, colspan-1, 0, 4, 1);
+        add(comboBox, colspan-1, 0, 6, 1);
 
         logger.debug("Built {}", getId());
     }

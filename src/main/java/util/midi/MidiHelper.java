@@ -45,8 +45,8 @@ public class MidiHelper {
 
     private MidiHelper() {
         ledMap.put(CHANNEL_RIGHT1, new ChannelIndicator("Ch 1:", getColor("voice", "ledRed", "on"), getColor("voice", "ledRed", "off")));
-        ledMap.put(CHANNEL_LEFT, new ChannelIndicator("Ch 2 (⇧):", getColor("voice", "ledGreen", "on"), getColor("voice", "ledGreen", "off")));
-        ledMap.put(CHANNEL_RIGHT2, new ChannelIndicator("Ch 3 (⌃):",getColor("voice", "ledBlue", "on"), getColor("voice", "ledBlue", "off")));
+        ledMap.put(CHANNEL_LEFT, new ChannelIndicator("Ch 2 (⌃):", getColor("voice", "ledGreen", "on"), getColor("voice", "ledGreen", "off")));
+        ledMap.put(CHANNEL_RIGHT2, new ChannelIndicator("Ch 3 (⇧):",getColor("voice", "ledBlue", "on"), getColor("voice", "ledBlue", "off")));
         ledMap.put(CHANNEL_STYLE, new ChannelIndicator("Style", getColor("voice", "ledOrange", "on"), getColor("voice", "ledOrange", "off").darker()));
 
         listen.put(CHANNEL_RIGHT1, new SimpleBooleanProperty(true));
@@ -73,7 +73,7 @@ public class MidiHelper {
             result = false;
         }
 
-        return result;
+         return result;
     }
 
     public boolean sendMidi(Midi midi) {

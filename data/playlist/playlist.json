@@ -3,13 +3,34 @@
   "id" : 1,
   "songInfo" : {
     "performer" : "Nana Mouskouri",
-    "tempo" : 135,
+    "tempo" : 136,
     "scale" : {
       "scale" : "E",
       "pitch" : "major"
     },
     "signature" : {
       "beats" : 4,
+      "beat" : 4
+    }
+  },
+  "preMappings" : [ "XG System On", "Tempo" ],
+  "mappings" : [ {
+    "receive" : "Intro I Off",
+    "reply" : "Select Registration Button 2"
+  } ],
+  "postMappings" : [ "All Parameter Reset" ]
+}, {
+  "name" : "Vaya Con Dios",
+  "id" : 2,
+  "songInfo" : {
+    "performer" : "Les Paul & Mary Ford",
+    "tempo" : 95,
+    "scale" : {
+      "scale" : "C",
+      "pitch" : "major"
+    },
+    "signature" : {
+      "beats" : 3,
       "beat" : 4
     }
   },

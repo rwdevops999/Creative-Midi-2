@@ -67,7 +67,7 @@ public class SongDetailsPane extends GridPane {
         logger.debug("Built {}", getId());
     }
 
-    private final ObjectProperty<Integer> songIdProperty = new SimpleObjectProperty<>(PlaylistContainer.getInstance().getNextSongId());
+    private final ObjectProperty<Integer> songIdProperty = new SimpleObjectProperty<>();
 
     private final Label songIdLabel  = new Label("Id");
     private final Spinner<Integer> songIdSpinner = new Spinner<>(1, 999, 1);

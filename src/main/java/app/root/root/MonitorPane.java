@@ -123,6 +123,8 @@ public class MonitorPane extends VBox {
 
     private void handleSelectSong(String songName) {
         AppEvent appEvent = new AppEvent(SONG, songName);
+        messages.clear();
+        messagesView.getItems().clear();
         registry.post(appEvent);
     }
 

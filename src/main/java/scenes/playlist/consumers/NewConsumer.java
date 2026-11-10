@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scenes.SceneActionsPane;
 import scenes.playlist.PlaylistPane;
+import scenes.playlist.container.PlaylistContainer;
 import scenes.sysex.statemachine.States;
 import util.app.AppInfo;
 
@@ -23,6 +24,7 @@ public class NewConsumer<T extends NameEntity, P extends Pane> extends NameEntit
     @Override
     public void accept(T entity, P pane) {
         Song song = new Song();
+        song.setId(PlaylistContainer.getInstance().getNextSongId());
 
         SceneActionsPane sceneActionsPane = (SceneActionsPane) pane;
         PlaylistPane playlistPane = sceneActionsPane.getPane();
