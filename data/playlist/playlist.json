@@ -1,9 +1,9 @@
 [ {
-  "name" : "Weisse Rosen Aus Athen",
+  "name" : "001. Weisse Rosen Aus Athen",
   "id" : 1,
   "songInfo" : {
     "performer" : "Nana Mouskouri",
-    "tempo" : 136,
+    "tempo" : 135,
     "scale" : {
       "scale" : "E",
       "pitch" : "major"
@@ -13,7 +13,7 @@
       "beat" : 4
     }
   },
-  "preMappings" : [ "GM2 System On", "Tempo" ],
+  "preMappings" : [ "XG System On", "Tempo" ],
   "mappings" : [ {
     "receive" : "Intro I Off",
     "reply" : "Select Registration Button 2"

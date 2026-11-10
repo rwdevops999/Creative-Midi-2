@@ -1,11 +1,18 @@
 package scenes.playlist.service;
 
 import entity.midi.Midi;
+import entity.playlist.Song;
+import entity.playlist.SongMapping;
+import entity.sysex.Sysex;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scenes.playlist.container.PlaylistContainer;
 import scenes.playlist.service.helper.LoadedSongResolver;
+import scenes.sysex.parametrized.Parameter;
+import scenes.sysex.parametrized.ParametrizedFunctionFactory;
+import scenes.sysex.parametrized.TempoFunction;
 import util.SysexToHexStringConvertor;
 import util.app.AppInfo;
 import util.communication.CommunicationType;
@@ -13,10 +20,15 @@ import util.midi.MidiWriter;
 import util.registry.AppEvent;
 import util.registry.CommunicationMessage;
 import util.registry.Registry;
+import util.sysex.SysexWriter;
 
 import javax.sound.midi.*;
 
-import static util.communication.CommunicationType.SELECT_SONG;
+import java.nio.ByteBuffer;
+import java.util.*;
+import java.util.function.Function;
+
+import static util.communication.CommunicationType.*;
 import static util.registry.AppEvent.AppEventType.MONITOR;
 
 public class KeyboardPlayService extends Service<Void> {
@@ -30,38 +42,167 @@ public class KeyboardPlayService extends Service<Void> {
     private final CommunicationMessage comm = CommunicationMessage.getInstance();
     private final LoadedSongResolver songResolver = LoadedSongResolver.getInstance();
     private final MidiWriter midiWriter = MidiWriter.getInstance();
+    private final SysexWriter sysexWriter = SysexWriter.getInstance();
+    private final PlaylistContainer playlistContainer = PlaylistContainer.getInstance();
 
     private MidiDevice midiOutputDevice;
     private MidiDevice midiInputDevice; // for writing to keyboard
 
+    private String currentPlayingSong = "";
     private boolean songIsPlaying = false;
+    private boolean preMappingsSent = false;
+    /*
+     * followSong is false if the song doesn't exist in the CM playlist.
+     * There is no song information, so we don't need to follow it.
+     */
+    private boolean followSong = true;
+
+    private List<Sysex> preMappings = new ArrayList<>();
+    private List<Sysex> postMappings = new ArrayList<>();
+    private Map<ByteBuffer, ByteBuffer> mappingsMap = new HashMap<>();
+    private Map<ByteBuffer, String> mappingsNameMap = new HashMap<>();
+
+    private void processSongInformation(String songName) {
+        Song song = playlistContainer.getSongByName(songName);
+
+        currentPlayingSong = "";
+
+        followSong = true;
+        if (song != null) {
+            if (! songName.equals(currentPlayingSong)) {
+                currentPlayingSong = songName;
+
+                // TODO setup song information (such as mappings)...
+                if (! song.getPreMappings().isEmpty()) {
+                    preMappings.clear();
+                    preMappingsSent = false;
+                    for (Sysex sysex : song.getPreMappings()) {
+                        if (sysex.getContent().getParametrized()) {
+                            Function<Integer, Parameter> function = ParametrizedFunctionFactory.getInstance().getParametrizedFunction(sysex.getContent().getParametrizedFunction());
+                            if (function instanceof TempoFunction tempoFunction) {
+                                Parameter result = tempoFunction.apply(song.getSongInfo().getTempo());
+                                sysex.getContent().setParametrized(false);
+                                String tempoSysex = sysex.getContent().getSysex().replace(result.getParameterString(), result.getReplacementString());
+                                sysex.getContent().setSysex(tempoSysex);
+
+                                preMappings.add(sysex);
+//                                preMappings.add(ByteBuffer.wrap(sysex.getContent().getBytes()));
+                            }
+                        } else {
+                            preMappings.add(sysex);
+//                            preMappings.add(ByteBuffer.wrap(sysex.getContent().getBytes()));
+                        }
+                    }
+                }
+
+                if (! song.getMappings().isEmpty()) {
+                    for (SongMapping songMapping : song.getMappings()) {
+                        mappingsMap.put(
+                                ByteBuffer.wrap(songMapping.getReceive().getContent().getBytes()),
+                                ByteBuffer.wrap(songMapping.getReply().getContent().getBytes()));
+                        mappingsNameMap.put(
+                                ByteBuffer.wrap(songMapping.getReceive().getContent().getBytes()), songMapping.getReceive().getName()
+                        );
+                        mappingsNameMap.put(
+                                ByteBuffer.wrap(songMapping.getReply().getContent().getBytes()), songMapping.getReceive().getName()
+                        );
+                    }
+                }
+
+                if (! song.getPostMappings().isEmpty()) {
+                    postMappings.clear();
+                    postMappings.addAll(song.getPostMappings());
+                }
+
+                // Execute pre-mappings
+//                sendPreMappings();
+            }
+        } else {
+            followSong = false;
+        }
+    }
+
+    private void sendPreMappings () {
+        // Execute pre-mappings
+        try {
+            for (Sysex sysex : preMappings) {
+                sysexWriter.send(sysex);
+                Thread.sleep(100);
+            }
+            preMappingsSent = true;
+/*            for (ByteBuffer buffer : preMappings) {
+                System.out.println("Sending : " + buffer);
+                sysexWriter.sendBytes(buffer.array());
+            } */
+        } catch (InterruptedException | InvalidMidiDataException | MidiUnavailableException e) {
+            logger.error("Exception. CAUSE {}", e.getMessage());
+        }
+    }
+
+    private void sendPostMappings () {
+        // Execute post-mappings
+        try {
+            for (Sysex sysex : postMappings) {
+                sysexWriter.send(sysex);
+            }
+/*            for (ByteBuffer buffer : postMappings) {
+                sysexWriter.sendBytes(buffer.array());
+            } */
+        } catch (InvalidMidiDataException | MidiUnavailableException e) {
+            logger.error("Exception. CAUSE {}", e.getMessage());
+        }
+    }
 
     private void handleSysexMessage(SysexMessage message) {
         String hexMessage = SysexToHexStringConvertor.convertToHexString(message.getMessage());
+
+//        if (AppInfo.INSTANCE.isDebugMode()) {
+            System.out.println("SYSEX IN");
+            System.out.println("- MESSAGE = " + hexMessage);
+            System.out.println("- songIsPlaying = " + songIsPlaying);
+            System.out.println("- followSong = " + followSong);
+//        }
+
+        if (hexMessage.equals("F0 43 7E 01 00 1A 76 58 F7")) {
+            System.out.println("BREAKIE");
+        }
 
         if (hexMessage.startsWith("F0 43 73 01 52 26")) {
             // It is a song name => use songResolver
             String songName = songResolver.resolveSongName(hexMessage);
 
-            try {
-                Midi midi = new Midi("Stop", 0, 0xFC);
-                midiWriter.send(midi);
-            } catch (InvalidMidiDataException | MidiUnavailableException e) {
-                logger.error("Exception. CAUSE {}", e.getMessage());
-            }
-
             songIsPlaying = false;
+            followSong = false;
 
             comm.showMessage(SELECT_SONG, songName);
+
+            processSongInformation(songName);
+        } else if (songIsPlaying) {
+            // we examine only sysex messages when song is playing
+            ByteBuffer inbound = ByteBuffer.wrap(message.getMessage());
+            ByteBuffer outbound = mappingsMap.get(inbound);
+            if (outbound != null) {
+                try {
+                    sysexWriter.sendBytes(outbound.array());
+                    comm.showMessage(INBOUND, mappingsNameMap.get(inbound));
+                    comm.showMessage(OUTBOUND, mappingsNameMap.get(outbound));
+                } catch  (InvalidMidiDataException | MidiUnavailableException e) {
+                    logger.error("Exception. CAUSE {}", e.getMessage());
+                }
+            } else {
+                // There is no mapping for this sysex, so send it raw to monitor
+
+                /*
+                 * This message is send raw to the monitor as is...
+                 */
+                if (! songIsPlaying) {
+                    comm.showMessage(CommunicationType.INBOUND, hexMessage);
+                }
+            }
+        } else if (hexMessage.startsWith("F0 43 7E 01") && ! preMappingsSent) {
+            System.out.println("SENDING PREMAPPINGS");
+            sendPreMappings();
         }
-
-/*        if (! songIsPlaying) {
-
-        } */
-        /*
-         * This message is send to monitor
-         */
-        comm.showMessage(CommunicationType.INBOUND, hexMessage);
     };
 
     private static final byte ACTIVE_SENSING = -2;
@@ -74,12 +215,13 @@ public class KeyboardPlayService extends Service<Void> {
          */
         if (rawBytes[0] != ACTIVE_SENSING) {
             int status = message.getStatus();
-            if (status == ShortMessage.START) {
+            if (status == ShortMessage.START && followSong) {
                 comm.showMessage(CommunicationType.INBOUND, "Start");
                 songIsPlaying = true;
-            } else if (status == ShortMessage.STOP) {
+            } else if (status == ShortMessage.STOP && songIsPlaying) {
                 songIsPlaying = false;
                 comm.showMessage(CommunicationType.INBOUND, "Stop");
+                sendPostMappings();
             }
         }
     };

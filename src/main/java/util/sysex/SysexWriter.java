@@ -40,7 +40,21 @@ public class SysexWriter {
 
             midiInputDevice.getReceiver().send(message, -1);
 
-            CommunicationMessage.getInstance().showMessage(CommunicationType.OUTBOUND, content);
+//            CommunicationMessage.getInstance().showMessage(CommunicationType.OUTBOUND, content);
+            CommunicationMessage.getInstance().showMessage(CommunicationType.OUTBOUND, sysex.getName());
+        }
+    }
+
+    public void sendBytes(byte[] bytes) throws InvalidMidiDataException, MidiUnavailableException {
+        DeviceInfo dev = AppInfo.INSTANCE.getSelectedDevice();
+
+        if (dev != null) {
+            MidiDevice midiInputDevice = dev.getMidiInputDevice();
+
+            SysexMessage message = new SysexMessage();
+            message.setMessage(bytes, bytes.length);
+
+            midiInputDevice.getReceiver().send(message, -1);
         }
     }
 }

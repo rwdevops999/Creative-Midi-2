@@ -1,0 +1,29 @@
+GM1 Sytem On
+
+Schakelt naar GM1-modus: Het vertelt een synthesizer om de standaard GM1-geluidenset te gebruiken (128 vaste instrumenten en het drumkit-schema op MIDI-kanaal 0.6.4, 0.6.6)
+
+GM2 System On
+
+When a device receives a GM2 System On message (F0 7E 7F 09 03 F7), it executes a hard reset of its internal synthesis engine to match the GM2 specification:
+• Default Patch Map: Restores the instrument list to the standard 256 melodic patches and 9 specialized drum kits distributed across variation banks.
+• Percussion Routing: Automatically configures both MIDI Channel 10 and Channel 11 for percussion kits.
+• Controller Reset: Resets all continuous controllers (like Pitch Bend, Modulation, Expressive controllers, and Volume) to their native defaults.
+• Polyphony Allocation: Readies the engine for a minimum capability of 32 simultaneous voices across the 16 MIDI channels.
+• Effects Settings: Defaults spatial and depth effects like Reverb and Chorus to standard baseline levels
+
+General Midi Off
+
+
+What changes when General MIDI is OFF?
+
+• Instrument mappings change: With GM on, patch #1 is always an Acoustic Grand Piano and patch #25 is a Nylon Guitar. With GM off, patch #1 might be a synth lead, a weird pad, or a completely different custom sound defined by that specific manufacturer.
+• Drum mapping shifts: With GM on, channel 10 is strictly reserved for standard percussion where specific drum hits (kick, snare, hi-hat) sit on fixed MIDI keys. With GM off, channel 10 acts like a regular melodic channel or uses a custom, non-standard drum layout.
+• Standard MIDI files (.mid) sound wrong: If you play a standard backing track or computer file made for General MIDI while the device is set to GM off, the instruments will swap randomly (e.g., a piano part might play as a trumpet or a flute).
+• Custom/Internal mode is enabled: Turning GM off usually lets you access the device’s native, proprietary sound library, performance setups, or multi-timbral patches without being restricted by the 128-instrument GM limitation
+
+XG System On
+
+When a synthesizer receives this command, it triggers three main actions:
+• Enables Advanced Yamaha Features: It resets the device out of standard General MIDI (GM) limitations, immediately unlocking thousands of extra instrument voices, drum kits, and highly editable synth parameters unique to Yamaha.
+• Wipes the Current Memory (Global Reset): It acts as a master reset button. It clears out previous settings by turning off stuck notes, centering pitch bends, resetting volume and pan levels to their defaults, and clearing out data from any prior song.
+• Activates the XG Effects Processor: It prepares the synthesizer's internal routing to accept advanced instructions for built-in effects, such as reverb, chorus, and specialized "variation/insertion" effects (like guitar amplifiers or distortion).

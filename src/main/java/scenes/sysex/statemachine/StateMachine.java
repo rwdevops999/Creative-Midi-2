@@ -31,9 +31,10 @@ public class StateMachine {
 
     private void handleStateChange(States state, boolean executeOn) {
         if (actionsPane != null) {
-            actionsPane.hideAllButtons();
             if (executeOn) {
                 actionsPane.showButton("Execute", true);
+            } else {
+                actionsPane.hideAllButtons();
             }
 
             switch (state) {

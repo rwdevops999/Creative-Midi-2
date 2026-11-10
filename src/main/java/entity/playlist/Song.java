@@ -75,8 +75,8 @@ public class Song extends NameEntity implements Serializable {
 
     @JsonIgnore
     public boolean isEmpty() {
-//        return (name.isEmpty() && songInfo.isEmpty() && mappings.isEmpty());
-        return (name.isEmpty() && songInfo.isEmpty());
+        return (name.isEmpty() && songInfo.isEmpty() && mappings.isEmpty() && preMappings.isEmpty() && postMappings.isEmpty());
+//        return (name.isEmpty() && songInfo.isEmpty());
     }
 
     public boolean equals(Object obj) {
@@ -98,7 +98,7 @@ public class Song extends NameEntity implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, songInfo, preMappings);
+        return Objects.hash(name, songInfo, preMappings, postMappings, mappings);
 //        return Objects.hash(name, songInfo, mappings, preMappings, postMappings);
     }
 }

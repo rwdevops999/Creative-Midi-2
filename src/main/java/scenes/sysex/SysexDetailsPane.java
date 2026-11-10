@@ -89,7 +89,7 @@ public class SysexDetailsPane extends VBox {
                 }
             });
 
-            ComboValuePane parametrizedSelectValuePane = new ComboValuePane(this, "Parametrized", dsFunction, dsParametrized, ParametrizedFunctions.getParaFunctions(), ParametrizedFunctions.getParaFunctions().get(0), 90, 6, 4);
+            ComboValuePane parametrizedSelectValuePane = new ComboValuePane(this, "Function", dsFunction, dsParametrized, ParametrizedFunctions.getParaFunctions(), ParametrizedFunctions.getParaFunctions().get(0), 90, 6, 3);
             getChildren().add(parametrizedSelectValuePane);
             dsFunction.addListener((observable, oldValue, newValue) -> {
                 if (newValue != null && currentSysex != null) {
