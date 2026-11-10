@@ -156,17 +156,6 @@ public class KeyboardPlayService extends Service<Void> {
     private void handleSysexMessage(SysexMessage message) {
         String hexMessage = SysexToHexStringConvertor.convertToHexString(message.getMessage());
 
-//        if (AppInfo.INSTANCE.isDebugMode()) {
-            System.out.println("SYSEX IN");
-            System.out.println("- MESSAGE = " + hexMessage);
-            System.out.println("- songIsPlaying = " + songIsPlaying);
-            System.out.println("- followSong = " + followSong);
-//        }
-
-        if (hexMessage.equals("F0 43 7E 01 00 1A 76 58 F7")) {
-            System.out.println("BREAKIE");
-        }
-
         if (hexMessage.startsWith("F0 43 73 01 52 26")) {
             // It is a song name => use songResolver
             String songName = songResolver.resolveSongName(hexMessage);
@@ -200,7 +189,6 @@ public class KeyboardPlayService extends Service<Void> {
                 }
             }
         } else if (hexMessage.startsWith("F0 43 7E 01") && ! preMappingsSent) {
-            System.out.println("SENDING PREMAPPINGS");
             sendPreMappings();
         }
     };
@@ -233,8 +221,6 @@ public class KeyboardPlayService extends Service<Void> {
      */
     @Override
     protected Task<Void> createTask() {
-        System.out.println("CREATE KEYBOARD SERVICE");
-
         try {
             midiOutputDevice =  AppInfo.INSTANCE.getSelectedDevice().getMidiOutputDevice();
             if (midiOutputDevice == null) {
@@ -285,7 +271,6 @@ public class KeyboardPlayService extends Service<Void> {
                          */
                         @Override
                         public void close() {
-                            System.out.println("CLOSE RECEIVER -> CLOSE MIDI INPUT & OUTPUT DEVICE");
                             if (midiOutputDevice.isOpen()) {
                                 midiOutputDevice.close();
                             }

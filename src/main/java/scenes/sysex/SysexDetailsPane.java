@@ -78,7 +78,6 @@ public class SysexDetailsPane extends VBox {
             getChildren().add(parametrizedCheckedValuePane);
             dsParametrized.addListener((observable, oldValue, newValue) -> {
                 if (newValue != null && currentSysex != null) {
-                    System.out.println("Parametrized: " + newValue);
                     currentSysex.getContent().setParametrized(newValue);
                     if (! newValue) {
                         currentSysex.getContent().setParametrizedFunction(null);

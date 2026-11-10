@@ -341,7 +341,6 @@ public class VoiceListPane extends AnchorPane {
                 if (areFavorites) {
                     oldData = currentData;
                     currentData = data;
-                    System.out.println("data is empty");
                 }
             }
         }

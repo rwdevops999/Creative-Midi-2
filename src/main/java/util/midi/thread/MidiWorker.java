@@ -138,7 +138,7 @@ public class MidiWorker implements Runnable {
             try {
                 sequencer.setSequence((Sequence) null);
             } catch (Exception e) {
-                System.out.println("EXCEPTION");
+                logger.error("Exception. CAUSE: {}", e.getMessage());
             }
         }
         workerThread.interrupt();

@@ -57,8 +57,6 @@ public class FilterChannelPane extends VBox {
             }
             resultaat.append(bits.charAt(i));
         }
-
-        System.out.println("BITS: " + resultaat.toString());
     }
 
     // ACCESSOR

@@ -30,7 +30,6 @@ public class MS2SParser {
     public void startParsing(File file) {
         this.file = file;
         if (lastProcessedFile == null || !lastProcessedFile.equals(file.getName())) {
-            System.out.println("PARSING: " + file.getName());
             parse(this.file);
             lastProcessedFile = file.getName();
         }
@@ -80,7 +79,7 @@ public class MS2SParser {
                 // e.g Live! ConcertGrand
                 int index = patchName.indexOf("!");
                 if (index == -1 && AppInfo.INSTANCE.isDebugMode()) {
-                    System.out.println("Found a voice without type:" + patchName);
+                    logger.error("Found a voice without type:" + patchName);
                 } else {
                     String type = patchName.substring(0, index);
                     types.add(type);
