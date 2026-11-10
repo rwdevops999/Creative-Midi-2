@@ -12,10 +12,12 @@ import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import javafx.util.StringConverter;
 import org.apache.commons.lang3.SerializationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -186,6 +188,17 @@ public class SongDetailsPane extends GridPane {
         add(tempoSpinner, 2, row, 1, 1);
         tempoSpinner.getValueFactory().valueProperty().bindBidirectional(tempoProperty);
         tempoSpinner.setEditable(true);
+
+        tempoSpinner.getEditor().textProperty().addListener((observable, oldText, newText) -> {
+            if (newText != null && !newText.isEmpty()) {
+                try {
+                    StringConverter<Integer> converter = ((SpinnerValueFactory<Integer>) tempoSpinner.getValueFactory()).getConverter();
+                    Integer value = converter.fromString(newText);
+                    tempoSpinner.getValueFactory().setValue(value);
+                } catch (NumberFormatException e) {
+                }
+            }
+        });
 /*        tempoSpinner.valueProperty().addListener((obs, oldVal, newVal) -> {
             System.out.println("Tempo changed to " + newVal);
         }); */

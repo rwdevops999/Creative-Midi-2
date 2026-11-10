@@ -31,6 +31,7 @@ public class ColoredItem extends NameEntity {
             case ERROR -> getColor("communication", "error");
             case WARNING -> getColor("communication", "warning");
             case INFO -> getColor("communication", "info");
+            case SELECT_SONG -> getColor("communication", "song");
             default -> getColor("communication");
         };
    }
