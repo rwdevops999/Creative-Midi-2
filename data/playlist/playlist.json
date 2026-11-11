@@ -40,4 +40,25 @@
     "reply" : "Select Registration Button 2"
   } ],
   "postMappings" : [ "All Parameter Reset" ]
+}, {
+  "name" : "003. Blueberry Hill",
+  "id" : 3,
+  "songInfo" : {
+    "performer" : "Fats Domino",
+    "tempo" : 75,
+    "scale" : {
+      "scale" : "D",
+      "pitch" : "major"
+    },
+    "signature" : {
+      "beats" : 4,
+      "beat" : 4
+    }
+  },
+  "preMappings" : [ "XG System On", "Tempo" ],
+  "mappings" : [ {
+    "receive" : "Intro I Off",
+    "reply" : "Select Registration Button 2"
+  } ],
+  "postMappings" : [ "All Parameter Reset" ]
 } ]

@@ -67,7 +67,6 @@ public class KeyboardPlayService extends Service<Void> {
 
         currentPlayingSong = "";
 
-        followSong = true;
         if (song != null) {
             if (! songName.equals(currentPlayingSong)) {
                 currentPlayingSong = songName;

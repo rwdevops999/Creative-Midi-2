@@ -238,11 +238,15 @@ public class SongMappingsPane extends HBox {
     }
 
     private void showAddMappingDialog(TableView<SongMapping> table, boolean isUpdate, ListProperty<SongMapping> mappingProperty) {
+        isUpdating = true;
         new MappingDialog(table, mappingProperty, isUpdate);
+        isUpdating = false;
     }
 
     private void showAddSysexMappingDialog(TableView<Sysex> table, boolean isUpdate, ListProperty<Sysex> mappingProperty) {
+        isUpdating = true;
         new SysexMappingDialog(table, mappingProperty, isUpdate);
+        isUpdating = false;
     }
 
     // ACCESSORS
