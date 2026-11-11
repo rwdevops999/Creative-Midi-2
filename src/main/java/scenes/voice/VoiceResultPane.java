@@ -32,8 +32,8 @@ public class VoiceResultPane extends VBox {
     private void buildPane() {
         logger.debug("building {}", getId());
 
-        voiceListPane = new VoiceListPane(this, 79.9);
         voiceFilterPane = new  VoiceFilterPane(this, 9.8);
+        voiceListPane = new VoiceListPane(this, 79.9);
 
         getChildren().add(voiceFilterPane);
         getChildren().add(voiceListPane);

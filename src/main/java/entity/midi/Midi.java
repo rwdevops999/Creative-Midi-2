@@ -95,7 +95,9 @@ public class Midi extends NameEntity {
         StringBuilder hexString = new StringBuilder();
         for (int i = 0; i < rawData.length; i++) {
             // Format as 2-digit uppercase hex, padding with a leading zero if needed
-            hexString.append(String.format("%02X", rawData[i]));
+            if (rawData[i] != null) {
+                hexString.append(String.format("%02X", rawData[i]));
+            }
 
             // Add a space between bytes, but not after the last byte
             if (i < rawData.length - 1) {

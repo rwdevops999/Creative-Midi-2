@@ -61,12 +61,17 @@ public class VoiceListPane extends AnchorPane {
         this.parent = owner;
 
         channelPatches.clear();
-        channelPatches.put(CHANNEL_RIGHT1, new Patch(null, "Live", "Grand Piano", null, "0", "115", "0"));
-        channelPatches.put(CHANNEL_LEFT, new Patch(null, "Live", "Grand Piano", null, "0", "115", "0"));
-        channelPatches.put(CHANNEL_RIGHT2, new Patch(null, "Live" , "Grand Piano", null, "0", "115", "0"));
+        Patch patchPiano = new Patch(null, "Live", "Grand Piano", null, "0", "115", "0");
+
+        channelPatches.put(CHANNEL_RIGHT1, patchPiano);
+        channelPatches.put(CHANNEL_LEFT, patchPiano);
+        channelPatches.put(CHANNEL_RIGHT2, patchPiano);
+
+        getVoiceResultPane().getVoiceFilterPane().setRight1(patchPiano);
+        getVoiceResultPane().getVoiceFilterPane().setLeft(patchPiano);
+        getVoiceResultPane().getVoiceFilterPane().setRight2(patchPiano);
 
         Util.setPaneHeightAsPercentage(this, owner, height);
-//        Util.showPaneBorder(this, getColor("border", "green"));
 
         setTopAnchor(table, 0.0);
         setBottomAnchor(table, 0.0);
@@ -385,18 +390,25 @@ public class VoiceListPane extends AnchorPane {
                         // 3. CRITICAL: Only proceed if exactly ONE item is currently selected
                         if (selectedItems.size() == 1) {
 
-                            int targetChannel;
-                            if (shift) {
-                                targetChannel = CHANNEL_LEFT; // Channel 2 (Shift click)
+                            System.out.println("KEYS: " + shift + ", " + ctrl);
+                            int targetChannel = -1;
+                            if (shift && ctrl) {
+                                targetChannel = CHANNEL_LEFT; // Channel  (Shift & ctrl click)
+                            } else if (shift) {
+                                targetChannel = CHANNEL_RIGHT1; // Channel 1 (Shift click)
                             } else if (ctrl) {
-                                targetChannel = CHANNEL_RIGHT2; // Channel 3 (Ctrl click)
-                            } else {
-                                targetChannel = CHANNEL_RIGHT1; // Channel 1 (Normal click)
+                                targetChannel = CHANNEL_RIGHT2; // Channel 2 (Ctrl click)
                             }
 
-                            Patch singleItem = selectedItems.get(0);
-                            channelPatches.put(targetChannel,singleItem);
-                            midiHelper.sendAsMidi(targetChannel, singleItem);
+                            System.out.println("SELECTED CHANNEL = " + targetChannel);
+
+                            if (targetChannel != -1) {
+                                Patch singleItem = selectedItems.get(0);
+                                channelPatches.put(targetChannel,singleItem);
+                                getVoiceResultPane().getVoiceFilterPane().setVoice(targetChannel, singleItem);
+//                                midiHelper.sendAsMidi(targetChannel, singleItem);
+                            }
+
                         }
                     });
                 }
