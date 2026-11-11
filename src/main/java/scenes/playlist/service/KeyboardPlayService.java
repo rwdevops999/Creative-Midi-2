@@ -160,7 +160,6 @@ public class KeyboardPlayService extends Service<Void> {
             String songName = songResolver.resolveSongName(hexMessage);
 
             songIsPlaying = false;
-            followSong = false;
 
             comm.showMessage(SELECT_SONG, songName);
 
@@ -193,6 +192,8 @@ public class KeyboardPlayService extends Service<Void> {
     };
 
     private static final byte ACTIVE_SENSING = -2;
+    private static final byte STOP = -4;
+    private static final byte START = -6;
 
     private void handleMidiMessage(ShortMessage message) {
         byte[] rawBytes = message.getMessage();
@@ -201,11 +202,10 @@ public class KeyboardPlayService extends Service<Void> {
          * I'm not interested in ACTIVE SENSING messages
          */
         if (rawBytes[0] != ACTIVE_SENSING) {
-            int status = message.getStatus();
-            if (status == ShortMessage.START && followSong) {
+            if (rawBytes[0] == START && followSong) {
                 comm.showMessage(CommunicationType.INBOUND, "Start");
                 songIsPlaying = true;
-            } else if (status == ShortMessage.STOP && songIsPlaying) {
+            } else if (rawBytes[0] == STOP && songIsPlaying) {
                 songIsPlaying = false;
                 comm.showMessage(CommunicationType.INBOUND, "Stop");
                 sendPostMappings();
@@ -254,12 +254,8 @@ public class KeyboardPlayService extends Service<Void> {
                         public void send(MidiMessage message, long timeStamp) {
                             if (message instanceof SysexMessage sysexMessage) {
                                 handleSysexMessage(sysexMessage);
-                                return;
-                            }
-
-                            if (message instanceof ShortMessage midiMessage) {
+                            } else if (message instanceof ShortMessage midiMessage) {
                                 handleMidiMessage(midiMessage);
-                                return;
                             }
 
                             // We don't treat META messages
