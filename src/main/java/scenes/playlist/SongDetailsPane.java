@@ -94,9 +94,9 @@ public class SongDetailsPane extends GridPane {
     private final Label meterLabel = new Label("Meter");
     private final SignatureSelector signatureSelector = new SignatureSelector();
 
-    private boolean isUpdating = false;
+    private boolean muteListenerUpdating = false;
 
-    private void setDatasource(Song song) {
+    private void fillDatasources(Song song) {
         songIdProperty.set(song.getId());
         songNameProperty.set(song.getName());
         performerProperty.set(song.getSongInfo().getPerformer());
@@ -107,14 +107,14 @@ public class SongDetailsPane extends GridPane {
         beatProperty.set(song.getSongInfo().getSignature().getBeat());
 
         songIdProperty.addListener((obs, oldVal, newVal) -> {
-            if (! isUpdating) {
+            if (! muteListenerUpdating) {
                 workingSong.setId(newVal);
                 checkChanges();
             }
         });
 
         songNameProperty.addListener((obs, oldVal, newVal) -> {
-            if (! isUpdating) {
+            if (! muteListenerUpdating) {
                 workingSong.setName(newVal);
                 getPlaylistDetailsPane().getSongTitlePane().updateSongTitle(newVal);
                 checkChanges();
@@ -122,42 +122,42 @@ public class SongDetailsPane extends GridPane {
         });
 
         performerProperty.addListener((obs, oldVal, newVal) -> {
-            if (! isUpdating) {
+            if (! muteListenerUpdating) {
                 workingSong.getSongInfo().setPerformer(newVal);
                 checkChanges();
             }
         });
 
         tempoProperty.addListener((obs, oldVal, newVal) -> {
-            if (! isUpdating) {
+            if (! muteListenerUpdating) {
                 workingSong.getSongInfo().setTempo(newVal);
                 checkChanges();
             }
         });
 
         scaleProperty.addListener((obs, oldVal, newVal) -> {
-            if (! isUpdating) {
+            if (! muteListenerUpdating) {
                 workingSong.getSongInfo().getScale().setScale(newVal);
                 checkChanges();
             }
         });
 
         pitchProperty.addListener((obs, oldVal, newVal) -> {
-            if (! isUpdating) {
+            if (! muteListenerUpdating) {
                 workingSong.getSongInfo().getScale().setPitch(newVal);
                 checkChanges();
             }
         });
 
         beatProperty.addListener((obs, oldVal, newVal) -> {
-            if (! isUpdating) {
+            if (! muteListenerUpdating) {
                 workingSong.getSongInfo().getSignature().setBeat(newVal);
                 checkChanges();
             }
         });
 
         beatsProperty.addListener((obs, oldVal, newVal) -> {
-            if (! isUpdating) {
+            if (! muteListenerUpdating) {
                 workingSong.getSongInfo().getSignature().setBeats(newVal);
                 checkChanges();
             }
@@ -217,33 +217,30 @@ public class SongDetailsPane extends GridPane {
     }
 
     private Song workingSong;
-    public void setSong(Song song) {
-        isUpdating = true;
+    public void setSong(Song song, boolean fromMappingPane) {
+        muteListenerUpdating = true;
 
-        workingSong = new Song(song);
+        if (song != null) {
+            workingSong = song;
 
-        if (workingSong != null) {
-            if  (! song.equals(AppInfo.INSTANCE.getCurrentSong())) {
-                Song deepCopiedSong = SerializationUtils.clone(song);
-                AppInfo.INSTANCE.setCurrentSong(deepCopiedSong);
+            Song deepCopy = SerializationUtils.clone(song);
+            AppInfo.INSTANCE.setCurrentSong(deepCopy);
 
-                getPlaylistDetailsPane().getSongMappingsPane().setSong(workingSong);
-
-                getPlaylistDetailsPane().getSongTitlePane().updateSongTitle(song.getName());
-
-                setDatasource(song);
-
-                buildPane();
-                addComponents();
-
-                getPlaylistDetailsPane().getSongMappingsPane().buildPane(this, workingSong);
+            if (! fromMappingPane) {
+                getPlaylistDetailsPane().getSongMappingsPane().setSong(song);
             }
+
+            getPlaylistDetailsPane().getSongTitlePane().updateSongTitle(song.getName());
+            fillDatasources(song);
+            addComponents();
         } else {
+            workingSong = null;
+            AppInfo.INSTANCE.setCurrentSong(null);
+            getPlaylistDetailsPane().getSongMappingsPane().setSong(null);
             getPlaylistDetailsPane().getSongTitlePane().updateSongTitle("");
-            getChildren().clear();
         }
 
-        isUpdating = false;
+        muteListenerUpdating = false;
     }
 
     private void checkChanges() {
@@ -274,6 +271,11 @@ public class SongDetailsPane extends GridPane {
 
     public Song getSong() {
         return workingSong;
+    }
+
+    public void replaceWorkingSong(Song song) {
+        workingSong = song;
+        checkChanges();
     }
 
     // ACCESSORS

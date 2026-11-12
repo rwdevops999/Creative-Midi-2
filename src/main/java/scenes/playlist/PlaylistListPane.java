@@ -14,6 +14,7 @@ import scenes.playlist.container.PlaylistContainer;
 import scenes.sysex.SysexListPane;
 import scenes.sysex.container.SysexContainer;
 import scenes.sysex.statemachine.States;
+import util.app.AppInfo;
 import util.registry.AppEvent;
 import util.registry.Registry;
 
@@ -71,7 +72,7 @@ public class PlaylistListPane extends VBox {
         // (1) Song select change listener
         songListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             getPlaylistPane().changeState(States.SELECT);
-            getPlaylistPane().getPlaylistDetailsPane().getSongDetailsPane().setSong(newValue);
+            getPlaylistPane().getPlaylistDetailsPane().getSongDetailsPane().setSong(newValue, false);
         });
 
         logger.debug("Built {}", getId());

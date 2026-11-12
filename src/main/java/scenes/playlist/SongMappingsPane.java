@@ -45,7 +45,7 @@ public class SongMappingsPane extends HBox {
         setPaneHeightAsPercentage(this, owner, height);
         showSmallPaneBorder(this, getColor("border", "turquoise"));
 
-        buildPane(owner, new Song());
+        buildPane(new Song());
     }
 
     private final ListProperty<Sysex> preMappingProperty = new SimpleListProperty<>(FXCollections.observableArrayList());;
@@ -53,7 +53,7 @@ public class SongMappingsPane extends HBox {
     private final ListProperty<SongMapping> mappingProperty = new SimpleListProperty<>(FXCollections.observableArrayList());
 
     private Song currentSong;
-    public void buildPane(Pane owner, Song song) {
+    public void buildPane(Song song) {
         logger.debug("Building {}", getId());
 
         getChildren().clear();
@@ -198,55 +198,90 @@ public class SongMappingsPane extends HBox {
         table.setContextMenu(contextMenu);
     }
 
-    private boolean isUpdating = false;
+    private boolean muteUpdating = false;
+    private ListChangeListener<Sysex> preMappingListener = new ListChangeListener<>() {
+        @Override
+        public void onChanged(Change<? extends Sysex> c) {
+            if (! muteUpdating) {
+                currentSong.setPreMappings(new ArrayList<>(preMappingProperty.get()));
+                if (currentSong == null) {
+                    System.out.println("WARNING");
+                }
+//            getPlaylistDetailsPane().getSongDetailsPane().setSong(currentSong, true);
+                muteUpdating = true;
+                getPlaylistDetailsPane().getSongDetailsPane().replaceWorkingSong(currentSong);
+                muteUpdating = false;
+            }
+        }
+    };
+
+    private ListChangeListener<Sysex> postMappingListener = new ListChangeListener<>() {
+        @Override
+        public void onChanged(Change<? extends Sysex> c) {
+            if (! muteUpdating) {
+                currentSong.setPostMappings(new ArrayList<>(postMappingProperty.get()));
+                if (currentSong == null) {
+                    System.out.println("WARNING");
+                }
+//            getPlaylistDetailsPane().getSongDetailsPane().setSong(currentSong, true);
+                muteUpdating = true;
+                getPlaylistDetailsPane().getSongDetailsPane().replaceWorkingSong(currentSong);
+                muteUpdating = false;
+            }
+        }
+    };
+
+    private ListChangeListener<SongMapping> mappingListener = new ListChangeListener<>() {
+        @Override
+        public void onChanged(Change<? extends SongMapping> sm) {
+            if (! muteUpdating) {
+                currentSong.setMappings(new ArrayList<>(mappingProperty.get()));
+                if (currentSong == null) {
+                    System.out.println("WARNING");
+                }
+                //            getPlaylistDetailsPane().getSongDetailsPane().setSong(currentSong, true);
+                muteUpdating = true;
+                getPlaylistDetailsPane().getSongDetailsPane().replaceWorkingSong(currentSong);
+                muteUpdating = false;
+            }
+        }
+    };
+
     public void setSong(Song song) {
-        currentSong = song;
+        preMappingProperty.removeListener(preMappingListener);
+        postMappingProperty.removeListener(postMappingListener);
+        mappingProperty.removeListener(mappingListener);
 
         if (song != null) {
-            isUpdating = true;
+            currentSong = song;
             if (song.getPreMappings() != null) {
                 preMappingProperty.set(FXCollections.observableArrayList(song.getPreMappings()));
-                preMappingProperty.addListener((ListChangeListener<Sysex>) change -> {
-                    if (! isUpdating) {
-                        currentSong.setPreMappings(new ArrayList<>(preMappingProperty.get()));
-                        getPlaylistDetailsPane().getSongDetailsPane().setSong(currentSong);
-                    }
-                });
             }
 
             if (song.getPostMappings() != null) {
                 postMappingProperty.set(FXCollections.observableArrayList(song.getPostMappings()));
-                postMappingProperty.addListener((ListChangeListener<Sysex>) change -> {
-                    if (! isUpdating) {
-                        currentSong.setPostMappings(new ArrayList<>(postMappingProperty.get()));
-                        getPlaylistDetailsPane().getSongDetailsPane().setSong(currentSong);
-                    }
-                });
             }
 
             if (song.getMappings() != null) {
                 mappingProperty.set(FXCollections.observableArrayList(song.getMappings()));
-                mappingProperty.addListener((ListChangeListener<SongMapping>) change -> {
-                    if (! isUpdating) {
-                        currentSong.setMappings(new ArrayList<>(mappingProperty.get()));
-                        getPlaylistDetailsPane().getSongDetailsPane().setSong(currentSong);
-                    }
-                });
             }
-            isUpdating = false;
+
+            buildPane(song);
+        } else {
+            currentSong = null;
         }
+
+        preMappingProperty.addListener(preMappingListener);
+        postMappingProperty.addListener(postMappingListener);
+        mappingProperty.addListener(mappingListener);
     }
 
     private void showAddMappingDialog(TableView<SongMapping> table, boolean isUpdate, ListProperty<SongMapping> mappingProperty) {
-        isUpdating = true;
         new MappingDialog(table, mappingProperty, isUpdate);
-        isUpdating = false;
     }
 
     private void showAddSysexMappingDialog(TableView<Sysex> table, boolean isUpdate, ListProperty<Sysex> mappingProperty) {
-        isUpdating = true;
         new SysexMappingDialog(table, mappingProperty, isUpdate);
-        isUpdating = false;
     }
 
     // ACCESSORS

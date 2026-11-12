@@ -61,4 +61,22 @@
     "reply" : "Select Registration Button 2"
   } ],
   "postMappings" : [ "All Parameter Reset" ]
+}, {
+  "name" : "004. Blue Bayou",
+  "id" : 4,
+  "songInfo" : {
+    "performer" : "Linda Rondstadt",
+    "tempo" : 94,
+    "scale" : {
+      "scale" : "C",
+      "pitch" : "major"
+    },
+    "signature" : {
+      "beats" : 4,
+      "beat" : 4
+    }
+  },
+  "preMappings" : [ ],
+  "mappings" : [ ],
+  "postMappings" : [ ]
 } ]

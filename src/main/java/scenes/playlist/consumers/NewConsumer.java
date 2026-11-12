@@ -29,7 +29,7 @@ public class NewConsumer<T extends NameEntity, P extends Pane> extends NameEntit
         SceneActionsPane sceneActionsPane = (SceneActionsPane) pane;
         PlaylistPane playlistPane = sceneActionsPane.getPane();
 
-        playlistPane.getPlaylistDetailsPane().getSongDetailsPane().setSong(song);
+        playlistPane.getPlaylistDetailsPane().getSongDetailsPane().setSong(song, false);
         playlistPane.changeState(States.NEW);
     }
 }
