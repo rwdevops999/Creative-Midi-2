@@ -58,9 +58,9 @@ public class VoiceInfoPane extends VBox {
     private void buildPane() {
         getChildren().clear();
 
-        right1Pane = new VoiceInfoLinePane(this, "Right1 (⌃)");
+        right1Pane = new VoiceInfoLinePane(this, "Right1 (⇧)");
         leftPane = new VoiceInfoLinePane(this, "Left (⌃⇧)");
-        right2Pane = new VoiceInfoLinePane(this, "Right1 (⇧)");
+        right2Pane = new VoiceInfoLinePane(this, "Right2 (⌃)");
 
         getChildren().addAll(right1Pane, leftPane, right2Pane);
     }

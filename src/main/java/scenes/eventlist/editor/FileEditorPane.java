@@ -229,40 +229,43 @@ public class FileEditorPane extends VBox {
         MidiEvent targetEvent = eventInfoToDelete.getOriginalEvent();
         if (targetEvent == null || targetEvent.getMessage() == null) return;
 
-        // 1. Calculate the exact start-tick (bijv. 10 * 4 = 40)
-        long startTick = eventInfoToDelete.getTick() * 4;
-        long endTickWindow = startTick + 5; // window of 5 ticks for LSB and PC
+        System.out.println("Info tick: " + eventInfoToDelete.getTick());
+        System.out.println("Actual event tick: " + targetEvent.getTick());
+        System.out.println("Message type: " + targetEvent.getMessage().getClass().getSimpleName());
 
-        MidiMessage targetMsg = targetEvent.getMessage();
-        int targetChannel = -1;
+        // 1. Always remove the exact original event first
+        for (Track track : activeSequence.getTracks()) {
+            if (track.remove(targetEvent)) {
+                break;
+            }
+        }
 
-        if (targetMsg instanceof ShortMessage) {
-            targetChannel = ((ShortMessage) targetMsg).getChannel();
+        // 2. If it's a channel message, also clean up nearby MSB/LSB/PC events on that channel
+        if (targetEvent.getMessage() instanceof ShortMessage targetSm) {
+            int targetChannel = targetSm.getChannel();
+
+            // Use the actual tick from the event, not a guessed multiplier
+            long startTick = targetEvent.getTick();
+            long endTickWindow = startTick + 5;
 
             for (Track track : activeSequence.getTracks()) {
-                java.util.List<MidiEvent> eventsToRemove = new java.util.ArrayList<>();
+                List<MidiEvent> eventsToRemove = new ArrayList<>();
 
                 for (int i = 0; i < track.size(); i++) {
                     MidiEvent currentEvent = track.get(i);
                     long currentTick = currentEvent.getTick();
 
-                    // Check A: Does the event fall inside the window
                     if (currentTick >= startTick && currentTick <= endTickWindow) {
-                        MidiMessage currentMsg = currentEvent.getMessage();
+                        if (currentEvent.getMessage() instanceof ShortMessage currentSm
+                                && currentSm.getChannel() == targetChannel) {
 
-                        if (currentMsg instanceof ShortMessage currentSm) {
+                            int cmd = currentSm.getCommand();
+                            boolean isMSB = (cmd == ShortMessage.CONTROL_CHANGE && currentSm.getData1() == 0);
+                            boolean isLSB = (cmd == ShortMessage.CONTROL_CHANGE && currentSm.getData1() == 32);
+                            boolean isPC  = (cmd == ShortMessage.PROGRAM_CHANGE);
 
-                            // CRUCIAL CHECK: The event must exactly match with the selected MIDI-channel!
-                            if (currentSm.getChannel() == targetChannel) {
-                                int cmd = currentSm.getCommand();
-
-                                boolean isMSB = (cmd == ShortMessage.CONTROL_CHANGE && currentSm.getData1() == 0);
-                                boolean isLSB = (cmd == ShortMessage.CONTROL_CHANGE && currentSm.getData1() == 32);
-                                boolean isPC = (cmd == ShortMessage.PROGRAM_CHANGE);
-
-                                if (isMSB || isLSB || isPC) {
-                                    eventsToRemove.add(currentEvent);
-                                }
+                            if (isMSB || isLSB || isPC) {
+                                eventsToRemove.add(currentEvent);
                             }
                         }
                     }
@@ -270,13 +273,6 @@ public class FileEditorPane extends VBox {
 
                 for (MidiEvent event : eventsToRemove) {
                     track.remove(event);
-                }
-            }
-        } else {
-            // Zoek de track waar dit specifieke object in zit en verwijder het direct
-            for (Track track : activeSequence.getTracks()) {
-                if (track.remove(targetEvent)) {
-                    break; // Gevonden en verwijderd, we kunnen stoppen met zoeken door de tracks
                 }
             }
         }

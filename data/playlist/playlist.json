@@ -76,7 +76,37 @@
       "beat" : 4
     }
   },
-  "preMappings" : [ ],
-  "mappings" : [ ],
-  "postMappings" : [ ]
+  "preMappings" : [ "XG System On", "Tempo" ],
+  "mappings" : [ {
+    "receive" : "Intro I Off",
+    "reply" : "Select Registration Button 2"
+  }, {
+    "receive" : "Intro II Off",
+    "reply" : "Select Registration Button 7"
+  } ],
+  "postMappings" : [ "All Parameter Reset" ]
+}, {
+  "name" : "005. Mississippi",
+  "id" : 5,
+  "songInfo" : {
+    "performer" : "Pussycat",
+    "tempo" : 122,
+    "scale" : {
+      "scale" : "A#",
+      "pitch" : "major"
+    },
+    "signature" : {
+      "beats" : 4,
+      "beat" : 4
+    }
+  },
+  "preMappings" : [ "XG System On", "Tempo" ],
+  "mappings" : [ {
+    "receive" : "Intro I Off",
+    "reply" : "Select Registration Button 2"
+  }, {
+    "receive" : "Intro II Off",
+    "reply" : "Select Registration Button 6"
+  } ],
+  "postMappings" : [ "All Parameter Reset" ]
 } ]
