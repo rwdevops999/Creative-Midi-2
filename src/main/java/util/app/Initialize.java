@@ -7,6 +7,7 @@ import util.device.DeviceScanner;
 import util.filter.DetailFilter;
 import util.midi.MBTCalculator;
 import util.properties.AppProperties;
+import util.user.UserData;
 
 import static util.properties.PropertyKeys.*;
 
@@ -44,5 +45,13 @@ public class Initialize {
         // 6. Set working dir
         String workPath = AppProperties.getInstance().getPropertyAsString(WORK_DIR, "./data/work");
         AppInfo.INSTANCE.setWorkingDir(workPath);
+
+        // 7. Load User Data
+        try {
+            UserData.getInstance().load();
+        } catch (Exception e) {
+            logger.debug("Exception. CAUSE {}", e.getMessage());
+        }
+
     }
 }

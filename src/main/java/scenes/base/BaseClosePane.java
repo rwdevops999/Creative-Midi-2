@@ -11,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.app.routing.Router;
 import util.app.scene.IScene;
+import util.registry.Registry;
+import util.user.UserData;
 
 import static util.app.colors.ColorScheme.getColor;
 import static util.Util.setPaneBackground;
@@ -48,18 +50,18 @@ public class BaseClosePane extends HBox {
         closeButton.setId("CloseButton");
 
         closeButton.setOnAction(e -> {
-/*            try {
-                SysData.getInstance().save();
+            try {
+                UserData.getInstance().save();
             } catch (Exception ex) {
-                logger.error("[CM_CLOSE_PANE] Exception. CAUSE {}", ex.getMessage());
+                logger.error("Exception. CAUSE {}", ex.getMessage());
             }
-*/
+
             if (closeHandler != null) {
                 closeHandler.handle(null);
             }
-/*
-            CommunicationModel.clearStatus();
-*/
+
+            Registry.getInstance().showStatus("");
+
             Router.getInstance().routeTo(null, callingScene, true);
         });
 

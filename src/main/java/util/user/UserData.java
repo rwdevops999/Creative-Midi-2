@@ -5,9 +5,14 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 import lombok.Getter;
 import util.app.AppInfo;
+import util.files.BinaryFileReader;
+import util.files.BinaryFileWriter;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -41,7 +46,7 @@ public class UserData extends UserDataBase {
         return found != null;
     }
 
-/*    private void writeHeader(BinaryFileWriter writer) throws Exception {
+    private void writeHeader(BinaryFileWriter writer) throws Exception {
         byte[] header = {'C', 'M', 'S', 'D'};
         writer.writeBytes(header);
     }
@@ -72,9 +77,19 @@ public class UserData extends UserDataBase {
     }
 
     public void save() throws Exception {
-        // De try-with-resources opent en sluit de BinaryFileWriter automatisch!
-        try (BinaryFileWriter writer = new BinaryFileWriter(DEFAULT_FILENAME)) {
+        Path filePath = Paths.get(DEFAULT_FILENAME);
 
+        // Create parent directories if they don't exist
+        if (filePath.getParent() != null) {
+            Files.createDirectories(filePath.getParent());
+        }
+
+        // Create the file if it doesn't exist
+        if (Files.notExists(filePath)) {
+            Files.createFile(filePath);
+        }
+
+        try (BinaryFileWriter writer = new BinaryFileWriter(DEFAULT_FILENAME)) {
             // 1. Schrijf de hoofdheader [C,M,S,D] via de writer
             writeHeader(writer);
 
@@ -126,6 +141,4 @@ public class UserData extends UserDataBase {
         }
         // The reader closes here automatically, everything is cleaned up!
     }
-
- */
 }

@@ -36,20 +36,20 @@ public class ExecuteConsumer<T extends NameEntity, P extends Pane>  extends Name
 
         SceneActionsPane actionsPane = (SceneActionsPane) pane;
 
-        if (AppInfo.INSTANCE.getSelectedDevice() == null) {
-            DialogFactory.getInstance().renderErrorDialog("Device is not selected");
-       } else {
-            Service<Void> service = AppInfo.INSTANCE.getKeyboardService();
-            if (service != null) {
-                Registry.getInstance().showStatus("Stopped playing the playlist");
+        Service<Void> service = AppInfo.INSTANCE.getKeyboardService();
+        if (service != null) {
+            Registry.getInstance().showStatus("Stopped playing the playlist");
 
-                if (service.isRunning()) {
-                    service.cancel();
-                }
+            if (service.isRunning()) {
+                service.cancel();
+            }
 
-                actionsPane.renameActionButtonName("Stop", "Execute");
+            actionsPane.renameActionButtonName("Stop", "Execute");
 
-                AppInfo.INSTANCE.setKeyboardService(null);
+            AppInfo.INSTANCE.setKeyboardService(null);
+        } else {
+            if (AppInfo.INSTANCE.getSelectedDevice() == null) {
+                DialogFactory.getInstance().renderErrorDialog("Device is not selected");
             } else {
                 Registry.getInstance().showStatus("Playing the playlist");
                 CommunicationMessage.getInstance().showMessage(ACTION, MONITOR_ACTION_CLEAR);
