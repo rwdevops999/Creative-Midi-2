@@ -106,14 +106,12 @@ public class VoicePlayPane extends HBox {
 
         Button load = new Button("Load...");
         load.setOnAction(e -> {
-            if (AppInfo.INSTANCE.getLastVisitedFolder() != null) {
-                fileChooser.setInitialDirectory(new File(AppInfo.INSTANCE.getLastVisitedFolder()));
+            if (AppInfo.INSTANCE.getWorkingDir() != null) {
+                fileChooser.setInitialDirectory(new File(AppInfo.INSTANCE.getWorkingDir()));
             }
             selectedFile = fileChooser.showOpenDialog(AppInfo.INSTANCE.getPrimaryStage());
 
             if (selectedFile != null) {
-                String lastPath = FilenameUtils.getFullPath(selectedFile.getPath());
-                AppInfo.INSTANCE.setLastVisitedFolder(lastPath);
                 AppInfo.INSTANCE.setMidiToPlay(selectedFile);
 
                 List<MidiEventInfo> midiEventInfos = MidiHelper.getInstance().extractMarkers();

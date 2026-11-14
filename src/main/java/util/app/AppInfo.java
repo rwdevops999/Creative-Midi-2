@@ -66,7 +66,7 @@ public enum AppInfo {
 
         @Getter
         @Setter
-        private String lastVisitedFolder; // last visited by any FileChooser
+        private String workingDir; // last visited by any FileChooser
 
         @Getter
         @Setter

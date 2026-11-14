@@ -59,7 +59,7 @@ public class MappingDialog extends Dialog<SongMapping> {
 
         List<String> replyMappings = mappingProperty.get().stream().map(sm -> sm.getReply().getName()).toList();
         List<String> availableReplyMappings = new ArrayList<>(availableMappings);
-        availableReplyMappings.removeAll(replyMappings);
+//        availableReplyMappings.removeAll(replyMappings);
 
         Label replyLabel = new Label("Reply");
         content.add(replyLabel, 0, 2);

@@ -109,4 +109,73 @@
     "reply" : "Select Registration Button 6"
   } ],
   "postMappings" : [ "All Parameter Reset" ]
+}, {
+  "name" : "006. Keep On Smiling",
+  "id" : 6,
+  "songInfo" : {
+    "performer" : "James Lloyd",
+    "tempo" : 92,
+    "scale" : {
+      "scale" : "A",
+      "pitch" : "major"
+    },
+    "signature" : {
+      "beats" : 4,
+      "beat" : 4
+    }
+  },
+  "preMappings" : [ "XG System On", "Tempo" ],
+  "mappings" : [ {
+    "receive" : "Intro I Off",
+    "reply" : "Select Registration Button 2"
+  }, {
+    "receive" : "Intro II Off",
+    "reply" : "Select Registration Button 2"
+  } ],
+  "postMappings" : [ "All Parameter Reset" ]
+}, {
+  "name" : "007. Het Kleine Cafe",
+  "id" : 7,
+  "songInfo" : {
+    "performer" : "Pierre Cartner",
+    "tempo" : 170,
+    "scale" : {
+      "scale" : "G",
+      "pitch" : "minor"
+    },
+    "signature" : {
+      "beats" : 6,
+      "beat" : 4
+    }
+  },
+  "preMappings" : [ "XG System On", "Tempo" ],
+  "mappings" : [ {
+    "receive" : "Intro I Off",
+    "reply" : "Select Registration Button 2"
+  } ],
+  "postMappings" : [ "All Parameter Reset" ]
+}, {
+  "name" : "008. Conquest Of Paradise",
+  "id" : 8,
+  "songInfo" : {
+    "performer" : "Vangelis",
+    "tempo" : 72,
+    "scale" : {
+      "scale" : "D",
+      "pitch" : "minor"
+    },
+    "signature" : {
+      "beats" : 3,
+      "beat" : 4
+    }
+  },
+  "preMappings" : [ "XG System On", "Tempo" ],
+  "mappings" : [ {
+    "receive" : "Intro I Off",
+    "reply" : "Select Registration Button 2"
+  }, {
+    "receive" : "Intro II Off",
+    "reply" : "Select Registration Button 5"
+  } ],
+  "postMappings" : [ "All Parameter Reset" ]
 } ]

@@ -113,8 +113,8 @@ public class PlaylistContainer {
         if (oldSong != null) {
             int index = playList.indexOf(oldSong);
             playList.set(index, newSong);
-            export();
         }
+        export();
     }
 
     public void delete(Song song) {

@@ -80,15 +80,12 @@ public class FileHandlerPane extends HBox {
         Button fileSelectButton = new Button("Upload ...");
         fileSelectButton.setMaxHeight(Button.USE_PREF_SIZE);
         fileSelectButton.setOnAction(e -> {
-            if (AppInfo.INSTANCE.getLastVisitedFolder() != null) {
-                fileChooser.setInitialDirectory(new File(AppInfo.INSTANCE.getLastVisitedFolder()));
+            if (AppInfo.INSTANCE.getWorkingDir() != null) {
+                fileChooser.setInitialDirectory(new File(AppInfo.INSTANCE.getWorkingDir()));
             }
             selectedFile = fileChooser.showOpenDialog(AppInfo.INSTANCE.getPrimaryStage());
 
             if (selectedFile != null) {
-                String lastPath = FilenameUtils.getFullPath(selectedFile.getPath());
-                AppInfo.INSTANCE.setLastVisitedFolder(lastPath);
-
                 fileName.set(FilenameUtils.removeExtension(selectedFile.getName()));
 
                 getEventListEditorPane().processFile(selectedFile);
@@ -123,13 +120,12 @@ public class FileHandlerPane extends HBox {
 
     public void handleSaveFile() {
         if (selectedFile != null) {
-            String workPath = AppProperties.getInstance().getPropertyAsString(WORK_DIR, "./data/work");
+            String workPath = AppInfo.INSTANCE.getWorkingDir();
 
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
             String timestamp = LocalDateTime.now().format(formatter);
             String newFilename = insertTimestamp(selectedFile.getName(), timestamp);
 
-//            String newFilename = FilenameUtils.removeExtension(selectedFile.getName()) + "_" + timestamp + ".mid";
             String newMidiFilename = workPath + "/" + newFilename;
 
             File file = new File(newMidiFilename);

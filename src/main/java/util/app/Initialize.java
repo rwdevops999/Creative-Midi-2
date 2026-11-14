@@ -8,8 +8,7 @@ import util.filter.DetailFilter;
 import util.midi.MBTCalculator;
 import util.properties.AppProperties;
 
-import static util.properties.PropertyKeys.APP_THEME;
-import static util.properties.PropertyKeys.TARGET_PPQ;
+import static util.properties.PropertyKeys.*;
 
 public class Initialize {
     private static final Logger logger = LoggerFactory.getLogger(Initialize.class);
@@ -42,5 +41,8 @@ public class Initialize {
         Theme.getInstance().setAppTheme(Theme.ThemeType.valueOf(theme));
         Theme.getInstance().switchTheme(AppInfo.INSTANCE.getRootScene());
 
+        // 6. Set working dir
+        String workPath = AppProperties.getInstance().getPropertyAsString(WORK_DIR, "./data/work");
+        AppInfo.INSTANCE.setWorkingDir(workPath);
     }
 }
