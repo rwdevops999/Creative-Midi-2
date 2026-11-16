@@ -383,6 +383,10 @@ public class KbCommunication {
         return null; // Retourneer null als er een timeout of fout optreedt
     }
 
+    public void clearHandshakeQueue() {
+        handshakeQueue.clear();
+    }
+
     public void close() {
         try { keyboardIn.close(); } catch (Exception ignored) {}
         try { keyboardOut.close(); } catch (Exception ignored) {}
