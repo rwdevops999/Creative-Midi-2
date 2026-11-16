@@ -5,9 +5,11 @@ import entity.midi.Midi;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import util.SysexToHexStringConvertor;
 import util.app.AppInfo;
 import util.communication.CommunicationType;
 import util.registry.CommunicationMessage;
+import util.sysex.SysexWriter;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiDevice;
@@ -21,6 +23,8 @@ public class MidiWriter {
 
     @Getter
     private static final MidiWriter instance = new MidiWriter();
+
+    private static final SysexWriter sysexWriter = SysexWriter.getInstance();
 
     private MidiWriter() {
     }
@@ -90,6 +94,7 @@ public class MidiWriter {
 //            distributeOverAllNotes(midi);
 
             sendBulk();
+
         } catch (InvalidMidiDataException | MidiUnavailableException e) {
             logger.error("Exception. CAUSE {}", e.getMessage());
         }

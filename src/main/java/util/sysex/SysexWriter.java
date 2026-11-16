@@ -52,7 +52,7 @@ public class SysexWriter {
             MidiDevice midiInputDevice = dev.getMidiInputDevice();
 
             SysexMessage message = new SysexMessage();
-            message.setMessage(bytes, bytes.length);
+            message.setMessage(SysexMessage.SYSTEM_EXCLUSIVE, bytes, bytes.length);
 
             midiInputDevice.getReceiver().send(message, -1);
         }

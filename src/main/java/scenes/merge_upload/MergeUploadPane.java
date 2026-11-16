@@ -5,15 +5,21 @@ import entity.playlist.Song;
 import fx.component.ImageButton;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.VPos;
+import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.*;
+import javafx.stage.FileChooser;
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scenes.SceneActionsPane;
@@ -22,7 +28,13 @@ import scenes.sysex.SysexListPane;
 import scenes.sysex.consumers.*;
 import scenes.sysex.statemachine.StateMachine;
 import scenes.sysex.statemachine.States;
+import util.app.AppInfo;
+import util.keyboards.yamaha.KeyboardUtil;
+import util.registry.Registry;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.BiConsumer;
 
 import static util.Util.setPaneBackground;
@@ -62,30 +74,66 @@ public class MergeUploadPane extends GridPane {
     private BooleanProperty midiUploadPropertyDisabled = new SimpleBooleanProperty(true);
     private BooleanProperty mergePropertyDisabled = new SimpleBooleanProperty(true);
 
+    private StringProperty styleFileProperty = new SimpleStringProperty("");
+    private StringProperty midiFileProperty = new SimpleStringProperty("");
+
     private boolean styleSelected = false;
     private boolean midiSelected = false;
+
+    private String selectedKeyboardStyleFile = null;
+    private String selectedKeyboardMidiFile = null;
 
     private static final int VIEW_HEIGHT = 175;
 
     private void buildPane() {
         logger.debug("Building {}", getId());
 
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Select a file");
+
         int row = 0;
 
-        ListView<String> stylesListView = new ListView();
+        ListView<String> stylesListView = new ListView<>();
         stylesListView.setMaxWidth(Double.MAX_VALUE);
         stylesListView.setMaxHeight(VIEW_HEIGHT);
         stylesListView.setPrefHeight(VIEW_HEIGHT);
         add (stylesListView, 0, row, 10, 3);
         setStyleFiles(stylesListView);
 
+        stylesListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+           if (newValue != null) {
+               selectedKeyboardStyleFile = newValue;
+           }
+        });
+
         // style uploading
         row += 3;
 
         Button loadStyleFileButton = new Button("Load Style ...");
+        loadStyleFileButton.setOnAction(event -> {
+            fileChooser.getExtensionFilters().clear();
+            fileChooser.getExtensionFilters().add(
+                    new FileChooser.ExtensionFilter("STYLE", "*.sty")
+            );
+
+            if (AppInfo.INSTANCE.getWorkingDir() != null) {
+                fileChooser.setInitialDirectory(new File(AppInfo.INSTANCE.getWorkingDir()));
+            }
+            File selectedFile = fileChooser.showOpenDialog(AppInfo.INSTANCE.getPrimaryStage());
+            styleSelected = false;
+            if (selectedFile != null) {
+                styleFileProperty.set(selectedFile.getAbsolutePath());
+                styleSelected = true;
+            } else {
+                styleFileProperty.set(null);
+            }
+            styleUploadPropertyDisabled.set(!styleSelected);
+            handleMergeDisabling();
+        });
         add (loadStyleFileButton, 0, row);
 
-        Label styleFilenameLabel = new Label("Here comes the style file name");
+        Label styleFilenameLabel = new Label();
+        styleFilenameLabel.textProperty().bind(styleFileProperty);
         add (styleFilenameLabel, 2, row, 5, 1);
 
         ImageButton uploadStyleButton = new ImageButton("icons/upload-up.png", 100, 35);
@@ -102,9 +150,30 @@ public class MergeUploadPane extends GridPane {
         row += 2;
 
         Button loadMidiFileButton = new Button("Load Midi ...");
+        loadMidiFileButton.setOnAction(event -> {
+            fileChooser.getExtensionFilters().clear();
+            fileChooser.getExtensionFilters().add(
+                    new FileChooser.ExtensionFilter("MIDI", "*.mid")
+            );
+
+            if (AppInfo.INSTANCE.getWorkingDir() != null) {
+                fileChooser.setInitialDirectory(new File(AppInfo.INSTANCE.getWorkingDir()));
+            }
+            File selectedFile = fileChooser.showOpenDialog(AppInfo.INSTANCE.getPrimaryStage());
+            midiSelected = false;
+            if (selectedFile != null) {
+                midiFileProperty.set(selectedFile.getAbsolutePath());
+                midiSelected = true;
+            } else {
+                midiFileProperty.set(null);
+            }
+            midiUploadPropertyDisabled.set(!midiSelected);
+            handleMergeDisabling();
+        });
         add (loadMidiFileButton, 0, row);
 
-        Label midiFilenameLabel = new Label("Here comes the midi file name");
+        Label midiFilenameLabel = new Label();
+        midiFilenameLabel.textProperty().bind(midiFileProperty);
         add (midiFilenameLabel, 2, row, 5, 1);
 
         ImageButton uploadMidiButton = new ImageButton("icons/upload-down.png", 100, 35);
@@ -114,7 +183,7 @@ public class MergeUploadPane extends GridPane {
         // midis list
         row++;
 
-        ListView<String> midisListView = new ListView();
+        ListView<String> midisListView = new ListView<>();
         midisListView.setMaxWidth(Double.MAX_VALUE);
         midisListView.setMaxHeight(VIEW_HEIGHT);
         midisListView.setPrefHeight(VIEW_HEIGHT);
@@ -122,14 +191,38 @@ public class MergeUploadPane extends GridPane {
 
         setMidiFiles(midisListView);
 
+        midisListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                selectedKeyboardMidiFile = newValue;
+            }
+        });
+
+        Registry.getInstance().showStatus("Uploaded data from keyboard");
+
         logger.debug("Built {}", getId());
     }
 
+    private void handleMergeDisabling() {
+        mergePropertyDisabled.set(!(styleSelected && midiSelected));
+    }
+
     private void setStyleFiles(ListView<String> listView) {
-        listView.getItems().add("Style1");
+        try {
+            KeyboardUtil utils = new KeyboardUtil();
+            List<String> styles = utils.getStyleFiles().stream().sorted(String.CASE_INSENSITIVE_ORDER).toList();
+            listView.getItems().addAll(styles);
+        } catch (Exception e) {
+            listView.getItems().addAll(new ArrayList<>());
+        }
     }
 
     private void setMidiFiles(ListView<String> listView) {
-        listView.getItems().add("Midi1");
+        try {
+            KeyboardUtil utils = new KeyboardUtil();
+            List<String> songs = utils.getSongFiles().stream().sorted(String.CASE_INSENSITIVE_ORDER).toList();
+            listView.getItems().addAll(songs);
+        } catch (Exception e) {
+            listView.getItems().addAll(new ArrayList<>());
+        }
     }
 }
