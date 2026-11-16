@@ -1,4 +1,4 @@
-package util.keyboards.yamaha;
+package util.keyboards.oldyamaha;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

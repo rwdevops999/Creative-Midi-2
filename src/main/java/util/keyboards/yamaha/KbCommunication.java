@@ -1,25 +1,20 @@
-package util.keyboards.comm;
+package util.keyboards.yamaha;
 
-import entity.sysex.Sysex;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.app.AppInfo;
-import util.keyboards.yamaha.KeyboardCommunication;
 import util.keyboards.yamaha.entity.*;
 import util.sysex.SysexWriter;
 
 import javax.sound.midi.*;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import static util.keyboards.comm.KbUtil.extractName;
+import static util.keyboards.yamaha.KbUtil.extractName;
 import static util.keyboards.yamaha.General.*;
 import static util.keyboards.yamaha.General.startsWith;
 
@@ -35,37 +30,38 @@ public class KbCommunication {
     private boolean isInitialised = false;
 
     private MidiDevice pcInput, pcOutput;
+    private MidiDevice keyboardIn, keyboardOut;
 
-    private Receiver keyboardReceiver;
-    private Transmitter keyboardTransmitter;
+    private Receiver receiver;
+    private Transmitter transmitter;
 
+    /**
+     * Sets-up MidiDevices (input and output as we need both)
+     */
     private KbCommunication() {
         if (AppInfo.INSTANCE.getSelectedDevice() == null) {
             // TODO Something
             logger.error("No device selected");
         } else {
-            MidiDevice keyboardOutput = AppInfo.INSTANCE.getSelectedDevice().getMidiOutputDevice();
-            MidiDevice keyboardInput = AppInfo.INSTANCE.getSelectedDevice().getMidiInputDevice();
+            keyboardOut = AppInfo.INSTANCE.getSelectedDevice().getMidiOutputDevice();
+            keyboardIn = AppInfo.INSTANCE.getSelectedDevice().getMidiInputDevice();
 
             /*
              * We need both, so neither one may be null
              */
-            if (keyboardOutput == null || keyboardInput == null) {
+            if (keyboardOut == null || keyboardIn == null) {
                 logger.error("MidiDevice not selected");
             } else {
-                pcInput = keyboardOutput;
-                pcOutput = keyboardInput;
-
                 try {
-                    if (!pcOutput.isOpen()) {
-                        pcOutput.open();
+                    if (!keyboardIn.isOpen()) {
+                        keyboardIn.open();
                     }
                 } catch (MidiUnavailableException e) {
                     logger.error("Exception. CAUSE {}", e.getMessage());
                 }
 
                 try {
-                    pcInput.open();
+                    keyboardOut.open();
                 } catch (MidiUnavailableException e) {
                     logger.error("Exception. CAUSE {}", e.getMessage());
                 }
@@ -76,9 +72,9 @@ public class KbCommunication {
 
                 try {
                     /* keyboardInput has a receiver, keyboardOutput has a transmitter */
-                    keyboardReceiver = keyboardInput.getReceiver();
-                    keyboardTransmitter = keyboardOutput.getTransmitter();
-                    keyboardTransmitter.setReceiver(new Receiver() {
+                    receiver = keyboardIn.getReceiver();
+                    transmitter = keyboardOut.getTransmitter();
+                    transmitter.setReceiver(new Receiver() {
                         public void send(MidiMessage msg, long stamp) {
                             if (msg instanceof SysexMessage) {
                                 onSysexReceived(msg.getMessage().clone());
@@ -99,20 +95,80 @@ public class KbCommunication {
     /*
      * Unbounded blocking queue (for producer - consumer)
      */
-    private final BlockingQueue<byte[]> midiHandshake = new LinkedBlockingQueue<>();
+    private final BlockingQueue<byte[]> handshakeQueue = new LinkedBlockingQueue<>();
 
-    private void onSysexReceived(byte[] rawResponse) {
+    /**
+     * Sysex received from keyboard and put in Q
+     *
+     * @param rawResponse
+     */
+    public void onSysexReceived(byte[] rawResponse) {
         // poll() of offer() zorgt voor de directe overdracht naar de wachtende thread
-        boolean accepted = midiHandshake.offer(rawResponse);
+        boolean accepted = handshakeQueue.offer(rawResponse);
         if (!accepted) {
             logger.debug("No thread is waiting on these bytes at the moment: ignore them.");
         }
     }
 
-    private void send(byte[] bytes) throws MidiUnavailableException, InvalidMidiDataException {
+    /**
+     * Sending sysex bytes to keyboard
+     *
+     * @param bytes
+     * @throws MidiUnavailableException
+     * @throws InvalidMidiDataException
+     */
+    public void send(byte[] bytes) throws MidiUnavailableException, InvalidMidiDataException {
         sysexWriter.sendBytes(bytes);
     }
 
+    public byte[] waitForResponse(
+            byte[] expectedPrefix,
+            long timeoutMs) throws InterruptedException {
+
+        long deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(timeoutMs);
+
+        while (true) {
+            long remaining = deadline - System.nanoTime();
+            if (remaining <= 0) {
+                /* timeout reached */
+                logger.error("Timeout waiting for: {}", asHex(expectedPrefix));
+                return null;
+            }
+
+            /* wait for the response */
+            byte[] response = handshakeQueue.poll(
+                    remaining, TimeUnit.NANOSECONDS);
+
+            if (response == null) {
+                /* timeout set response to null */
+                logger.error("Timeout waiting for: {}", asHex(expectedPrefix));
+                return null;
+            }
+
+            if (starts(response, 0xF0, 0x43, 0x50, 0x00, 0x05, 0x7F)) {
+                /* No more data */
+                return response;
+            }
+
+            if (startsWith(response, expectedPrefix)) {
+                /* this is the expected response */
+                return response;
+            }
+
+            logger.debug("Ignoring unexpected response: {}", asHex(response));
+        }
+    }
+
+        /**
+         * Send and wait for response
+         *
+         * @param s : string to send
+         * @param expectedPrefix :  bytes array of expected response
+         * @param timeoutMs : tome to wait
+         * @return byte array, the response or null
+         *
+         * @throws Exception
+         */
     public byte[] sendAndWaitForResponse(
             String s, byte[] expectedPrefix, long timeoutMs) throws Exception {
 
@@ -120,60 +176,20 @@ public class KbCommunication {
             throw new IllegalArgumentException("timeoutMs must be > 0, got: " + timeoutMs);
         }
 
-        midiHandshake.clear();
+        /* clear the handschake Q */
+        handshakeQueue.clear();
 
+        /* send the string */
         long sendStart = System.nanoTime();
         send(hex(s));
-        long sendDurationMs = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - sendStart);
 
-        if (sendDurationMs > 10) {
-            logger.warn("send() took {} ms", sendDurationMs);
-        }
-
-        // Start the response timeout AFTER send() completes
-        long deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(timeoutMs);
-
-        while (true) {
-            long remaining = deadline - System.nanoTime();
-            if (remaining <= 0) {
-                logger.error("Timeout waiting for: {} (timeoutMs={}, sendDurationMs={})",
-                        asHex(expectedPrefix), timeoutMs, sendDurationMs);
-                return null;
-            }
-
-            byte[] response = midiHandshake.poll(
-                    remaining, TimeUnit.NANOSECONDS);
-
-            if (response == null) {
-                logger.error("Timeout waiting for: {}", asHex(expectedPrefix));
-                return null;
-            }
-
-
-            if (starts(response, 0xF0, 0x43, 0x50,
-                    0x00, 0x05, 0x7F)) {
-                return response;
-            }
-
-            // Expected response
-            if (startsWith(response, expectedPrefix)) {
-                return response;
-            }
-
-  /*          // Directory end/status response
-            if (startsWith(response,
-                    new byte[]{(byte) 0xF0, 0x43, 0x50, 0x00, 0x05, 0x7F})) {
-                return response;
-            }
-*/
-            logger.debug("Ignoring unexpected response: {}", asHex(response));
-        }
+        return waitForResponse(expectedPrefix, timeoutMs);
     }
 
     /*
-     * The 3 messages included here test for a response. It is a connection check.
+     * The 3 messages included here test for a response. It is for a connection check.
      */
-    public void testCommunication() throws Exception {
+    public void checkCommunication() throws Exception {
         logger.debug("Test Communication");
 
         byte[] expected1 = {
@@ -181,7 +197,11 @@ public class KbCommunication {
                 0x43, 0x50, 0x00,
                 0x00, 0x00, 0x02, 0X01, 0X01
         };
-        sendAndWaitForResponse("F0 43 50 00 00 00 01 F7", expected1, 1000);
+        byte[] response1 = sendAndWaitForResponse("F0 43 50 00 00 00 01 F7", expected1, 1000);
+        if (response1 == null) {
+            throw new IOException("Connection test 1 failed");
+        }
+
 
         byte[] expected2 = {
                 (byte) 0xF0,
@@ -196,18 +216,24 @@ public class KbCommunication {
         );
 
         if (response2 == null) {
-            throw new IOException("Timeout waiting for device information");
+            throw new IOException("Connection test 2 failed");
         }
 
         byte[] expected3 = {
                 (byte) 0xF0,0x43,0x50,0x00,0x00,0x01,0x02,0x00
         };
-        sendAndWaitForResponse("F0 43 50 00 00 01 01 F7", expected3, 1000);
+        byte[] response3 = sendAndWaitForResponse("F0 43 50 00 00 01 01 F7", expected3, 1000);
+        if (response3 == null) {
+            throw new IOException("Connection test 3 failed");
+        }
     }
 
+    /**
+     * request identification
+     *
+     * @throws Exception
+     */
     public void identity() throws Exception {
-        logger.debug("IDENTIFY");
-
         byte[] expected = {
                 (byte) 0xF0,
                 0x7E, 0x7F, 0x06,
@@ -229,6 +255,12 @@ public class KbCommunication {
         sendAndWaitForResponse("F0 43 50 00 00 01 00 01 F7", expected4, 1000);
     }
 
+    /**
+     * Here we disconnect from the keyboard; The keyboard changes its display
+     * back to normal functionality
+     *
+     * @throws Exception
+     */
     public void disconnect() throws Exception {
         byte[] expected = {
                 (byte) 0xF0,0x43,0x50,0x00,0x00,0x01,0x02,0x00
@@ -241,7 +273,14 @@ public class KbCommunication {
         );
     }
 
-    public Keyboard getKeyboardSetup() throws Exception {
+    /**
+     * retrieve the drives (USER and USB1 if connected)
+     *
+     * @return Keyboard instance containing a list of present drives
+     *
+     * @throws Exception
+     */
+    public Keyboard getKeyboardDrives() throws Exception {
         byte[] expected = {
                 (byte) 0xF0, 0x43, 0x50, 0x00, 0x05, 0x0B, 0x01
         };
@@ -259,20 +298,22 @@ public class KbCommunication {
             KbDrive kbUserDrive = new KbDrive(1, "USER");
             response = sendAndWaitForResponse(SysexBuilder.getDrive(1), expected, 1000);
             keyboard.getDrives().add(kbUserDrive);
-
-//            asHex = asHex(response);
-//            drives.put(1, new CommEntity("USER", asHex.substring(35, asHex.length() - 2)));
         } else {
             KbDrive kbUserDrive = new KbDrive(0, "USER");
             keyboard.getDrives().add(kbUserDrive);
-
-//            String asHex = asHex(response);
-//            drives.put(0, new CommEntity("USER", asHex.substring(35, asHex.length() - 2)));
         }
 
         return keyboard;
     }
 
+    /**
+     * retrieve files and/or folders
+     *
+     * @param entity (a Drive or Folder instance)
+     * @param sysex The sysex
+     *
+     * @throws Exception
+     */
     public void retrieveData(DriveEntity entity, String sysex) throws Exception {
         byte[] expected = {
                 (byte) 0xF0,
@@ -283,9 +324,11 @@ public class KbCommunication {
         byte[] response = sendAndWaitForResponse(sysex, expected, 10000);
 
         if (response != null) {
+            // The response if a file or folder
             if (! starts(response, 0xF0, 0x43, 0x50,0x00, 0x05, 0x7F)) {
                 extractName(response, entity);
 
+                /* Look for the next items */
                 for (int i = 0; i < 10000; i++) {
                     response = sendAndWaitForResponse(
                             "F0 43 50 00 05 05 00 F7",
@@ -299,16 +342,51 @@ public class KbCommunication {
                         break;
                     }
 
-                    /* NO MORE DATA */
+                    /* until NO MORE DATA is sent */
                     // F0 43 50 00 05 7F 01 01 01 42 00 00 F7
                     if (starts(response, 0xF0, 0x43, 0x50,
                             0x00, 0x05, 0x7F)) {
                         break;
                     }
 
+                    /* extract file or folder from response and add it to instance */
                     extractName(response, entity);
                 }
             }
         }
+    }
+
+    public byte[] sendMessageAndWait(String s, long timeout, boolean sendFirst) throws MidiUnavailableException {
+        try {
+            if (sendFirst) {
+                send(hex(s));
+            }
+
+            // 3. HIER BLOKKEERT DE THREAD: We wachten maximaal 3 seconden.
+            // Omdat de listener de array maakt, maakt de variabele lengte hier niks uit!
+            byte[] responseBytes = handshakeQueue.poll(timeout, TimeUnit.MILLISECONDS);
+
+            if (responseBytes != null) {
+                // 5. Geef de byte-array terug als resultaat van de functie
+                return responseBytes;
+            } else {
+                logger.error("[SendThread] Timeout: MIDI device didin't react in the time limit");
+            }
+
+        } catch (InvalidMidiDataException e) {
+            logger.error("Error in MIDI data format: {}", e.getMessage());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.error("Thread interrupted while waiting.");
+        }
+
+        return null; // Retourneer null als er een timeout of fout optreedt
+    }
+
+    public void close() {
+        try { keyboardIn.close(); } catch (Exception ignored) {}
+        try { keyboardOut.close(); } catch (Exception ignored) {}
+        try { receiver.close(); } catch (Exception ignored) {}
+        try { transmitter.close(); } catch (Exception ignored) {}
     }
 }

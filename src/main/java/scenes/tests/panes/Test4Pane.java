@@ -1,16 +1,8 @@
 package scenes.tests.panes;
 
-import entity.midi.Midi;
-import entity.voice.Group;
-import entity.voice.Patch;
-import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
-import util.keyboards.comm.SysexBuilder;
+import util.keyboards.yamaha.SysexBuilder;
 import util.midi.MidiHelper;
-import util.midi.MidiWriter;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static util.Util.setPaneBackground;
 

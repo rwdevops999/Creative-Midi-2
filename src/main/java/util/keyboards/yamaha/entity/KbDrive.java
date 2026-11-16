@@ -1,11 +1,12 @@
 package util.keyboards.yamaha.entity;
 
-import entity.NameEntity;
-import lombok.Getter;
-
-import java.util.ArrayList;
-import java.util.List;
-
+/**
+ * Contains
+ * - the drive name (USB1 or USER)
+ * - the drive id
+ * - a list of folders
+ * - a list of files
+ */
 public class KbDrive extends DriveEntity {
     public KbDrive(int id, String name) {
         super();

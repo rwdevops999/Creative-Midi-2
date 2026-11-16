@@ -6,6 +6,11 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Contains keyboard internal information
+ * - a list of available drives
+ */
+
 public class Keyboard {
     @Getter
     private List<KbDrive> drives;

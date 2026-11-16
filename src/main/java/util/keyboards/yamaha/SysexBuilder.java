@@ -1,9 +1,9 @@
-package util.keyboards.comm;
+package util.keyboards.yamaha;
 
 import util.keyboards.yamaha.entity.KbFolder;
 
-import static util.keyboards.comm.KbUtil.buildDirRequestSysEx;
-import static util.keyboards.comm.KbUtil.byteToHex;
+import static util.keyboards.yamaha.KbUtil.buildDirRequestSysEx;
+import static util.keyboards.yamaha.KbUtil.byteToHex;
 
 public class SysexBuilder {
     private static final String EOS = " F7";

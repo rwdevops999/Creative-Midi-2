@@ -1,21 +1,19 @@
 package util.keyboards.yamaha;
 
-import org.apache.commons.io.FilenameUtils;
-import util.keyboards.comm.KbCommunication;
-import util.keyboards.comm.SysexBuilder;
+import fx.dialog.DialogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import util.keyboards.yamaha.entity.KbDrive;
-import util.keyboards.yamaha.entity.KbFile;
-import util.keyboards.yamaha.entity.KbFolder;
 import util.keyboards.yamaha.entity.Keyboard;
 
-import java.io.IOException;
+import java.io.File;
 import java.util.*;
-import java.util.stream.Collectors;
 
-import static util.keyboards.comm.KbUtil.getFilesFrom;
-import static util.keyboards.yamaha.General.starts;
+import static util.keyboards.yamaha.KbUtil.getFilesFrom;
 
 public class KeyboardUtil {
+    private static final Logger logger = LoggerFactory.getLogger(KeyboardUtil.class);
+
     private final KbCommunication kbComm = KbCommunication.getInstance();
 
     public synchronized List<String> getStyleFiles() throws Exception {
@@ -25,13 +23,13 @@ public class KeyboardUtil {
             return new ArrayList<>();
         }
 
-        kbComm.testCommunication();
+        kbComm.checkCommunication();
 
         try {
             kbComm.identity();
             kbComm.connect();
 
-            Keyboard kb = kbComm.getKeyboardSetup();
+            Keyboard kb = kbComm.getKeyboardDrives();
 
             for (KbDrive drive : kb.getDrives()) {
                 String sysex = SysexBuilder.getAllFilesOnDriveSysex(drive.getId());
@@ -56,13 +54,13 @@ public class KeyboardUtil {
             return new ArrayList<>();
         }
 
-        kbComm.testCommunication();
+        kbComm.checkCommunication();
 
         try {
             kbComm.identity();
             kbComm.connect();
 
-            Keyboard kb = kbComm.getKeyboardSetup();
+            Keyboard kb = kbComm.getKeyboardDrives();
 
             for (KbDrive drive : kb.getDrives()) {
                 String sysex = SysexBuilder.getAllFilesOnDriveSysex(drive.getId());
@@ -78,5 +76,21 @@ public class KeyboardUtil {
         }
 
         return files;
+    }
+
+    public synchronized void uploadStyle(String styleFileOnDisk, String styleName) {
+        if (!kbComm.isInitialised()) {
+            DialogFactory.getInstance().renderErrorDialog("No device selected");
+        } else {
+            try (StyleUploader styleUploader = new StyleUploader()) {
+                File f = new File(styleFileOnDisk);
+                String newStyleName = styleName + ".sty";
+
+                styleUploader.upload(f.toPath(), newStyleName);
+                logger.debug("Uploaded style file on disk: " + styleFileOnDisk);
+            } catch (Exception e) {
+                logger.error("Exception. CAUSE {}", e.getMessage());
+            }
+        }
     }
 }

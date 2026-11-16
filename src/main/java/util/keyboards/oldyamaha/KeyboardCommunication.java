@@ -1,10 +1,9 @@
-package util.keyboards.yamaha;
+package util.keyboards.oldyamaha;
 
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.app.AppInfo;
-import util.properties.AppProperties;
 
 import javax.sound.midi.*;
 import java.io.IOException;
@@ -15,7 +14,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import static util.keyboards.yamaha.General.*;
-import static util.properties.PropertyKeys.DEVICE;
 
 public class KeyboardCommunication {
     private static final Logger logger = LoggerFactory.getLogger(KeyboardCommunication.class);

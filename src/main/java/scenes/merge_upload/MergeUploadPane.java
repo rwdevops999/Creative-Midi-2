@@ -1,7 +1,5 @@
 package scenes.merge_upload;
 
-import entity.NameEntity;
-import entity.playlist.Song;
 import fx.component.ImageButton;
 import fx.dialog.DialogFactory;
 import fx.dialog.NameDialog;
@@ -9,37 +7,24 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.collections.FXCollections;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
 import javafx.geometry.VPos;
-import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.Separator;
 import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
-import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import scenes.SceneActionsPane;
-import scenes.sysex.SysexDetailsPane;
-import scenes.sysex.SysexListPane;
-import scenes.sysex.consumers.*;
-import scenes.sysex.statemachine.StateMachine;
-import scenes.sysex.statemachine.States;
 import util.app.AppInfo;
 import util.keyboards.yamaha.KeyboardUtil;
 import util.registry.Registry;
 
 import java.io.File;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.BiConsumer;
 
 import static util.Util.setPaneBackground;
 
@@ -262,9 +247,12 @@ public class MergeUploadPane extends GridPane {
     }
 
 
-        private void uploadStyleFile(String fileName, String selectedStyleFile) {
-            // Upload the file from selectedStyleFile -> fileName (.sty)
-            System.out.println("Uploading style file " + selectedStyleFile + " to " + fileName + ".sty");
+        private void uploadStyleFile(String styleName, String selectedStyleFile) {
+            KeyboardUtil utils = new KeyboardUtil();
+
+            System.out.println("Uploading style file " + selectedStyleFile + " to " + styleName + ".sty");
+
+            utils.uploadStyle(selectedStyleFile, styleName);
         }
 
         private void uploadMidiFile(String fileName, String selectedMidiFile) {

@@ -2,7 +2,13 @@ package util.keyboards.yamaha;
 
 import java.util.Arrays;
 
+/**
+ * General utilities
+ */
 public class General {
+    /**
+     * Convert a string to hex bytes
+     */
     public static byte[] hex(String s) {
         s = s.replaceAll("\\s", "");
         byte[] b = new byte[s.length()/2];
@@ -10,6 +16,9 @@ public class General {
         return b;
     }
 
+    /**
+     * convert bytes as hex string
+     */
     public static String asHex(byte[] data) {
         if (data == null) {
             return "NULL";
@@ -30,12 +39,26 @@ public class General {
         return sb.toString().trim();
     }
 
+    /**
+     * check is bytes start with prefix
+     */
     public static boolean starts(byte[] b, int... prefix) {
-        if (b.length < prefix.length) return false;
-        for (int i=0;i<prefix.length;i++) if ((b[i]&255)!=prefix[i]) return false;
+        if (b.length < prefix.length) {
+            return false;
+        }
+
+        for (int i=0;i<prefix.length;i++) {
+            if ((b[i]&255)!=prefix[i]) {
+                return false;
+            }
+        }
+
         return true;
     }
 
+    /**
+     * check is bytes array start with prefix bytes array
+     */
     public static boolean startsWith(byte[] array, byte[] prefix) {
         if (array == null || prefix == null) {
             return false;

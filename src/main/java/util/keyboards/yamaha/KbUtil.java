@@ -1,16 +1,15 @@
-package util.keyboards.comm;
+package util.keyboards.yamaha;
 
 import org.apache.commons.io.FilenameUtils;
 import util.keyboards.yamaha.entity.*;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
-import static util.keyboards.yamaha.General.asHex;
 
 public class KbUtil {
     public static String byteToHex(byte data) {
@@ -186,4 +185,21 @@ public class KbUtil {
         return files;
     }
 
+    public static String createUniqueName(Path styleFile, String extension) {
+        String filename = styleFile.getFileName().toString();
+
+        int dot = filename.lastIndexOf('.');
+        String baseName = dot > 0
+                ? filename.substring(0, dot)
+                : filename;
+
+        // Keep the filename compatible with our ASCII encoder.
+        baseName = baseName.replaceAll("[^A-Za-z0-9_-]", "_");
+
+        String timestamp = LocalDateTime.now().format(
+                DateTimeFormatter.ofPattern("yyMMdd_HHmmss")
+        );
+
+        return baseName + "_" + timestamp + extension;
+    }
 }
