@@ -3,6 +3,8 @@ package scenes.merge_upload;
 import entity.NameEntity;
 import entity.playlist.Song;
 import fx.component.ImageButton;
+import fx.dialog.DialogFactory;
+import fx.dialog.NameDialog;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -33,8 +35,10 @@ import util.keyboards.yamaha.KeyboardUtil;
 import util.registry.Registry;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 
 import static util.Util.setPaneBackground;
@@ -84,6 +88,9 @@ public class MergeUploadPane extends GridPane {
     private String selectedKeyboardMidiFile = null;
 
     private static final int VIEW_HEIGHT = 175;
+
+    private List<String> styleFiles;
+    private List<String> midiFiles;
 
     private void buildPane() {
         logger.debug("Building {}", getId());
@@ -140,6 +147,20 @@ public class MergeUploadPane extends GridPane {
         uploadStyleButton.disableProperty().bindBidirectional(styleUploadPropertyDisabled);
         add (uploadStyleButton, 8, row, 2, 1);
 
+        uploadStyleButton.setOnAction(event -> {
+            NameDialog nameDialog = new NameDialog("style", selectedKeyboardStyleFile);
+            Optional<String> styleName = nameDialog.showAndWait();
+            if (styleName.isPresent()) {
+                if (styleFiles.contains(styleName.get())) {
+                    if (DialogFactory.getInstance().renderConfirmationDialog("File exists ...", "Overwrite ?")) {
+                        uploadStyleFile(selectedKeyboardStyleFile, styleFileProperty.get());
+                    }
+                } else {
+                    uploadStyleFile(styleName.get(), styleFileProperty.get());
+                }
+            }
+        });
+
         // merge button
         row++;
         ImageButton mergeButton = new ImageButton("icons/merge.png", 100, 100);
@@ -159,6 +180,7 @@ public class MergeUploadPane extends GridPane {
             if (AppInfo.INSTANCE.getWorkingDir() != null) {
                 fileChooser.setInitialDirectory(new File(AppInfo.INSTANCE.getWorkingDir()));
             }
+
             File selectedFile = fileChooser.showOpenDialog(AppInfo.INSTANCE.getPrimaryStage());
             midiSelected = false;
             if (selectedFile != null) {
@@ -179,6 +201,19 @@ public class MergeUploadPane extends GridPane {
         ImageButton uploadMidiButton = new ImageButton("icons/upload-down.png", 100, 35);
         uploadMidiButton.disableProperty().bindBidirectional(midiUploadPropertyDisabled);
         add (uploadMidiButton, 8, row, 2, 1);
+        uploadMidiButton.setOnAction(event -> {
+            NameDialog nameDialog = new NameDialog("style", selectedKeyboardMidiFile);
+            Optional<String> songName = nameDialog.showAndWait();
+            if (songName.isPresent()) {
+                if (midiFiles.contains(songName.get())) {
+                    if (DialogFactory.getInstance().renderConfirmationDialog("File exists ...", "Overwrite ?")) {
+                        uploadMidiFile(selectedKeyboardMidiFile, midiFileProperty.get());
+                    }
+                } else {
+                    uploadStyleFile(songName.get(), midiFileProperty.get());
+                }
+            }
+        });
 
         // midis list
         row++;
@@ -209,8 +244,8 @@ public class MergeUploadPane extends GridPane {
     private void setStyleFiles(ListView<String> listView) {
         try {
             KeyboardUtil utils = new KeyboardUtil();
-            List<String> styles = utils.getStyleFiles().stream().sorted(String.CASE_INSENSITIVE_ORDER).toList();
-            listView.getItems().addAll(styles);
+            styleFiles = utils.getStyleFiles().stream().sorted(String.CASE_INSENSITIVE_ORDER).toList();
+            listView.getItems().addAll(styleFiles);
         } catch (Exception e) {
             listView.getItems().addAll(new ArrayList<>());
         }
@@ -225,4 +260,15 @@ public class MergeUploadPane extends GridPane {
             listView.getItems().addAll(new ArrayList<>());
         }
     }
+
+
+        private void uploadStyleFile(String fileName, String selectedStyleFile) {
+            // Upload the file from selectedStyleFile -> fileName (.sty)
+            System.out.println("Uploading style file");
+        }
+
+        private void uploadMidiFile(String fileName, String selectedMidiFile) {
+            // Upload the file from selectedMidiFile -> fileName (.mid)
+            System.out.println("Uploading midi file");
+        }
 }
