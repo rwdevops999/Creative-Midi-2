@@ -254,8 +254,8 @@ public class MergeUploadPane extends GridPane {
     private void setMidiFiles(ListView<String> listView) {
         try {
             KeyboardUtil utils = new KeyboardUtil();
-            List<String> songs = utils.getSongFiles().stream().sorted(String.CASE_INSENSITIVE_ORDER).toList();
-            listView.getItems().addAll(songs);
+            midiFiles = utils.getSongFiles().stream().sorted(String.CASE_INSENSITIVE_ORDER).toList();
+            listView.getItems().addAll(midiFiles);
         } catch (Exception e) {
             listView.getItems().addAll(new ArrayList<>());
         }
@@ -264,11 +264,11 @@ public class MergeUploadPane extends GridPane {
 
         private void uploadStyleFile(String fileName, String selectedStyleFile) {
             // Upload the file from selectedStyleFile -> fileName (.sty)
-            System.out.println("Uploading style file");
+            System.out.println("Uploading style file " + selectedStyleFile + " to " + fileName + ".sty");
         }
 
         private void uploadMidiFile(String fileName, String selectedMidiFile) {
             // Upload the file from selectedMidiFile -> fileName (.mid)
-            System.out.println("Uploading midi file");
+            System.out.println("Uploading midi file " + selectedMidiFile + " to " + fileName + ".mid");
         }
 }
