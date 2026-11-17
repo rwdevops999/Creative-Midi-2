@@ -229,10 +229,6 @@ public class FileEditorPane extends VBox {
         MidiEvent targetEvent = eventInfoToDelete.getOriginalEvent();
         if (targetEvent == null || targetEvent.getMessage() == null) return;
 
-        System.out.println("Info tick: " + eventInfoToDelete.getTick());
-        System.out.println("Actual event tick: " + targetEvent.getTick());
-        System.out.println("Message type: " + targetEvent.getMessage().getClass().getSimpleName());
-
         // 1. Always remove the exact original event first
         for (Track track : activeSequence.getTracks()) {
             if (track.remove(targetEvent)) {

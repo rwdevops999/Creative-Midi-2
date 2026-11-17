@@ -254,15 +254,11 @@ public class MergeUploadPane extends GridPane {
         private void uploadStyleFile(String styleName, String selectedStyleFile) {
             KeyboardUtil utils = new KeyboardUtil();
 
-            System.out.println("Uploading style file " + selectedStyleFile + " to " + styleName + ".sty");
-
             utils.uploadStyle(selectedStyleFile, styleName);
         }
 
         private void uploadMidiFile(String songName, String selectedMidiFile) {
             KeyboardUtil utils = new KeyboardUtil();
-
-            System.out.println("Uploading midi file " + selectedMidiFile + " to " + songName + ".mid");
 
             utils.uploadSong(selectedMidiFile, songName);
         }

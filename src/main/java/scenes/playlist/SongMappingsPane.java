@@ -204,10 +204,6 @@ public class SongMappingsPane extends HBox {
         public void onChanged(Change<? extends Sysex> c) {
             if (! muteUpdating) {
                 currentSong.setPreMappings(new ArrayList<>(preMappingProperty.get()));
-                if (currentSong == null) {
-                    System.out.println("WARNING");
-                }
-//            getPlaylistDetailsPane().getSongDetailsPane().setSong(currentSong, true);
                 muteUpdating = true;
                 getPlaylistDetailsPane().getSongDetailsPane().replaceWorkingSong(currentSong);
                 muteUpdating = false;
@@ -220,10 +216,6 @@ public class SongMappingsPane extends HBox {
         public void onChanged(Change<? extends Sysex> c) {
             if (! muteUpdating) {
                 currentSong.setPostMappings(new ArrayList<>(postMappingProperty.get()));
-                if (currentSong == null) {
-                    System.out.println("WARNING");
-                }
-//            getPlaylistDetailsPane().getSongDetailsPane().setSong(currentSong, true);
                 muteUpdating = true;
                 getPlaylistDetailsPane().getSongDetailsPane().replaceWorkingSong(currentSong);
                 muteUpdating = false;
@@ -236,10 +228,6 @@ public class SongMappingsPane extends HBox {
         public void onChanged(Change<? extends SongMapping> sm) {
             if (! muteUpdating) {
                 currentSong.setMappings(new ArrayList<>(mappingProperty.get()));
-                if (currentSong == null) {
-                    System.out.println("WARNING");
-                }
-                //            getPlaylistDetailsPane().getSongDetailsPane().setSong(currentSong, true);
                 muteUpdating = true;
                 getPlaylistDetailsPane().getSongDetailsPane().replaceWorkingSong(currentSong);
                 muteUpdating = false;
