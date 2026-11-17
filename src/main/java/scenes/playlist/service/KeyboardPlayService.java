@@ -63,15 +63,33 @@ public class KeyboardPlayService extends Service<Void> {
     private Map<ByteBuffer, String> mappingsNameMap = new HashMap<>();
 
     private void processSongInformation(String songName) {
-        Song song = playlistContainer.getSongByName(songName);
+        logger.debug("PROCESSING SONG: {}", songName);
 
-        currentPlayingSong = "";
 
+        // TODO Test this with a song with 2 numbers
+        if (! songName.equals(currentPlayingSong)) {
+            logger.debug("THIS IS NOT THE SAME SONG AS IS PLAYING: {}", songName);
+
+            logger.debug("LOOKING UP SONG: {}", songName);
+            Song song = playlistContainer.getSongByName(songName);
+
+            if (song != null) {
+                logger.debug("SONG INFORMATION IS AVAILABLE: {}", songName);
+
+                logger.debug("SET SONG AS CURRENT PLAYING: {}", songName);
+                currentPlayingSong = songName;
+            }
+        } else {
+            logger.debug("THE SELECTED SONG IS PLAYING. DO SOMETHING? : {}", songName);
+        }
+
+/*
         if (song != null) {
+            logger.debug("SONG INFORMATION IS AVAILABLE: {}", songName);
             if (! songName.equals(currentPlayingSong)) {
+                logger.debug("NEW SONG SELECTED: {}", songName);
                 currentPlayingSong = songName;
 
-                // TODO setup song information (such as mappings)...
                 if (! song.getPreMappings().isEmpty()) {
                     preMappings.clear();
                     preMappingsSent = false;
@@ -85,11 +103,9 @@ public class KeyboardPlayService extends Service<Void> {
                                 sysex.getContent().setSysex(tempoSysex);
 
                                 preMappings.add(sysex);
-//                                preMappings.add(ByteBuffer.wrap(sysex.getContent().getBytes()));
                             }
                         } else {
                             preMappings.add(sysex);
-//                            preMappings.add(ByteBuffer.wrap(sysex.getContent().getBytes()));
                         }
                     }
                 }
@@ -118,7 +134,7 @@ public class KeyboardPlayService extends Service<Void> {
             }
         } else {
             followSong = false;
-        }
+        } */
     }
 
     private void sendPreMappings () {
@@ -220,6 +236,8 @@ public class KeyboardPlayService extends Service<Void> {
      */
     @Override
     protected Task<Void> createTask() {
+        currentPlayingSong = "";
+
         try {
             midiOutputDevice =  AppInfo.INSTANCE.getSelectedDevice().getMidiOutputDevice();
             if (midiOutputDevice == null) {
