@@ -13,7 +13,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
+import static org.apache.commons.lang3.text.translate.CharSequenceTranslator.hex;
 import static util.keyboards.yamaha.General.asHex;
+import static util.keyboards.yamaha.General.startsWith;
 
 public class StyleUploader implements AutoCloseable {
     private static final Logger logger = LoggerFactory.getLogger(StyleUploader.class);
@@ -40,7 +42,6 @@ public class StyleUploader implements AutoCloseable {
             byte[] data = Files.readAllBytes(fileOnDisk);
             List<byte[]> packets = FilePackets.buildDataPackets(data);
             byte[] setup = FilePackets.buildTransferRequest(kb, "USER", "STYLE", destinationName, data.length);
-
             byte[] storageResponse = kbComm.sendMessageAndWait(
                     "F0 43 50 00 05 06 00 01 F7",
                     2000, true
@@ -52,22 +53,29 @@ public class StyleUploader implements AutoCloseable {
             kbComm.send(setup);
             kbComm.waitForResponse(new byte[] {(byte)0xF0,0x43,0x50,0x00,0x03,0x00,(byte)0xF7}, 10000);
             for (int i = 0; i < packets.size(); i++) {
-                kbComm.clearHandshakeQueue();
-                kbComm.send(packets.get(i));
-                byte[] ack = kbComm.waitForResponse(new byte[] {
-                                (byte) 0xF0, 0x43, 0x50, 0x00,
-                                0x03, 0x00, (byte) 0xF7
-                        }, 10000
+                byte[] packet = packets.get(i);
+
+                kbComm.send(packet);
+
+                byte[] ack = kbComm.waitForResponse(
+                        new byte[] {
+                                (byte) 0xF0, 0x43, 0x50, 0x00, 0x03
+                        },
+                        10000
                 );
 
                 if (ack == null) {
                     throw new IOException(
-                            "No ACK for style packet " +
-                                    (i + 1) + "/" + packets.size()
+                            "No ACK for packet " + (i + 1)
                     );
                 }
 
-                logger.debug("Style upload: {}/{} packets%n",i + 1, packets.size());
+                if (ack.length < 7 || (ack[5] & 0xFF) != 0x00) {
+                    throw new IOException(
+                            "Unexpected ACK for packet " + (i + 1)
+                                    + ": " + asHex(ack)
+                    );
+                }
             }
 
             kbComm.clearHandshakeQueue();
@@ -78,14 +86,23 @@ public class StyleUploader implements AutoCloseable {
 
             // Wait for the actual transfer-completion response.
             // Ignore intermediate 00 05 02 notifications.
-            byte[] completed = kbComm.waitForResponse(new byte[] {
-                            (byte) 0xF0, 0x43, 0x50, 0x00,
-                            0x03, 0x03
-                    }, 30000
+            byte[] completed = kbComm.waitForResponse(
+                    new byte[] {
+                            (byte) 0xF0, 0x43, 0x50, 0x00, 0x03
+                    },
+                    30000
             );
-            logger.debug("Transfer completed: {}",  asHex(completed));
 
-            System.out.println("CHECKIE");
+            if (completed == null
+                    || completed.length < 7
+                    || (completed[5] & 0xFF) != 0x03) {
+                throw new IOException(
+                        "Transfer not confirmed: "
+                                + (completed == null ? "TIMEOUT" : asHex(completed))
+                );
+            }
+
+            logger.debug("Transfer completed: {}", asHex(completed));
         } catch (Exception e) {
             logger.error("Exception. CAUSE {}", e.getMessage());
         }

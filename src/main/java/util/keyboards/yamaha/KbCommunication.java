@@ -95,16 +95,21 @@ public class KbCommunication {
     /*
      * Unbounded blocking queue (for producer - consumer)
      */
-    private final BlockingQueue<byte[]> handshakeQueue = new LinkedBlockingQueue<>();
+    public final BlockingQueue<byte[]> handshakeQueue = new LinkedBlockingQueue<>();
 
     /**
      * Sysex received from keyboard and put in Q
      *
      * @param rawResponse
+     * @param rawResponse
      */
     public void onSysexReceived(byte[] rawResponse) {
-        // poll() of offer() zorgt voor de directe overdracht naar de wachtende thread
+
+        logMidi("RECEIVED", rawResponse);
+
+        // Bestaande overdracht naar de wachtende thread
         boolean accepted = handshakeQueue.offer(rawResponse);
+
         if (!accepted) {
             logger.debug("No thread is waiting on these bytes at the moment: ignore them.");
         }
@@ -117,7 +122,11 @@ public class KbCommunication {
      * @throws MidiUnavailableException
      * @throws InvalidMidiDataException
      */
-    public void send(byte[] bytes) throws MidiUnavailableException, InvalidMidiDataException {
+    public void send(byte[] bytes)
+            throws MidiUnavailableException, InvalidMidiDataException {
+
+        logMidi("SENT", bytes);
+
         sysexWriter.sendBytes(bytes);
     }
 
@@ -125,33 +134,33 @@ public class KbCommunication {
             byte[] expectedPrefix,
             long timeoutMs) throws InterruptedException {
 
-        long deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(timeoutMs);
+        long deadline = System.nanoTime()
+                + TimeUnit.MILLISECONDS.toNanos(timeoutMs);
 
         while (true) {
             long remaining = deadline - System.nanoTime();
+
             if (remaining <= 0) {
-                /* timeout reached */
                 logger.error("Timeout waiting for: {}", asHex(expectedPrefix));
                 return null;
             }
 
-            /* wait for the response */
             byte[] response = handshakeQueue.poll(
                     remaining, TimeUnit.NANOSECONDS);
 
             if (response == null) {
-                /* timeout set response to null */
                 logger.error("Timeout waiting for: {}", asHex(expectedPrefix));
                 return null;
             }
 
-            if (starts(response, 0xF0, 0x43, 0x50, 0x00, 0x05, 0x7F)) {
-                /* No more data */
+            logger.debug("Received response: {}", asHex(response));
+
+            // Alle Yamaha style-transferstatussen teruggeven.
+            if (starts(response, 0xF0, 0x43, 0x50, 0x00, 0x03)) {
                 return response;
             }
 
             if (startsWith(response, expectedPrefix)) {
-                /* this is the expected response */
                 return response;
             }
 
@@ -195,8 +204,9 @@ public class KbCommunication {
         byte[] expected1 = {
                 (byte) 0xF0,
                 0x43, 0x50, 0x00,
-                0x00, 0x00, 0x02, 0X01, 0X01
+                0x00, 0x00
         };
+
         byte[] response1 = sendAndWaitForResponse("F0 43 50 00 00 00 01 F7", expected1, 1000);
         if (response1 == null) {
             throw new IOException("Connection test 1 failed");
@@ -393,4 +403,16 @@ public class KbCommunication {
         try { receiver.close(); } catch (Exception ignored) {}
         try { transmitter.close(); } catch (Exception ignored) {}
     }
-}
+
+    private synchronized void logMidi(String direction, byte[] bytes) {
+        if (bytes == null) return;
+
+        StringBuilder hex = new StringBuilder();
+
+        for (byte b : bytes) {
+            hex.append(String.format("%02X ", b & 0xFF));
+        }
+
+        logger.info("MIDI {} [{} bytes]: {}",
+                direction, bytes.length, hex.toString().trim());
+    }}

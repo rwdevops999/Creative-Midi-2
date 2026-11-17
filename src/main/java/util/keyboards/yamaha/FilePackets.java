@@ -1,6 +1,8 @@
 package util.keyboards.yamaha;
 
 import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import util.keyboards.yamaha.entity.KbDrive;
 import util.keyboards.yamaha.entity.KbFile;
 import util.keyboards.yamaha.entity.KbFolder;
@@ -13,7 +15,11 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+import static util.keyboards.yamaha.General.asHex;
+
 public class FilePackets {
+    private static final Logger logger = LoggerFactory.getLogger(FilePackets.class);
+
     public static final int CHUNK_SIZE = 210;
 
     /** Yamaha 7-bit data-packing: one MSB mask then up to seven low-7-bit bytes. */
@@ -31,27 +37,69 @@ public class FilePackets {
     }
 
     public static List<byte[]> buildDataPackets(byte[] fileBytes) {
+
         if (fileBytes == null || fileBytes.length == 0)
             throw new IllegalArgumentException("Empty style file");
+
         int count = (fileBytes.length + CHUNK_SIZE - 1) / CHUNK_SIZE;
-        // Sequence format above 0x7f is not established by the reference capture.
-        if (count > 128)
-            throw new IllegalArgumentException("More than 128 packets: sequence extension unverified");
+
+/*        if (count > 128)
+            throw new IllegalArgumentException(
+                    "More than 128 packets: sequence extension unverified"
+            );
+*/
         List<byte[]> packets = new ArrayList<>(count);
+
         for (int seq = 0; seq < count; seq++) {
+
             int start = seq * CHUNK_SIZE;
-            byte[] packed = packData(fileBytes, start, Math.min(CHUNK_SIZE, fileBytes.length - start));
+            int inputLength = Math.min(
+                    CHUNK_SIZE,
+                    fileBytes.length - start
+            );
+
+            byte[] packed = packData(fileBytes, start, inputLength);
+
             ByteArrayOutputStream out = new ByteArrayOutputStream();
-            out.write(0xf0); out.write(0x43); out.write(0x50); out.write(0x01); out.write(0x01);
-            out.write((packed.length + 3) & 0x7f);
-            out.write(0x02); out.write(0x02); out.write(seq);
+
+            out.write(0xF0);
+            out.write(0x43);
+            out.write(0x50);
+            out.write(0x01);
+
+            // TEST: final-packet flag; not yet confirmed for PC -> PSR
+            out.write(0x01);
+//            out.write(seq == count - 1 ? 0x00 : 0x01);
+
+            out.write((packed.length + 3) & 0x7F);
+            out.write(0x02);
+            out.write(0x02);
+            int sequence = seq & 0x7F;
+            out.write(sequence);
+//            out.write(seq);
+
+            // Actual packed file data
             out.writeBytes(packed);
-            int sum = seq;
-            for (byte b : packed) sum += b & 0xff;
-            out.write((124 - sum) & 0x7f);
-            out.write(0xf7);
-            packets.add(out.toByteArray());
+
+// Checksum
+            int sum = sequence;
+
+            for (byte b : packed)
+                sum += b & 0xFF;
+
+            out.write((124 - sum) & 0x7F);
+
+            // End of SysEx
+            out.write(0xF7);
+
+            byte[] packet = out.toByteArray();
+            logger.debug("SEND PACKET: {} = {}",
+                    seq,
+                    java.util.HexFormat.of().formatHex(packet)
+            );
+            packets.add(packet);
         }
+
         return packets;
     }
 
@@ -65,7 +113,7 @@ public class FilePackets {
         System.out.println("packedDestination filename = [" + filename + "]");
 
         if (filename == null ||
-                !filename.matches("[A-Za-z0-9_.-]+\\.sty")) {
+                !filename.matches("[A-Za-z0-9_.-]+\\.(sty|mid)")) {
 
             throw new IllegalArgumentException(
                     "Invalid filename: [" + filename + "]"

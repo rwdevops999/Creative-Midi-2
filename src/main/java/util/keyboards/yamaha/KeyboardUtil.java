@@ -93,4 +93,20 @@ public class KeyboardUtil {
             }
         }
     }
+
+    public synchronized void uploadSong(String styleFileOnDisk, String styleName) {
+        if (!kbComm.isInitialised()) {
+            DialogFactory.getInstance().renderErrorDialog("No device selected");
+        } else {
+            try (MidiUploader midiUploader = new MidiUploader()) {
+                File f = new File(styleFileOnDisk);
+                String newStyleName = styleName + ".mid";
+
+                midiUploader.upload(f.toPath(), newStyleName);
+                logger.debug("Uploaded midi file on disk: " + styleFileOnDisk);
+            } catch (Exception e) {
+                logger.error("Exception. CAUSE {}", e.getMessage());
+            }
+        }
+    }
 }
