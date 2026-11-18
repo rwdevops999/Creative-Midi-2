@@ -398,10 +398,10 @@ public class KbCommunication {
     }
 
     public void close() {
-        try { keyboardIn.close(); } catch (Exception ignored) {}
-        try { keyboardOut.close(); } catch (Exception ignored) {}
-        try { receiver.close(); } catch (Exception ignored) {}
-        try { transmitter.close(); } catch (Exception ignored) {}
+//        try { keyboardIn.close(); } catch (Exception ignored) {}
+//        try { keyboardOut.close(); } catch (Exception ignored) {}
+//        try { receiver.close(); } catch (Exception ignored) {}
+//        try { transmitter.close(); } catch (Exception ignored) {}
     }
 
     private synchronized void logMidi(String direction, byte[] bytes) {

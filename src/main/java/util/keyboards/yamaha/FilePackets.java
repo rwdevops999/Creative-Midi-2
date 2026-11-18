@@ -113,8 +113,7 @@ public class FilePackets {
         System.out.println("packedDestination filename = [" + filename + "]");
 
         if (filename == null ||
-                !filename.matches("[A-Za-z0-9_.-]+\\.(sty|mid)")) {
-
+                !filename.matches("(?i)[A-Za-z0-9_. -]+\\.(sty|mid)")) {
             throw new IllegalArgumentException(
                     "Invalid filename: [" + filename + "]"
             );

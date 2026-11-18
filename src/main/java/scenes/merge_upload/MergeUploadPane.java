@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.app.AppInfo;
 import util.keyboards.yamaha.KeyboardUtil;
+import util.keyboards.yamaha.StyleMerger;
 import util.registry.Registry;
 
 import java.io.File;
@@ -150,6 +151,9 @@ public class MergeUploadPane extends GridPane {
         row++;
         ImageButton mergeButton = new ImageButton("icons/merge.png", 100, 100);
         mergeButton.disableProperty().bindBidirectional(mergePropertyDisabled);
+        mergeButton.setOnAction(event -> {
+            handleMerge(styleFileProperty.get(), midiFileProperty.get());
+        });
         add (mergeButton, 8, row, 2, 2);
 
         // midi uploading
@@ -261,5 +265,11 @@ public class MergeUploadPane extends GridPane {
             KeyboardUtil utils = new KeyboardUtil();
 
             utils.uploadSong(selectedMidiFile, songName);
+        }
+
+        private void handleMerge(String styleFileName, String midiFileName) {
+            StyleMerger styleMerger = new StyleMerger();
+            String newStyleFilename = styleMerger.mergeStyleAndMidi(styleFileName, midiFileName);
+            styleFileProperty.set(newStyleFilename);
         }
 }

@@ -5,6 +5,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Control;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import org.apache.commons.io.FilenameUtils;
 import util.app.colors.ColorScheme;
 import util.properties.AppProperties;
 
@@ -167,5 +168,19 @@ public class Util {
             }
         }
         return null;
+    }
+
+    public static String insertTimestamp(String fileName, String timestamp) {
+        String nameWithoutExt = FilenameUtils.removeExtension(fileName);
+        String extension = FilenameUtils.getExtension(fileName);
+
+        // Regex matches: underscore followed by 4 digits, 2 digits, 2 digits,
+        // and time digits separated by dashes (e.g., _2026-11-05_11-28-00)
+        String regex = "_\\d{4}-\\d{2}-\\d{2}_\\d{2}-\\d{2}-\\d{2}";
+
+        // Remove the old timestamp if it exists
+        nameWithoutExt = nameWithoutExt.replaceAll(regex, "");
+
+        return nameWithoutExt + "_" + timestamp + "." + extension;
     }
 }
