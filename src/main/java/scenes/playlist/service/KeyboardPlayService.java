@@ -2,6 +2,7 @@ package scenes.playlist.service;
 
 import entity.midi.Midi;
 import entity.playlist.Song;
+import entity.playlist.SongControl;
 import entity.playlist.SongMapping;
 import entity.sysex.Sysex;
 import javafx.concurrent.Service;
@@ -29,6 +30,8 @@ import java.util.*;
 import java.util.function.Function;
 
 import static util.communication.CommunicationType.*;
+import static util.keyboards.yamaha.General.asHex;
+import static util.keyboards.yamaha.General.hex;
 import static util.registry.AppEvent.AppEventType.MONITOR;
 
 public class KeyboardPlayService extends Service<Void> {
@@ -48,69 +51,69 @@ public class KeyboardPlayService extends Service<Void> {
     private MidiDevice midiOutputDevice;
     private MidiDevice midiInputDevice; // for writing to keyboard
 
-    private String currentPlayingSong = "";
+    private String selectedSong = "";
+    private boolean songIsValid = false;
     private boolean songIsPlaying = false;
-    private boolean preMappingsSent = false;
-    /*
-     * followSong is false if the song doesn't exist in the CM playlist.
-     * There is no song information, so we don't need to follow it.
-     */
-    private boolean followSong = true;
 
-    private List<Sysex> preMappings = new ArrayList<>();
-    private List<Sysex> postMappings = new ArrayList<>();
+    private boolean preMappingsSent = false;
+
+    private SongControl songControl = null;
+
+//    private List<Sysex> preMappings = new ArrayList<>();
+//    private List<Sysex> postMappings = new ArrayList<>();
     private Map<ByteBuffer, ByteBuffer> mappingsMap = new HashMap<>();
     private Map<ByteBuffer, String> mappingsNameMap = new HashMap<>();
 
     private void processSongInformation(String songName) {
         logger.debug("PROCESSING SONG: {}", songName);
 
-
-        // TODO Test this with a song with 2 numbers
-        if (! songName.equals(currentPlayingSong)) {
+        if (! songName.equals(selectedSong)) {
             logger.debug("THIS IS NOT THE SAME SONG AS IS PLAYING: {}", songName);
+
+            songControl = new SongControl(songName);
+
+            logger.debug("STOP STYLE: {}", songName);
+            sendToKeyboard("F0 43 60 7D F7");
 
             logger.debug("LOOKING UP SONG: {}", songName);
             Song song = playlistContainer.getSongByName(songName);
+            song.getPreMappings().stream().filter(s -> s.getContent().getParametrized() != false).findFirst().ifPresent(System.out::println);
 
             if (song != null) {
                 logger.debug("SONG INFORMATION IS AVAILABLE: {}", songName);
-
-                logger.debug("SET SONG AS CURRENT PLAYING: {}", songName);
-                currentPlayingSong = songName;
-            }
-        } else {
-            logger.debug("THE SELECTED SONG IS PLAYING. DO SOMETHING? : {}", songName);
-        }
-
-/*
-        if (song != null) {
-            logger.debug("SONG INFORMATION IS AVAILABLE: {}", songName);
-            if (! songName.equals(currentPlayingSong)) {
-                logger.debug("NEW SONG SELECTED: {}", songName);
-                currentPlayingSong = songName;
+                logger.debug("SONG TEMPO: {}", song.getSongInfo().getTempo());
 
                 if (! song.getPreMappings().isEmpty()) {
-                    preMappings.clear();
+                    logger.debug("SETTING UP PRE-MAPPINGS: {}", songName);
+                    songControl.setPreMappings(new ArrayList<>());
+                    System.out.println(">>> PREMAPPINGS: " + Integer.toHexString(System.identityHashCode(songControl.getPreMappings())));
+
                     preMappingsSent = false;
                     for (Sysex sysex : song.getPreMappings()) {
-                        if (sysex.getContent().getParametrized()) {
-                            Function<Integer, Parameter> function = ParametrizedFunctionFactory.getInstance().getParametrizedFunction(sysex.getContent().getParametrizedFunction());
+                        Sysex newSysex = new Sysex(sysex);
+                        songControl.getPreMappings().add(newSysex);
+
+                        if (newSysex.getContent().getParametrized()) {
+                            Function<Integer, Parameter> function = ParametrizedFunctionFactory.getInstance().getParametrizedFunction(newSysex.getContent().getParametrizedFunction());
                             if (function instanceof TempoFunction tempoFunction) {
                                 Parameter result = tempoFunction.apply(song.getSongInfo().getTempo());
-                                sysex.getContent().setParametrized(false);
+                                newSysex.getContent().setParametrized(false);
                                 String tempoSysex = sysex.getContent().getSysex().replace(result.getParameterString(), result.getReplacementString());
-                                sysex.getContent().setSysex(tempoSysex);
+                                System.out.println("TEMPO SYSEX = " + tempoSysex);
 
-                                preMappings.add(sysex);
+                                newSysex.getContent().setSysex(tempoSysex);
+
+//                                songControl.getPreMappings().add(new Sysex(sysex));
                             }
-                        } else {
-                            preMappings.add(sysex);
                         }
+/*                        else {
+                            songControl.getPreMappings().add(new Sysex(sysex));
+                        } */
                     }
                 }
 
                 if (! song.getMappings().isEmpty()) {
+                    logger.debug("SETTING UP MAPPINGS: {}", songName);
                     for (SongMapping songMapping : song.getMappings()) {
                         mappingsMap.put(
                                 ByteBuffer.wrap(songMapping.getReceive().getContent().getBytes()),
@@ -125,22 +128,31 @@ public class KeyboardPlayService extends Service<Void> {
                 }
 
                 if (! song.getPostMappings().isEmpty()) {
-                    postMappings.clear();
-                    postMappings.addAll(song.getPostMappings());
+                    logger.debug("SETTING UP POST-MAPPINGS: {}", songName);
+                    songControl.setPostMappings(new ArrayList<>());
+                    songControl.getPostMappings().addAll(song.getPostMappings());
                 }
 
-                // Execute pre-mappings
-//                sendPreMappings();
+                logger.debug("SELECT REG 1: {}", songName);
+                sendToKeyboard("F0 43 73 01 52 25 11 00 02 00 00 F7");
+
+                logger.debug("SENDING PRE-MAPPINGS: {}", songName);
+                sendPreMappings();
+
+                songIsValid = true;
+                logger.debug("SET SONG AS CURRENT SELECTED: {}", songName);
+                selectedSong = songName;
             }
-        } else {
-            followSong = false;
-        } */
+        }
     }
 
     private void sendPreMappings () {
+        System.out.println("SENDING PRE-MAPPINGS of " + songControl != null ? songControl.getSongName() : "UNDEFINED");
         // Execute pre-mappings
         try {
-            for (Sysex sysex : preMappings) {
+            System.out.println(">>> PREMAPPINGS: " + Integer.toHexString(System.identityHashCode(songControl.getPreMappings())));
+            for (Sysex sysex : songControl.getPreMappings()) {
+                System.out.println("SENDING SYSEX: " + sysex.getContent().getSysex());
                 sysexWriter.send(sysex);
                 Thread.sleep(100);
             }
@@ -157,12 +169,9 @@ public class KeyboardPlayService extends Service<Void> {
     private void sendPostMappings () {
         // Execute post-mappings
         try {
-            for (Sysex sysex : postMappings) {
+            for (Sysex sysex : songControl.getPostMappings()) {
                 sysexWriter.send(sysex);
             }
-/*            for (ByteBuffer buffer : postMappings) {
-                sysexWriter.sendBytes(buffer.array());
-            } */
         } catch (InvalidMidiDataException | MidiUnavailableException e) {
             logger.error("Exception. CAUSE {}", e.getMessage());
         }
@@ -174,8 +183,6 @@ public class KeyboardPlayService extends Service<Void> {
         if (hexMessage.startsWith("F0 43 73 01 52 26")) {
             // It is a song name => use songResolver
             String songName = songResolver.resolveSongName(hexMessage);
-
-            songIsPlaying = false;
 
             comm.showMessage(SELECT_SONG, songName);
 
@@ -203,6 +210,7 @@ public class KeyboardPlayService extends Service<Void> {
                 }
             }
         } else if (hexMessage.startsWith("F0 43 7E 01") && ! preMappingsSent) {
+            logger.debug("SENDING PREMAPPINGS");
             sendPreMappings();
         }
     };
@@ -218,12 +226,18 @@ public class KeyboardPlayService extends Service<Void> {
          * I'm not interested in ACTIVE SENSING messages
          */
         if (rawBytes[0] != ACTIVE_SENSING) {
-            if (rawBytes[0] == START && followSong) {
+            if (rawBytes[0] == START && songIsValid) {
+                logger.debug("STARTED SONG: {}", selectedSong);
                 comm.showMessage(CommunicationType.INBOUND, "Start");
                 songIsPlaying = true;
+                logger.debug("SENDING PRE MAPPINGS");
+                sendPreMappings();
             } else if (rawBytes[0] == STOP && songIsPlaying) {
+                logger.debug("STOPPED SONG: {}", selectedSong);
+
                 songIsPlaying = false;
                 comm.showMessage(CommunicationType.INBOUND, "Stop");
+                logger.debug("SENDING POST MAPPINGS");
                 sendPostMappings();
             }
         }
@@ -236,7 +250,7 @@ public class KeyboardPlayService extends Service<Void> {
      */
     @Override
     protected Task<Void> createTask() {
-        currentPlayingSong = "";
+        selectedSong = "";
 
         try {
             midiOutputDevice =  AppInfo.INSTANCE.getSelectedDevice().getMidiOutputDevice();
@@ -330,5 +344,14 @@ public class KeyboardPlayService extends Service<Void> {
         }); */
 
         return null;
+    }
+
+    private void sendToKeyboard(String sysex) {
+        try {
+            sysexWriter.sendBytes(hex(sysex));
+//            Thread.sleep(1000);
+        } catch (Exception e) {
+            logger.error("Exception. CAUSE {}", e.getMessage());
+        }
     }
 }

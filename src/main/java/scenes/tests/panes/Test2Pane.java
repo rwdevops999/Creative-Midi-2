@@ -1,16 +1,24 @@
 package scenes.tests.panes;
 
+import entity.midi.Midi;
 import fx.dialog.SrcDstListDialog;
 import javafx.geometry.Insets;
 import javafx.scene.layout.HBox;
+import util.midi.MidiWriter;
+import util.sysex.SysexWriter;
 
+import javax.sound.midi.ShortMessage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static util.Util.setPaneBackground;
+import static util.keyboards.yamaha.General.hex;
 
 public class Test2Pane extends HBox {
+    private SysexWriter writer = SysexWriter.getInstance();
+    private MidiWriter mwriter = MidiWriter.getInstance();
+
     public Test2Pane() {
         super();
 
@@ -23,30 +31,24 @@ public class Test2Pane extends HBox {
     }
 
     private  void  setupTest() {
-        setPadding(new Insets(5));
-        setSpacing(5);
     }
 
     private void runTest() {
-        List<String> srcList = new ArrayList<>();
-        srcList.add("src1");
-        srcList.add("src2");
-        srcList.add("src");
+        try {
+            writer.sendBytes(hex("F0 43 60 7D F7"));
+            Thread.sleep(1000);
+            writer.sendBytes(hex("F0 43 73 01 52 25 11 00 02 00 00 F7"));
+        } catch (Exception ex) {
+            System.out.println("EXCEPTION: " + ex.getMessage());
+        }
 
-        List<String> dstList = new ArrayList<>();
-        dstList.add("dst1");
-        dstList.add("dst2");
+/*        try {
+            ShortMessage sm = new ShortMessage(ShortMessage.STOP);
 
-        SrcDstListDialog<String> dialog = new SrcDstListDialog<>("This is the title", "Determine the events to be shown or hidden", "Filter", "SrcLabel", "DstLabel", srcList, dstList);
-
-        Optional<List<String>> result = dialog.showAndWait();
-        result.ifPresent(list -> {
-            if (list.isEmpty()) {
-                System.out.println("EMPTY RESULT");
-            } else {
-                list.forEach(System.out::println);
-            }
-        });
+            mwriter.send(sm);
+        } catch (Exception e) {
+            System.out.println("Exception: " + e.getMessage());
+        } */
     }
 
     private void testMidi() {

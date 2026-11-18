@@ -18,6 +18,8 @@ import javax.sound.midi.ShortMessage;
 import java.util.ArrayList;
 import java.util.List;
 
+import static util.keyboards.yamaha.General.asHex;
+
 public class MidiWriter {
     private static final Logger logger = LoggerFactory.getLogger(MidiWriter.class);
 
@@ -37,6 +39,18 @@ public class MidiWriter {
             if (midiInputDevice != null) {
                 midiInputDevice.getReceiver().send(midi.getMessage(), -1);
                 CommunicationMessage.getInstance().showMessage(CommunicationType.OUTBOUND, midi.toString());
+            }
+        }
+    }
+
+    public void send(ShortMessage message) throws MidiUnavailableException {
+        DeviceInfo dev = AppInfo.INSTANCE.getSelectedDevice();
+
+        if (dev != null) {
+            MidiDevice midiInputDevice = dev.getMidiInputDevice();
+            if (midiInputDevice != null) {
+                midiInputDevice.getReceiver().send(message, -1);
+                CommunicationMessage.getInstance().showMessage(CommunicationType.OUTBOUND, asHex(message.getMessage()));
             }
         }
     }
