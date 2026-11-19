@@ -18,8 +18,6 @@ public class MidiUploader implements AutoCloseable {
     private static final Logger logger = LoggerFactory.getLogger(MidiUploader.class);
     private static KbCommunication kbComm = KbCommunication.getInstance();
 
-    private SysexWriter sysexWriter = SysexWriter.getInstance();
-
     public MidiUploader() {
     }
 
@@ -38,82 +36,42 @@ public class MidiUploader implements AutoCloseable {
 
             byte[] data = Files.readAllBytes(fileOnDisk);
 
-            System.out.println("Filebytes length: " + data.length);
-
-            List<byte[]> packets = FilePackets.buildDataPackets(data);
-
-            System.out.println("Packets size: " + packets.size());
-
-            byte[] setup = FilePackets.buildTransferRequest(kb, "USER", "SONG", destinationName, data.length);
-            byte[] storageResponse = kbComm.sendMessageAndWait(
-                    "F0 43 50 00 05 06 00 01 F7",
-                    2000, true
-            );
-
-            logger.debug("Storage response: {}", (storageResponse == null ? "TIMEOUT" : asHex(storageResponse)));
-
-            kbComm.clearHandshakeQueue();
+            byte[] setup = FileTransferBuilder.packedDestination(kb, "USER", "STYLE", destinationName, data.length);
             kbComm.send(setup);
-            kbComm.waitForResponse(new byte[] {(byte)0xF0,0x43,0x50,0x00,0x03,0x00,(byte)0xF7}, 10000);
-            for (int i = 0; i < packets.size(); i++) {
-                byte[] packet = packets.get(i);
+            kbComm.waitForResponse(KbCommunication.ACK, 10000);
 
+            List<byte[]> packets = FileTransferBuilder.buildDataPackets(data);
+
+            System.out.println("SENDING PACKETS");
+            int i = 0;
+            for (byte[] packet : packets) {
+                System.out.println("SENDING PACKET: " + i);
                 kbComm.send(packet);
-
-                byte[] ack = kbComm.waitForResponse(
-                        new byte[] {
-                                (byte) 0xF0, 0x43, 0x50, 0x00, 0x03
-                        },
-                        10000
-                );
-
-                if (ack == null) {
-                    throw new IOException(
-                            "No ACK for packet " + (i + 1)
-                    );
-                }
-
-                if (ack.length < 7 || (ack[5] & 0xFF) != 0x00) {
-                    throw new IOException(
-                            "Unexpected ACK for packet " + (i + 1)
-                                    + ": " + asHex(ack)
-                    );
-                }
+                kbComm.waitForResponse(KbCommunication.ACK, 10000);
+                i++;
             }
+
+            System.out.println("DONE");
 
             kbComm.clearHandshakeQueue();
             kbComm.send(new byte[] {
-                    (byte) 0xF0, 0x43, 0x50, 0x00,
-                    0x03, 0x02, (byte) 0xF7
+                    (byte) 0xF0, 0x43, 0x50, 0x00, 0x03, 0x02, (byte) 0xF7
             });
 
-            // Wait for the actual transfer-completion response.
-            // Ignore intermediate 00 05 02 notifications.
+            // 2. wait for confirmation F0 43 50 00 03 03 F7
             byte[] completed = kbComm.waitForResponse(
-                    new byte[] {
-                            (byte) 0xF0, 0x43, 0x50, 0x00, 0x03
-                    },
+                    new byte[] { (byte) 0xF0, 0x43, 0x50, 0x00, 0x03, 0x03, (byte) 0xF7 },
                     30000
             );
 
-            if (completed == null
-                    || completed.length < 7
-                    || (completed[5] & 0xFF) != 0x03) {
-                throw new IOException(
-                        "Transfer not confirmed: "
-                                + (completed == null ? "TIMEOUT" : asHex(completed))
-                );
+            if (completed == null) {
+                throw new IOException("Transfer niet bevestigd door keyboard (TIMEOUT op 03 03)");
             }
 
-            logger.debug("Transfer completed: {}", asHex(completed));
+            // Close the transfer-mode clearing the keyboard-screen again
+            kbComm.disconnect();
         } catch (Exception e) {
             logger.error("Exception. CAUSE {}", e.getMessage());
-        }
-        finally {
-            try {
-                kbComm.disconnect();
-            } catch (Exception ignored) {
-            }
         }
     }
 

@@ -21,6 +21,8 @@ import static util.keyboards.yamaha.General.startsWith;
 public class KbCommunication {
     private static final Logger logger = LoggerFactory.getLogger(KbCommunication.class);
 
+    public static byte[] ACK = new byte[] { (byte) 0xF0, 0x43, 0x50, 0x00, 0x03, 0x00, (byte) 0xF7 };
+
     @Getter
     private static KbCommunication instance = new KbCommunication();
 
@@ -410,4 +412,48 @@ public class KbCommunication {
 
         logger.info("MIDI {} [{} bytes]: {}",
                 direction, bytes.length, hex.toString().trim());
-    }}
+    }
+
+    private final Object transferLock = new Object();
+
+    public byte[] sendAndWaitForAck(byte[] packet, int packetNumber)
+            throws Exception {
+
+        synchronized (transferLock) {
+
+            // Oude antwoorden verwijderen vóór verzending
+            handshakeQueue.clear();
+
+            System.out.println("SEND packet " + packetNumber);
+            System.out.println("SEND " + asHex(packet));
+
+            send(packet);
+
+            logger.info("WAIT ACK packet {}", packetNumber);
+
+            byte[] ack = waitForResponse(
+                    new byte[] {
+                            (byte) 0xF0, 0x43, 0x50, 0x00, 0x03
+                    },
+                    10000
+            );
+
+            if (ack == null) {
+                throw new IOException(
+                        "No ACK for packet " + packetNumber
+                );
+            }
+
+            if (ack.length < 7 || (ack[5] & 0xFF) != 0x00) {
+                throw new IOException(
+                        "Rejected packet " + packetNumber + ": " + asHex(ack)
+                );
+            }
+
+            logger.info("ACK packet {}: {}", packetNumber, asHex(ack));
+
+            return ack;
+        }
+    }
+
+}
