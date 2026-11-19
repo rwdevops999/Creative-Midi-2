@@ -276,9 +276,6 @@ public class MergeUploadPane extends GridPane {
         }
 
         private void handleMerge(String styleFileName, String midiFileName) {
-            StyleMerger styleMerger = new StyleMerger();
-//            String newStyleFilename = styleMerger.mergeStyleAndMidi(styleFileName, midiFileName);
-//            styleFileProperty.set(newStyleFilename);
             MidiSplitter splitter = new MidiSplitter();
             String splitFileName = splitter.splitMidi(styleFileName);
             try {

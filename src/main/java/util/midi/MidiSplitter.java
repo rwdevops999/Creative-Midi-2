@@ -38,7 +38,7 @@ public class MidiSplitter {
         return splitFileName;
     }
 
-    public SplitResult splitMidiAndNonMidi(byte[] fileBytes) throws IOException {
+    private SplitResult splitMidiAndNonMidi(byte[] fileBytes) throws IOException {
         ByteArrayOutputStream midiOut = new ByteArrayOutputStream();
         ByteArrayOutputStream nonMidiOut = new ByteArrayOutputStream();
 
