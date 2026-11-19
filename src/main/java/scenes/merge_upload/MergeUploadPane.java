@@ -15,14 +15,17 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.app.AppInfo;
 import util.keyboards.yamaha.KeyboardUtil;
 import util.keyboards.yamaha.StyleMerger;
+import util.midi.MidiSplitter;
 import util.registry.Registry;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -127,6 +130,9 @@ public class MergeUploadPane extends GridPane {
 
         Label styleFilenameLabel = new Label();
         styleFilenameLabel.textProperty().bind(styleFileProperty);
+        styleFilenameLabel.textProperty().bind(
+                styleFileProperty.map(path -> path != null ? FilenameUtils.getBaseName(path) : "")
+        );
         add (styleFilenameLabel, 2, row, 5, 1);
 
         ImageButton uploadStyleButton = new ImageButton("icons/upload-up.png", 100, 35);
@@ -184,7 +190,9 @@ public class MergeUploadPane extends GridPane {
         add (loadMidiFileButton, 0, row);
 
         Label midiFilenameLabel = new Label();
-        midiFilenameLabel.textProperty().bind(midiFileProperty);
+        midiFilenameLabel.textProperty().bind(
+                midiFileProperty.map(path -> path != null ? FilenameUtils.getBaseName(path) : "")
+        );
         add (midiFilenameLabel, 2, row, 5, 1);
 
         ImageButton uploadMidiButton = new ImageButton("icons/upload-down.png", 100, 35);
@@ -269,7 +277,15 @@ public class MergeUploadPane extends GridPane {
 
         private void handleMerge(String styleFileName, String midiFileName) {
             StyleMerger styleMerger = new StyleMerger();
-            String newStyleFilename = styleMerger.mergeStyleAndMidi(styleFileName, midiFileName);
-            styleFileProperty.set(newStyleFilename);
+//            String newStyleFilename = styleMerger.mergeStyleAndMidi(styleFileName, midiFileName);
+//            styleFileProperty.set(newStyleFilename);
+            MidiSplitter splitter = new MidiSplitter();
+            String splitFileName = splitter.splitMidi(styleFileName);
+            try {
+                splitter.spliceFiles(midiFileName, splitFileName, styleFileName);
+                styleFileProperty.set(splitFileName);
+            } catch (IOException ioe) {
+                System.out.println("IOE");
+            }
         }
 }

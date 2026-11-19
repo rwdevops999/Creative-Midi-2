@@ -68,8 +68,8 @@ public class FilePackets {
             out.write(0x01);
 
             // TEST: final-packet flag; not yet confirmed for PC -> PSR
-            out.write(0x01);
-//            out.write(seq == count - 1 ? 0x00 : 0x01);
+//            out.write(0x01);
+            out.write(seq == count - 1 ? 0x00 : 0x01);
 
             out.write((packed.length + 3) & 0x7F);
             out.write(0x02);

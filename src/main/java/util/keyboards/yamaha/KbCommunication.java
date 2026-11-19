@@ -155,11 +155,6 @@ public class KbCommunication {
 
             logger.debug("Received response: {}", asHex(response));
 
-            // Alle Yamaha style-transferstatussen teruggeven.
-            if (starts(response, 0xF0, 0x43, 0x50, 0x00, 0x03)) {
-                return response;
-            }
-
             if (startsWith(response, expectedPrefix)) {
                 return response;
             }

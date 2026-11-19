@@ -14,8 +14,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 import static org.apache.commons.lang3.text.translate.CharSequenceTranslator.hex;
-import static util.keyboards.yamaha.General.asHex;
-import static util.keyboards.yamaha.General.startsWith;
+import static util.keyboards.yamaha.General.*;
 
 public class StyleUploader implements AutoCloseable {
     private static final Logger logger = LoggerFactory.getLogger(StyleUploader.class);

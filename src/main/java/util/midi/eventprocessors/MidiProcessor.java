@@ -194,6 +194,9 @@ public class MidiProcessor {
         /*
          * The note ('C#', ...) is displayed in the comment
          */
+        if (calcNote(keyNo).getName().equals("D1")) {
+            System.out.println("BREAKIE");
+        }
         midiEventInfo.setComment(calcNote(keyNo).getName());
         /*
          * The velocity comes in the value
