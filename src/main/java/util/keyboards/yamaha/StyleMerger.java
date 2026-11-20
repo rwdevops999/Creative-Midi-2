@@ -229,7 +229,7 @@ public class StyleMerger {
             combinedEvents.sort(Comparator.comparingLong(ev -> ((MidiEvent) ev).getTick()));
 // Zet alle sectielengtes (Intro A, Main B, enz.) gelijk aan de originele style
             alignAllSectionLengths(origSeq, combinedEvents);
-// STAP D: Transponeer Intro/Ending globaal naar C, en normaliseer Main/Fill per maat naar C Majeur
+// STAP D: Transponeer Intro/Ending globaal naar C, en normaliseer Main/Fill naar C Majeur
             transposeAndNormalizeSections(combinedEvents, targetResolution, globalTransposeToC);
 // STAP E: Schrijf alles naar mainTrack
             for (Object obj : combinedEvents) {
@@ -286,7 +286,7 @@ public class StyleMerger {
             List result = new ArrayList();
             if (hasNotesInFirstPart) {
                 long cutStart = secStart + targetDuration;
-                boolean[][] activeNotes = new boolean[16][128];
+                boolean[] activeNotes = new boolean[2048];
                 for (Object obj : combinedEvents) {
                     MidiEvent ev = (MidiEvent) obj;
                     long tick = ev.getTick();
@@ -296,11 +296,12 @@ public class StyleMerger {
                             int ch = sm.getChannel();
                             int note = sm.getData1();
                             if (ch >= 0 && ch < 16 && note >= 0 && note < 128) {
+                                int idx = ch * 128 + note;
                                 if (sm.getCommand() == ShortMessage.NOTE_ON && sm.getData2() > 0) {
-                                    activeNotes[ch][note] = true;
+                                    activeNotes[idx] = true;
                                 } else if (sm.getCommand() == ShortMessage.NOTE_OFF
                                         || (sm.getCommand() == ShortMessage.NOTE_ON && sm.getData2() == 0)) {
-                                    activeNotes[ch][note] = false;
+                                    activeNotes[idx] = false;
                                 }
                             }
                         }
@@ -308,13 +309,13 @@ public class StyleMerger {
                         result.add(new MidiEvent(ev.getMessage(), tick - shiftBack));
                     }
                 }
-                for (int ch = 0; ch < 16; ch++) {
-                    for (int note = 0; note < 128; note++) {
-                        if (activeNotes[ch][note]) {
-                            try {
-                                result.add(new MidiEvent(new ShortMessage(ShortMessage.NOTE_OFF, ch, note, 0), cutStart - 1));
-                            } catch (InvalidMidiDataException ignored) {
-                            }
+                for (int idx = 0; idx < 2048; idx++) {
+                    if (activeNotes[idx]) {
+                        int ch = idx / 128;
+                        int note = idx % 128;
+                        try {
+                            result.add(new MidiEvent(new ShortMessage(ShortMessage.NOTE_OFF, ch, note, 0), cutStart - 1));
+                        } catch (InvalidMidiDataException ignored) {
                         }
                     }
                 }
@@ -408,10 +409,12 @@ public class StyleMerger {
         if (currentFixedStart != -1) {
             fixedSections.add(new SectionRange(currentFixedStart, maxTick + 1));
         }
+
         long ticksPerBar = (long) resolution * 4 * numerator / denominator;
         if (ticksPerBar <= 0) {
             ticksPerBar = resolution * 4L;
         }
+
         int totalBars = (int) (maxTick / ticksPerBar) + 1;
         List pitchClassCounts = new ArrayList(totalBars);
         for (int b = 0; b < totalBars; b++) {
@@ -421,6 +424,7 @@ public class StyleMerger {
         int[] lowestPitchClassPerBar = (int[]) Array.newInstance(int.class, totalBars);
         Arrays.fill(lowestNotePerBar, 128);
         Arrays.fill(lowestPitchClassPerBar, -1);
+
         for (Object obj : events) {
             MidiEvent ev = (MidiEvent) obj;
             if (ev.getMessage() instanceof ShortMessage sm
@@ -433,7 +437,8 @@ public class StyleMerger {
                 int bar = (int) (ev.getTick() / ticksPerBar);
                 int note = sm.getData1();
                 int pc = note % 12;
-                int weight = (ch == CH_11) ? 4 : 1;
+                // Laat akkoordtracks (CH 12-16) zwaarder wegen dan losse loopnoten in de bas (CH 11)
+                int weight = (ch == CH_11) ? 1 : 2;
                 int[] barCounts = (int[]) pitchClassCounts.get(bar);
                 Array.setInt(barCounts, pc, Array.getInt(barCounts, pc) + weight);
                 if (note < Array.getInt(lowestNotePerBar, bar)) {
@@ -442,10 +447,12 @@ public class StyleMerger {
                 }
             }
         }
+
         int[] barRoot = (int[]) Array.newInstance(int.class, totalBars);
         boolean[] barIsMinor = (boolean[]) Array.newInstance(boolean.class, totalBars);
         int lastKnownRoot = 0;
         boolean lastKnownMinor = false;
+
         for (int b = 0; b < totalBars; b++) {
             int bestRoot = -1;
             int bestScore = -1;
@@ -461,7 +468,7 @@ public class StyleMerger {
                 }
                 boolean isMin = minThirdHits > majThirdHits;
                 int thirdHits = isMin ? minThirdHits : majThirdHits;
-                int bassBonus = (Array.getInt(lowestPitchClassPerBar, b) == candidateRoot) ? 5 : 0;
+                int bassBonus = (Array.getInt(lowestPitchClassPerBar, b) == candidateRoot) ? 2 : 0;
                 int score = (rootHits * 3) + (fifthHits * 2) + (thirdHits * 2) + bassBonus;
                 if (score > bestScore) {
                     bestScore = score;
@@ -479,6 +486,10 @@ public class StyleMerger {
                 Array.setBoolean(barIsMinor, b, lastKnownMinor);
             }
         }
+
+        int[] activeTransposedNote = (int[]) Array.newInstance(int.class, 2048);
+        Arrays.fill(activeTransposedNote, -1);
+
         for (int i = 0; i < events.size(); i++) {
             MidiEvent ev = (MidiEvent) events.get(i);
             if (ev.getMessage() instanceof ShortMessage sm) {
@@ -491,26 +502,40 @@ public class StyleMerger {
                     continue;
                 }
                 int origNote = sm.getData1();
+                int idx = ch * 128 + origNote;
+                boolean isNoteOff = (cmd == ShortMessage.NOTE_OFF)
+                        || (cmd == ShortMessage.NOTE_ON && sm.getData2() == 0);
+
                 int newNote;
-                if (isTickInFixedSection(ev.getTick(), fixedSections)) {
-                    newNote = Math.max(0, Math.min(127, origNote + globalTransposeToC));
+                if (isNoteOff && Array.getInt(activeTransposedNote, idx) != -1) {
+                    newNote = Array.getInt(activeTransposedNote, idx);
+                    Array.setInt(activeTransposedNote, idx, -1);
                 } else {
-                    int bar = (int) (ev.getTick() / ticksPerBar);
-                    int root = Array.getInt(barRoot, bar);
-                    boolean isMinor = Array.getBoolean(barIsMinor, bar);
-                    int shift = -root;
-                    if (shift < -5) {
-                        shift += 12;
+                    if (isTickInFixedSection(ev.getTick(), fixedSections)) {
+                        newNote = Math.max(0, Math.min(127, origNote + globalTransposeToC));
+                    } else {
+                        int bar = (int) (ev.getTick() / ticksPerBar);
+                        int root = Array.getInt(barRoot, bar);
+                        boolean isMinor = Array.getBoolean(barIsMinor, bar);
+                        int shift = -root;
+                        if (shift < -5) {
+                            shift += 12;
+                        }
+                        int intervalFromRoot = Math.floorMod(origNote - root, 12);
+                        int minorToMajorAdjustment = (isMinor && intervalFromRoot == 3) ? 1 : 0;
+                        newNote = Math.max(0, Math.min(127, origNote + shift + minorToMajorAdjustment));
                     }
-                    int intervalFromRoot = Math.floorMod(origNote - root, 12);
-                    int minorToMajorAdjustment = (isMinor && intervalFromRoot == 3) ? 1 : 0;
-                    newNote = Math.max(0, Math.min(127, origNote + shift + minorToMajorAdjustment));
+                    if (cmd == ShortMessage.NOTE_ON && sm.getData2() > 0) {
+                        Array.setInt(activeTransposedNote, idx, newNote);
+                    }
                 }
+
                 ShortMessage newMsg = new ShortMessage(cmd, ch, newNote, sm.getData2());
                 events.set(i, new MidiEvent(newMsg, ev.getTick()));
             }
         }
     }
+
     private boolean isTickInFixedSection(long tick, List fixedSections) {
         for (Object obj : fixedSections) {
             SectionRange r = (SectionRange) obj;
