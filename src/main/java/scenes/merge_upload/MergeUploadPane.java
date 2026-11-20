@@ -7,12 +7,14 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.concurrent.Task;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.VPos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import org.apache.commons.io.FilenameUtils;
@@ -26,7 +28,9 @@ import util.registry.Registry;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -81,6 +85,9 @@ public class MergeUploadPane extends GridPane {
     private List<String> styleFiles;
     private List<String> midiFiles;
 
+    private ListView<String> stylesListView;
+    private ProgressBar uploadProgressBar;
+
     private void buildPane() {
         logger.debug("Building {}", getId());
 
@@ -89,7 +96,7 @@ public class MergeUploadPane extends GridPane {
 
         int row = 0;
 
-        ListView<String> stylesListView = new ListView<>();
+        stylesListView = new ListView<>();
         stylesListView.setMaxWidth(Double.MAX_VALUE);
         stylesListView.setMaxHeight(VIEW_HEIGHT);
         stylesListView.setPrefHeight(VIEW_HEIGHT);
@@ -213,11 +220,12 @@ public class MergeUploadPane extends GridPane {
         });
 
         // midis list
-        row++;
+        row += 2;
 
         ListView<String> midisListView = new ListView<>();
         midisListView.setMaxWidth(Double.MAX_VALUE);
         midisListView.setMaxHeight(VIEW_HEIGHT);
+//        midisListView.setMinHeight(VIEW_HEIGHT);
         midisListView.setPrefHeight(VIEW_HEIGHT);
         add (midisListView, 0, row, 10, 3);
 
@@ -229,7 +237,16 @@ public class MergeUploadPane extends GridPane {
             }
         });
 
-        Registry.getInstance().showStatus("Uploaded data from keyboard");
+        uploadProgressBar = new ProgressBar(0);
+        uploadProgressBar.setPrefSize(300, 25);
+        uploadProgressBar.setMaxSize(300, 25);
+        uploadProgressBar.setVisible(false);
+
+        GridPane.setHalignment(uploadProgressBar, HPos.CENTER);
+        GridPane.setValignment(uploadProgressBar, VPos.CENTER);
+        add(uploadProgressBar, 0, 0, 10, 10);
+
+//        Registry.getInstance().showStatus("Uploaded data from keyboard");
 
         logger.debug("Built {}", getId());
     }
@@ -241,13 +258,20 @@ public class MergeUploadPane extends GridPane {
     private void setStyleFiles(ListView<String> listView) {
         try {
             KeyboardUtil utils = new KeyboardUtil();
-            styleFiles = utils.getStyleFiles().stream().sorted(String.CASE_INSENSITIVE_ORDER).toList();
-            if (styleFiles == null) {
-                styleFiles = new ArrayList<>();
-            }
+            styleFiles = utils.getStyleFiles().stream()
+                    .sorted(
+                            Comparator.comparing((String s) -> s.matches("^\\d+.*") ? 0 : 1) // 1. Numbered files first
+                                    .thenComparing(s -> s.matches("^\\d+.*")
+                                            ? new BigInteger(s.replaceAll("^(\\d+).*", "$1"))
+                                            : BigInteger.ZERO)                                       // 2. Sort by leading number
+                                    .thenComparing(String.CASE_INSENSITIVE_ORDER)                // 3. Sort alphabetically
+                    )
+                    .toList();
+            listView.getItems().clear();
             listView.getItems().addAll(styleFiles);
         } catch (Exception e) {
             styleFiles = new ArrayList<>();
+            listView.getItems().clear();
             listView.getItems().addAll(styleFiles);
         }
     }
@@ -264,32 +288,91 @@ public class MergeUploadPane extends GridPane {
 
 
         private void uploadStyleFile(String styleName, String selectedStyleFile) {
-            KeyboardUtil utils = new KeyboardUtil();
+            Task<Void> uploadTask = new Task<>() {
+                @Override
+                protected Void call() throws Exception {
+                    KeyboardUtil utils = new KeyboardUtil();
 
-            utils.uploadStyle(selectedStyleFile, styleName);
+                    utils.uploadStyle(selectedStyleFile, styleName, this::updateProgress);
+
+                    return null;
+                }
+            };
+
+            uploadProgressBar.progressProperty().bind(uploadTask.progressProperty());
+            uploadProgressBar.visibleProperty().bind(uploadTask.runningProperty());
+
+            this.disableProperty().bind(uploadTask.runningProperty());
+
+            uploadTask.setOnSucceeded(e -> {
+                this.disableProperty().unbind();
+                this.setDisable(false);
+
+                Registry.getInstance().showStatus("Upload Success");
+
+                setStyleFiles(stylesListView);
+            });
+
+            uploadTask.setOnFailed(e -> {
+                this.disableProperty().unbind();
+                this.setDisable(false);
+
+                Throwable ex = uploadTask.getException();
+                logger.error("Upload failed: {}", ex.getMessage());
+                Registry.getInstance().showStatus("Upload failed: " + ex.getMessage());
+            });
+
+            Thread uploadThread = new Thread(uploadTask);
+            uploadThread.setDaemon(true);
+            uploadThread.start();
         }
 
         private void uploadMidiFile(String songName, String selectedMidiFile) {
-            KeyboardUtil utils = new KeyboardUtil();
+            Task<Void> uploadTask = new Task<>() {
+                @Override
+                protected Void call() throws Exception {
+                    KeyboardUtil utils = new KeyboardUtil();
 
-            utils.uploadSong(selectedMidiFile, songName);
+                    utils.uploadSong(selectedMidiFile, songName, this::updateProgress);
+
+                    return null;
+                }
+            };
+
+            uploadProgressBar.progressProperty().bind(uploadTask.progressProperty());
+            uploadProgressBar.visibleProperty().bind(uploadTask.runningProperty());
+
+            this.disableProperty().bind(uploadTask.runningProperty());
+
+            uploadTask.setOnSucceeded(e -> {
+                this.disableProperty().unbind();
+                this.setDisable(false);
+
+                Registry.getInstance().showStatus("Upload Success");
+                // Optioneel: ververs hier je styleFiles / midiFiles ListView
+            });
+
+            uploadTask.setOnFailed(e -> {
+                this.disableProperty().unbind();
+                this.setDisable(false);
+
+                Throwable ex = uploadTask.getException();
+                logger.error("Upload failed: {}", ex.getMessage());
+                Registry.getInstance().showStatus("Upload failed: " + ex.getMessage());
+            });
+
+            Thread uploadThread = new Thread(uploadTask);
+            uploadThread.setDaemon(true);
+            uploadThread.start();
         }
 
         private void handleMerge(String styleFileName, String midiFileName) {
-/*            MidiSplitter splitter = new MidiSplitter();
-            String splitFileName = splitter.splitMidi(styleFileName);
-            try {
-                splitter.spliceFiles(midiFileName, splitFileName, styleFileName);
-                styleFileProperty.set(splitFileName);
-            } catch (IOException ioe) {
-                System.out.println("IOE");
-            } */
             StyleMerger merger = new StyleMerger();
             try {
                 String mergedStyleFile = merger.merge(styleFileName, midiFileName);
                 styleFileProperty.set(mergedStyleFile);
             } catch (Exception e) {
-                System.out.println("E");
+                logger.error("Exception. CAUSE: {}", e.getMessage());
             }
     }
 }

@@ -424,9 +424,6 @@ public class KbCommunication {
             // Oude antwoorden verwijderen vóór verzending
             handshakeQueue.clear();
 
-            System.out.println("SEND packet " + packetNumber);
-            System.out.println("SEND " + asHex(packet));
-
             send(packet);
 
             logger.info("WAIT ACK packet {}", packetNumber);

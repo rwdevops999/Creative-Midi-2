@@ -77,7 +77,7 @@ public class KeyboardPlayService extends Service<Void> {
 
             logger.debug("LOOKING UP SONG: {}", songName);
             Song song = playlistContainer.getSongByName(songName);
-            song.getPreMappings().stream().filter(s -> s.getContent().getParametrized() != false).findFirst().ifPresent(System.out::println);
+//            song.getPreMappings().stream().filter(s -> s.getContent().getParametrized() != false).findFirst().ifPresent(System.out::println);
 
             if (song != null) {
                 logger.debug("SONG INFORMATION IS AVAILABLE: {}", songName);
@@ -86,7 +86,6 @@ public class KeyboardPlayService extends Service<Void> {
                 if (! song.getPreMappings().isEmpty()) {
                     logger.debug("SETTING UP PRE-MAPPINGS: {}", songName);
                     songControl.setPreMappings(new ArrayList<>());
-                    System.out.println(">>> PREMAPPINGS: " + Integer.toHexString(System.identityHashCode(songControl.getPreMappings())));
 
                     preMappingsSent = false;
                     for (Sysex sysex : song.getPreMappings()) {
@@ -99,16 +98,11 @@ public class KeyboardPlayService extends Service<Void> {
                                 Parameter result = tempoFunction.apply(song.getSongInfo().getTempo());
                                 newSysex.getContent().setParametrized(false);
                                 String tempoSysex = sysex.getContent().getSysex().replace(result.getParameterString(), result.getReplacementString());
-                                System.out.println("TEMPO SYSEX = " + tempoSysex);
 
                                 newSysex.getContent().setSysex(tempoSysex);
 
-//                                songControl.getPreMappings().add(new Sysex(sysex));
                             }
                         }
-/*                        else {
-                            songControl.getPreMappings().add(new Sysex(sysex));
-                        } */
                     }
                 }
 
@@ -147,20 +141,13 @@ public class KeyboardPlayService extends Service<Void> {
     }
 
     private void sendPreMappings () {
-        System.out.println("SENDING PRE-MAPPINGS of " + songControl != null ? songControl.getSongName() : "UNDEFINED");
         // Execute pre-mappings
         try {
-            System.out.println(">>> PREMAPPINGS: " + Integer.toHexString(System.identityHashCode(songControl.getPreMappings())));
             for (Sysex sysex : songControl.getPreMappings()) {
-                System.out.println("SENDING SYSEX: " + sysex.getContent().getSysex());
                 sysexWriter.send(sysex);
                 Thread.sleep(100);
             }
             preMappingsSent = true;
-/*            for (ByteBuffer buffer : preMappings) {
-                System.out.println("Sending : " + buffer);
-                sysexWriter.sendBytes(buffer.array());
-            } */
         } catch (InterruptedException | InvalidMidiDataException | MidiUnavailableException e) {
             logger.error("Exception. CAUSE {}", e.getMessage());
         }

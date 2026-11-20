@@ -8,6 +8,7 @@ import util.keyboards.yamaha.entity.Keyboard;
 
 import java.io.File;
 import java.util.*;
+import java.util.function.BiConsumer;
 
 import static util.keyboards.yamaha.KbUtil.getFilesFrom;
 
@@ -78,7 +79,7 @@ public class KeyboardUtil {
         return files;
     }
 
-    public synchronized void uploadStyle(String styleFileOnDisk, String styleName) {
+    public synchronized void uploadStyle(String styleFileOnDisk, String styleName, BiConsumer<Integer, Integer> progressCallback) {
         if (!kbComm.isInitialised()) {
             DialogFactory.getInstance().renderErrorDialog("No device selected");
         } else {
@@ -86,7 +87,7 @@ public class KeyboardUtil {
                 File f = new File(styleFileOnDisk);
                 String newStyleName = styleName + ".sty";
 
-                styleUploader.upload(f.toPath(), newStyleName);
+                styleUploader.upload(f.toPath(), newStyleName, progressCallback);
                 logger.debug("Uploaded style file on disk: " + styleFileOnDisk);
             } catch (Exception e) {
                 logger.error("Exception. CAUSE {}", e.getMessage());
@@ -94,16 +95,16 @@ public class KeyboardUtil {
         }
     }
 
-    public synchronized void uploadSong(String styleFileOnDisk, String styleName) {
+    public synchronized void uploadSong(String midiFileOnDisk, String songName, BiConsumer<Integer, Integer> progressCallback) {
         if (!kbComm.isInitialised()) {
             DialogFactory.getInstance().renderErrorDialog("No device selected");
         } else {
             try (MidiUploader midiUploader = new MidiUploader()) {
-                File f = new File(styleFileOnDisk);
-                String newStyleName = styleName + ".mid";
+                File f = new File(midiFileOnDisk);
+                String newSongName = songName + ".mid";
 
-                midiUploader.upload(f.toPath(), newStyleName);
-                logger.debug("Uploaded midi file on disk: " + styleFileOnDisk);
+                midiUploader.upload(f.toPath(), newSongName, progressCallback);
+                logger.debug("Uploaded midi file on disk: " + midiFileOnDisk);
             } catch (Exception e) {
                 logger.error("Exception. CAUSE {}", e.getMessage());
             }

@@ -390,7 +390,6 @@ public class VoiceListPane extends AnchorPane {
                         // 3. CRITICAL: Only proceed if exactly ONE item is currently selected
                         if (selectedItems.size() == 1) {
 
-                            System.out.println("KEYS: " + shift + ", " + ctrl);
                             int targetChannel = -1;
                             if (shift && ctrl) {
                                 targetChannel = CHANNEL_LEFT; // Channel  (Shift & ctrl click)
@@ -399,8 +398,6 @@ public class VoiceListPane extends AnchorPane {
                             } else if (ctrl) {
                                 targetChannel = CHANNEL_RIGHT2; // Channel 2 (Ctrl click)
                             }
-
-                            System.out.println("SELECTED CHANNEL = " + targetChannel);
 
                             if (targetChannel != -1) {
                                 Patch singleItem = selectedItems.get(0);

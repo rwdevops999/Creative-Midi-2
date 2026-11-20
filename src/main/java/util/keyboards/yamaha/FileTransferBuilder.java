@@ -49,8 +49,6 @@ public class FileTransferBuilder {
      */
     public static byte[] packedDestination(Keyboard kb, String drive, String folder, String filename, int fileSize) {
 
-        System.out.println("packedDestination filename = [" + filename + "]");
-
         if (filename == null ||
                 !filename.matches("(?i)[A-Za-z0-9_. -]+\\.(sty|mid)")) {
             throw new IllegalArgumentException(
