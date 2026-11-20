@@ -92,10 +92,6 @@ public class StyleMerger {
                     }
                     if (msg instanceof MetaMessage meta) {
                         if (meta.getType() == 0x2F || meta.getType() == 0x58) {
-                            continue; // Laat de nieuwe MIDI de maatsoort bepalen
-                        }
-
-                        if (meta.getType() == 0x2F) {
                             continue;
                         }
                         String text = new String(meta.getData(), StandardCharsets.US_ASCII).trim();
@@ -153,7 +149,6 @@ public class StyleMerger {
                 }
             }
 
-            // Als de originele stijl op tick 0 geen setup had voor CH 16 (PHR2), voeg die nu op tick 0 toe
             if (!origHasCh16Setup && Array.getBoolean(channelHasNotes, CH_16)) {
                 combinedEvents.add(new MidiEvent(new ShortMessage(ShortMessage.CONTROL_CHANGE, CH_16, 0, ch16Msb), 0));
                 combinedEvents.add(new MidiEvent(new ShortMessage(ShortMessage.CONTROL_CHANGE, CH_16, 32, ch16Lsb), 0));
@@ -232,18 +227,10 @@ public class StyleMerger {
                 }
             }
             combinedEvents.sort(Comparator.comparingLong(ev -> ((MidiEvent) ev).getTick()));
+// Zet alle sectielengtes (Intro A, Main B, enz.) gelijk aan de originele style
+            alignAllSectionLengths(origSeq, combinedEvents);
 // STAP D: Transponeer Intro/Ending globaal naar C, en normaliseer Main/Fill per maat naar C Majeur
             transposeAndNormalizeSections(combinedEvents, targetResolution, globalTransposeToC);
-
-            for (Object obj : combinedEvents) {
-                MidiEvent ev = (MidiEvent) obj;
-                if (ev.getMessage() instanceof MetaMessage meta && meta.getType() == 0x06) {
-                    String markerName = new String(meta.getData(), StandardCharsets.US_ASCII).trim();
-                    long bar = (ev.getTick() / (targetResolution * 4L)) + 1;
-                    logger.info("Marker '{}' staat op tick {} (maat ~{})", markerName, ev.getTick(), bar);
-                }
-            }
-
 // STAP E: Schrijf alles naar mainTrack
             for (Object obj : combinedEvents) {
                 mainTrack.add((MidiEvent) obj);
@@ -251,6 +238,134 @@ public class StyleMerger {
             MidiSystem.write(targetSeq, 0, out);
             return out.toByteArray();
         }
+    }
+    private void alignAllSectionLengths(Sequence origSeq, List combinedEvents) {
+        Map origDurations = getOrigSectionDurations(origSeq);
+        if (origDurations.isEmpty()) {
+            return;
+        }
+        for (Object entryObj : origDurations.entrySet()) {
+            Map.Entry entry = (Map.Entry) entryObj;
+            String targetSection = (String) entry.getKey();
+            long targetDuration = ((Long) entry.getValue()).longValue();
+            if (targetDuration <= 0) {
+                continue;
+            }
+            long secStart = -1;
+            long nextSecStart = -1;
+            for (Object obj : combinedEvents) {
+                MidiEvent ev = (MidiEvent) obj;
+                if (ev.getMessage() instanceof MetaMessage meta && meta.getType() == 0x06) {
+                    String marker = new String(meta.getData(), StandardCharsets.US_ASCII).trim();
+                    if ("SInt".equals(marker) || "SFF1".equals(marker) || "SFF2".equals(marker)) {
+                        continue;
+                    }
+                    if (targetSection.equals(marker)) {
+                        secStart = ev.getTick();
+                    } else if (secStart != -1) {
+                        nextSecStart = ev.getTick();
+                        break;
+                    }
+                }
+            }
+            if (secStart == -1 || nextSecStart == -1 || (nextSecStart - secStart) <= targetDuration) {
+                continue;
+            }
+            boolean hasNotesInFirstPart = false;
+            for (Object obj : combinedEvents) {
+                MidiEvent ev = (MidiEvent) obj;
+                long tick = ev.getTick();
+                if (tick >= secStart && tick < secStart + targetDuration
+                        && ev.getMessage() instanceof ShortMessage sm
+                        && sm.getCommand() == ShortMessage.NOTE_ON && sm.getData2() > 0) {
+                    hasNotesInFirstPart = true;
+                    break;
+                }
+            }
+            long shiftBack = (nextSecStart - secStart) - targetDuration;
+            List result = new ArrayList();
+            if (hasNotesInFirstPart) {
+                long cutStart = secStart + targetDuration;
+                boolean[][] activeNotes = new boolean[16][128];
+                for (Object obj : combinedEvents) {
+                    MidiEvent ev = (MidiEvent) obj;
+                    long tick = ev.getTick();
+                    if (tick < cutStart) {
+                        result.add(ev);
+                        if (ev.getMessage() instanceof ShortMessage sm) {
+                            int ch = sm.getChannel();
+                            int note = sm.getData1();
+                            if (ch >= 0 && ch < 16 && note >= 0 && note < 128) {
+                                if (sm.getCommand() == ShortMessage.NOTE_ON && sm.getData2() > 0) {
+                                    activeNotes[ch][note] = true;
+                                } else if (sm.getCommand() == ShortMessage.NOTE_OFF
+                                        || (sm.getCommand() == ShortMessage.NOTE_ON && sm.getData2() == 0)) {
+                                    activeNotes[ch][note] = false;
+                                }
+                            }
+                        }
+                    } else if (tick >= nextSecStart) {
+                        result.add(new MidiEvent(ev.getMessage(), tick - shiftBack));
+                    }
+                }
+                for (int ch = 0; ch < 16; ch++) {
+                    for (int note = 0; note < 128; note++) {
+                        if (activeNotes[ch][note]) {
+                            try {
+                                result.add(new MidiEvent(new ShortMessage(ShortMessage.NOTE_OFF, ch, note, 0), cutStart - 1));
+                            } catch (InvalidMidiDataException ignored) {
+                            }
+                        }
+                    }
+                }
+                result.sort(Comparator.comparingLong(ev -> ((MidiEvent) ev).getTick()));
+            } else {
+                long keepFrom = nextSecStart - targetDuration;
+                for (Object obj : combinedEvents) {
+                    MidiEvent ev = (MidiEvent) obj;
+                    long tick = ev.getTick();
+                    if (tick <= secStart) {
+                        result.add(ev);
+                    } else if (tick >= keepFrom) {
+                        result.add(new MidiEvent(ev.getMessage(), tick - shiftBack));
+                    }
+                }
+            }
+            combinedEvents.clear();
+            combinedEvents.addAll(result);
+        }
+    }
+    private Map getOrigSectionDurations(Sequence origSeq) {
+        List allOrigEvents = new ArrayList();
+        for (Track t : origSeq.getTracks()) {
+            for (int i = 0; i < t.size(); i++) {
+                allOrigEvents.add(t.get(i));
+            }
+        }
+        allOrigEvents.sort(Comparator.comparingLong(ev -> ((MidiEvent) ev).getTick()));
+        List names = new ArrayList();
+        List ticks = new ArrayList();
+        for (Object obj : allOrigEvents) {
+            MidiEvent ev = (MidiEvent) obj;
+            if (ev.getMessage() instanceof MetaMessage meta && meta.getType() == 0x06) {
+                String marker = new String(meta.getData(), StandardCharsets.US_ASCII).trim();
+                if ("SInt".equals(marker) || "SFF1".equals(marker) || "SFF2".equals(marker)) {
+                    continue;
+                }
+                names.add(marker);
+                ticks.add(Long.valueOf(ev.getTick()));
+            }
+        }
+        Map durations = new LinkedHashMap();
+        for (int i = 0; i < names.size() - 1; i++) {
+            String name = (String) names.get(i);
+            if (!"End Of Section".equalsIgnoreCase(name)) {
+                long start = ((Long) ticks.get(i)).longValue();
+                long end = ((Long) ticks.get(i + 1)).longValue();
+                durations.put(name, Long.valueOf(end - start));
+            }
+        }
+        return durations;
     }
     private void transposeAndNormalizeSections(List events, int resolution, int globalTransposeToC)
             throws InvalidMidiDataException {
@@ -432,15 +547,14 @@ public class StyleMerger {
         for (Object obj : csegBlocks) {
             extractAndNormalizeChannelChunks((byte[]) obj, masterChannelChunks, false);
         }
-// Als CH_16 (index 15 = PHR2) in geen enkel Cseg-blok bestond, maak hem dan aan op basis van een bestaand kanaal
         if (!masterChannelChunks.containsKey(CH_16) && !masterChannelChunks.isEmpty()) {
             byte[] template = (byte[]) masterChannelChunks.values().iterator().next();
             byte[] phr2Chunk = template.clone();
             String subTag = new String(phr2Chunk, 0, 4, StandardCharsets.US_ASCII);
-            Array.setByte(phr2Chunk, 8, (byte) CH_16);  // Source Channel = 15 (CH 16)
+            Array.setByte(phr2Chunk, 8, (byte) CH_16);
             byte[] phr2Name = "PHR2    ".getBytes(StandardCharsets.US_ASCII);
             System.arraycopy(phr2Name, 0, phr2Chunk, 9, 8);
-            Array.setByte(phr2Chunk, 17, (byte) CH_16); // Dest Channel = 15 (CH 16)
+            Array.setByte(phr2Chunk, 17, (byte) CH_16);
             normalizeChannelSubChunk(subTag, phr2Chunk);
             masterChannelChunks.put(CH_16, phr2Chunk);
         }
